@@ -1,0 +1,61 @@
+<html>
+  <head>
+
+    <title></title>
+  </head>
+  <body>
+   <div id="divresults" style="border-style: solid; border-width: 1px;">
+    messages...
+  
+  </div>   
+  
+    <script src="biginteger.js" type="text/javascript"></script>
+    <script src="sha256.js" type="text/javascript"></script>
+    <script src="mint.js" type="text/javascript"></script>
+	<script src="kernel.js" type="text/javascript"></script>
+    <script type="text/javascript">
+ 
+function doFindStaketest(){
+
+	var testData = {
+		BlockFromTime: 1394219584,
+		StakeModifier: 15161125480764745506,
+		PrevTxOffset:160,
+		PrevTxTime:1394219584,
+		PrevTxOutIndex:1,
+		PrevTxOutValue:210090000,		
+		IsProtocolV03:true,
+		StakeMinAge:2592000,
+		Bits:471087779,
+		TxTime:1411634680		
+	}	
+	var tpl0Hash=[0x00, 0x00, 0x00, 0xdb, 0x33, 0x30, 0x88, 0x15,
+				0x19, 0xa4, 0xf3, 0x2b, 0x90, 0x91, 0xb0, 0x93,
+				0x0f, 0x24, 0xec, 0x6f, 0xb0, 0x90, 0x0a, 0xcf,
+				0xbf, 0xb0, 0xc2, 0x26, 0xc7, 0xbc, 0x31, 0x92];
+				
+		staketemp = new StakeKernelTemplate(testData);
+
+		var resultobj = staketemp.CheckStakeKernelHash();//{succes: succes, minTarget:minTarget}
+		if (!resultobj.succes){
+			alert('error')
+		}	
+		
+		/*
+			if !bytes.Equal(tpl0Hash, hash) {
+		t.Errorf("wrong kernel hash, have %v want %v", hash, tpl0Hash)
+		return
+	}
+		*/
+}
+
+doFindStaketest();
+ 
+   
+
+ 	//console.log(" ---  t3 %d c1_ %d --- ",  t3, c1_)
+
+
+</script>  
+  </body>
+</html>
