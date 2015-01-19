@@ -1,6 +1,6 @@
-# Project Port findstake written in Go to JS
+# Project Port findstake written in Go to javascript
 
-Status: untested, alpha
+Status: tested with test modules succeeded; still alpha tho.
  
 Please chime in to getb this finished.
 

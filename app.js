@@ -1,75 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-	<meta name="description" content="javascript port of findstake: https://github.com/kac-/umint/tree/master/tools/findstake" />     
-
-    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1">
-
-    <title>Peercoin Findstake</title>
-
-    <style>
-	  .forminp {
-		width:200px;
-	  }
-      #divresults {
-        border: 1px solid #DDDDDD;
-      }
-    </style>
-
-    
-  </head>
-  
- 
-    <h3>FindStake with peercoin</h3>
-	<form>
-	  <p>BlockFromTime</p>
-	  <p>
-		<input id="inpBlockFromTime" class="forminp" type="text" placeholder="1394219584" required="">		
-	  </p>
-	  <p>StakeModifier</p>
-	  <p>
-		<input id="inpStakeModifier" class="forminp"  type="text" placeholder="15161125480764745506" required="">
-	  </p>
-	  <p>PrevTxOffset</p>
-	  <p>
-		<input id="inpPrevTxOffset" class="forminp"  type="text" placeholder="160" required="">
-	  </p>
-	  <p>PrevTxTime</p>
-	  <p>
-		<input id="inpPrevTxTime" class="forminp"  type="text" placeholder="1394219584" required="">
-	  </p>
-	  <p>PrevTxOutIndex</p>
-	  <p>
-		<input id="inpPrevTxOutIndex" class="forminp"  type="text" placeholder="1" required="">
-	  </p>
-	  <p>PrevTxOutValue</p>
-	  <p>
-		<input id="inpPrevTxOutValue" class="forminp"  type="text" placeholder="210090000" required="">
-	  </p>
-	  <p>Start</p>
-	  <p>
-		<input id="inpTxTime" class="forminp"  type="text" placeholder="1411634680" required="">
-	  </p>
-	  <p>Days</p>
-	  <p>
-		<input id="inpDays" class="forminp"  type="text" placeholder="15" required="">
-	  </p>		  
-	  <p>Difficulty</p>
-	  <p>
-		<input id="inpDifficulty" class="forminp"  type="text" placeholder="12.40" required="">
-	  </p>	  
-	  <p>
-		<button id="actiongo">GO</button><button type="reset">Clear</button>
-	  </p>	  
-	</form>	
-	<div id="divresults">
-	 <br/>
-	</div>
-  
-  
-     <script type="text/javascript">   
-  // In case we forget to take out console statements. IE becomes very unhappy when we forget. Let's not make IE unhappy
+ // In case we forget to take out console statements. IE becomes very unhappy when we forget. Let's not make IE unhappy
 if (typeof(console) === 'undefined') {
     var console = {}
     console.log = console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile = function() {};
@@ -1996,7 +1925,3 @@ globals.Mint = {
 
 
 }(window));
-  
-     </script>
-  </body>    
-</html>

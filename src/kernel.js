@@ -8,35 +8,49 @@
 	var coinDay     	= coin * day;
 	 
 	var StakeKernelTemplate = window.StakeKernelTemplate = function StakeKernelTemplate(tpl) {
+
 		this.BlockFromTime = tpl.BlockFromTime;// int64
-		this.StakeModifier = tpl.StakeModifier; //uint64
+		this.StakeModifier = tpl.StakeModifier; //uint64  => BigInteger!!!
 		this.PrevTxOffset = tpl.PrevTxOffset; //uint32
 		this.PrevTxTime = tpl.PrevTxTime;    //int64
 		this.PrevTxOutIndex = tpl.PrevTxOutIndex; //uint32
 		this.PrevTxOutValue = tpl.PrevTxOutValue; //int64
-		this.IsProtocolV03 = tpl.IsProtocolV03; //bool
-		this.StakeMinAge = tpl.StakeMinAge;   //int64
-		this.Bits = tpl.Bits;          //uint32
-		this.TxTime = tpl.TxTime;//(Date.now() / 1000 | 0);        //int64
+    
+		this.IsProtocolV03 = ('IsProtocolV03' in tpl) ? tpl.IsProtocolV03 : true;//bool
+		this.StakeMinAge = ('StakeMinAge' in tpl) ? tpl.StakeMinAge : 2592000; //int64
+		this.Bits = ('Bits' in tpl) ? tpl.Bits : this.SetBitsWithDifficulty(parseFloat("10.33")); //uint32 
+		this.TxTime = ('TxTime' in tpl) ? tpl.TxTime : (Date.now() / 1000 | 0); //int64
+		
 		this.Stop=false;
 	};
 	StakeKernelTemplate.prototype.SetBitsWithDifficulty = function (diff) {
 		this.Bits = Mint.BigToCompact(Mint.DiffToTarget(diff));
 	}
+  StakeKernelTemplate.prototype.arraysEqual= function arraysEqual(a, b) {
+      if (a === b) return true;
+      if (a == null || b == null) return false;
+      if (a.length != b.length) return false;
+
+      for (var i = 0; i < a.length; ++i) {
+        if (a[i] !== b[i]) return false;
+      }
+      return true;
+  }
+  
+  
 	StakeKernelTemplate.prototype.CheckStakeKernelHash = function () {
-		//var success = false;
-		//var minTarget=0;
+
 		var retobj = {};
 		retobj.success=false;
 		retobj.minTarget=0;
 		retobj.hash=[];
 		
 		if (this.TxTime < this.PrevTxTime) { // Transaction timestamp violation
-			console.log("CheckStakeKernelHash() : nTime violation");
+			AppLogger.log("CheckStakeKernelHash() : nTime violation");
 			return retobj;
 		}
 		if (this.BlockFromTime+this.StakeMinAge > this.TxTime) { // Min age requirement
-			console.log("CheckStakeKernelHash() : min age violation");
+			AppLogger.log("CheckStakeKernelHash() : min age violation");
 			return retobj;
 		}
 		var bnTargetPerCoinDay = Mint.CompactToBig(this.Bits);
@@ -55,7 +69,7 @@
 		var bnCoinDayWeight;// *big.Int
 		var valueTime = this.PrevTxOutValue * nTimeWeight;
 		if (valueTime > 0) { // no overflow
-			bnCoinDayWeight = new BigInteger(''+(valueTime / coinDay),10);
+			bnCoinDayWeight = new BigInteger(''+(Math.floor(valueTime / coinDay)),10);
 			//bnCoinDayWeight = new(big.Int).SetInt64(valueTime / coinDay)
 		} else {
 			// overflow, calc w/ big.Int or return error?
@@ -68,14 +82,16 @@
 			bnCoinDayWeight = ((t3.multiply(t4)).divide(t2)).divide(t1);			
 		}
 		var targetInt = bnCoinDayWeight.multiply(bnTargetPerCoinDay);// new(big.Int).Mul(bnCoinDayWeight, bnTargetPerCoinDay)		
-		var buf = new Uint8Array(28);
+		var buf = [0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0];// new Array(28);// new Uint8Array(28);
 		var o=0;
 
 		if (this.IsProtocolV03) { // v0.3 protocol
-			var d = this.StakeModifier;
+      var d = this.StakeModifier.toByteArrayUnsigned().reverse();      
 			for (var i = 0; i < 8; i++) {
-				buf[o] = (d & 0xff);
-				d >>= 8;
+				buf[o] = d[i];
 				o++;
 			}
 		} else { // v0.2 protocol
@@ -86,7 +102,7 @@
 				o++;
 			}
 		}
-		var data = new Uint32Array([this.BlockFromTime, this.PrevTxOffset, this.PrevTxTime, this.PrevTxOutIndex, this.TxTime]);
+		var data = [this.BlockFromTime, this.PrevTxOffset, this.PrevTxTime, this.PrevTxOutIndex, this.TxTime];
 		for (var k = 0, arrayLength = data.length; k < arrayLength; k++) {
 		    var d = data[k];
 			for (var i = 0; i < 4; i++) {
@@ -95,79 +111,49 @@
 				o++;
 			}
 		}
-		
-		var hashProofOfStake = SHA256.doubleSha256(buf); 
-		var buf2 = hashProofOfStake.slice();
-		//var buf2 = hashProofOfStake;
-		for (var i=0, l=buf2.length; i < l/2; i++ ){
-		    var t1 = buf2[i], t2 = buf2[l-1-i];
-			buf2[i] = t2;
-			buf2[l-1-i] = t1;
-		}
-		var	hashProofOfStakeInt = BigInteger.fromByteArrayUnsigned(buf2);//new(big.Int).SetBytes(buf)
+		var hashProofOfStake = (Crypto.SHA256(Crypto.SHA256(buf, { asBytes: true }), { asBytes: true })).reverse();
+
+		var	hashProofOfStakeInt = BigInteger.fromByteArrayUnsigned(hashProofOfStake);
 		if (hashProofOfStakeInt.compareTo(targetInt) > 0) {
 			return retobj;
 		}
 
 		retobj.minTarget= hashProofOfStakeInt.divide(bnCoinDayWeight).subtract(BigInteger.ONE);
-	    retobj.success = true;
+	  retobj.success = true;
 		retobj.hash=hashProofOfStake;
 		return retobj;		
 	}
 
 	StakeKernelTemplate.prototype.findStake = function(maxTime){
 		maxTime = (maxTime <= this.TxTime) ? (this.TxTime)+3600 : maxTime;
-		
-		
-		
-		/*		
-		this.BlockFromTime = tpl.BlockFromTime;// int64
-		this.StakeModifier = tpl.StakeModifier; //uint64
-		this.PrevTxOffset = tpl.PrevTxOffset; //uint32
-		this.PrevTxTime = tpl.PrevTxTime;    //int64
-		this.PrevTxOutIndex = tpl.PrevTxOutIndex; //uint32
-		this.PrevTxOutValue = tpl.PrevTxOutValue; //int64
-		this.IsProtocolV03 = tpl.IsProtocolV03; //bool
-		this.StakeMinAge = tpl.StakeMinAge;   //int64
-		this.Bits = tpl.Bits;          //uint32
-		this.TxTime = tpl.TxTime;//(Date.now() / 1000 | 0);        //int64		
-	
-		
-		
+				
+		/*				
 		console.log("CHECK  ...https://bkchain.org/ppc/tx/...");
-		
-		this.BlockFromTime= utx.BlockTime;
-		this.StakeModifier=utx.StakeModifier;
-		this.PrevTxOffset=utx.OffsetInBlock;
-		this.PrevTxTime=utx.Time;
-		this.PrevTxOutIndex= outPointIndex;
-		this.PrevTxOutValue= (utx.Value);	
+		 
 		this.Bits = Mint.BigToCompact(Mint.DiffToTarget(diff));
 		 	*/
-		var breakie = false, res=document.getElementById("divresults");
-		res.innerHTML = '<p>busy</p>';
+      
+		var breakie = false;
+		AppLogger.log('<p>busy</p>');
+    
 		var getfindStakeOnce = function(obj){
 			var that=obj; 
-			var findStakeOnce=function(){
-				var res=document.getElementById("divresults");
-				var resultobj = that.CheckStakeKernelHash();//{succes: succes, minTarget:minTarget}
-				if (resultobj.succes){
+			var findStakeOnce=function(){				 
+				var resultobj = that.CheckStakeKernelHash();//{succes: succes, hash, minTarget:minTarget}
+				if (resultobj.success){
 					var	comp = Mint.IncCompact(Mint.BigToCompact(resultobj.minTarget));
 					var maximumDiff = Mint.CompactToDiff(comp);
-					var newDate = new Date();
-					newDate.setTime(that.TxTime*1000);
-					var dateString = newDate.toUTCString();
-					res.innerHTML = res.innerHTML +'<p>MINT '+dateString+ " "+ maximumDiff+'</p>';
+					var dateString = new Date(that.TxTime*1000).toUTCString();
+          AppLogger.log('<p>MINT@ '+dateString+ " "+ maximumDiff+'</p>');					
 				}		
 			
 				that.TxTime++;
 				if (!that.Stop && that.TxTime < maxTime) {
 					setTimeout(findStakeOnce, 50);
 				}else
-					res.innerHTML = res.innerHTML +'<p>done</p>';	
-				
-				res.innerHTML = res.innerHTML +'. ';			
-		
+        		AppLogger.log('<p>done</p>');
+           
+        AppLogger.log('. ');
 			};
 			return findStakeOnce;
 		}(this);

@@ -8,18 +8,23 @@
     messages...
   
   </div>   
-  
+    
     <script src="biginteger.js" type="text/javascript"></script>
+    <script src="crypto.js" type="text/javascript"></script>	
     <script src="sha256.js" type="text/javascript"></script>
     <script src="mint.js" type="text/javascript"></script>
 	<script src="kernel.js" type="text/javascript"></script>
     <script type="text/javascript">
- 
+ window.AppLogger={};
+window.AppLogger.log=function(s){
+  if (window.AppLogger.el==null) window.AppLogger.el=document.getElementById("divresults");
+	window.AppLogger.el.innerHTML = window.AppLogger.el.innerHTML + s;	
+};
 function doFindStaketest(){
 
-	var testData = {
+	var tpldata = {
 		BlockFromTime: 1394219584,
-		StakeModifier: 15161125480764745506,
+		StakeModifier: new BigInteger('15161125480764745506',10),
 		PrevTxOffset:160,
 		PrevTxTime:1394219584,
 		PrevTxOutIndex:1,
@@ -34,19 +39,33 @@ function doFindStaketest(){
 				0x0f, 0x24, 0xec, 0x6f, 0xb0, 0x90, 0x0a, 0xcf,
 				0xbf, 0xb0, 0xc2, 0x26, 0xc7, 0xbc, 0x31, 0x92];
 				
-		staketemp = new StakeKernelTemplate(testData);
+		staketemp = new StakeKernelTemplate(tpldata);
 
 		var resultobj = staketemp.CheckStakeKernelHash();//{succes: succes, minTarget:minTarget}
-		if (!resultobj.succes){
-			alert('error')
+		if (!resultobj.success){
+			AppLogger.log('error no stake found');
+			return;
 		}	
-		
-		/*
-			if !bytes.Equal(tpl0Hash, hash) {
-		t.Errorf("wrong kernel hash, have %v want %v", hash, tpl0Hash)
-		return
-	}
-		*/
+		if (!staketemp.arraysEqual(resultobj.hash ,tpl0Hash)){
+			AppLogger.log('error hash not equal');
+			return;
+		}	
+		// check if template satisfies min target
+		staketemp.Bits = Mint.IncCompact(Mint.BigToCompact(resultobj.minTarget))
+		var resultobj2 = staketemp.CheckStakeKernelHash();
+		if (!resultobj2.success) {
+			 AppLogger.log('wrong check result on retarget');
+			 return;
+		}			
+
+		//  modify and test failure
+		staketemp.StakeModifier = staketemp.StakeModifier.add(BigInteger.ONE);
+		var resultobj3 = staketemp.CheckStakeKernelHash();
+		if (resultobj3.success)  {
+			AppLogger.log('wrong check result');			
+			return;
+		} 
+		AppLogger.log('<h2>OK</H2>');
 }
 
 doFindStaketest();

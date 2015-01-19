@@ -1,0 +1,48 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head> 
+</head>
+<body onload="u();">
+	<script type="text/javascript" src="crypto.js"></script>
+	<script type="text/javascript" src="sha256.js"></script>
+	 
+
+   <script type="text/javascript">
+//<![CDATA[
+function arraysEqual(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length != b.length) return false;
+
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+ 
+function u()
+{
+	var test='The quick brown fox jumps...';
+	var hash = Crypto.util.base64ToBytes('VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcy4uLg==');
+	var checksum = Crypto.SHA256(Crypto.SHA256(hash, { asBytes: true }), { asBytes: true });
+	
+	var texpected=[12, 33, 54, 16, 218, 159, 95, 159,
+					 159, 90, 10, 108, 186, 17, 238, 75,
+					 0, 228, 121, 195, 120, 234, 196, 182,
+					 70, 213, 135, 29, 147, 45, 82, 231];
+
+	if (!arraysEqual(checksum, texpected))
+		alert('error 1');
+					 
+	var hex=Crypto.util.bytesToHex(checksum);
+	if (hex != '0c213610da9f5f9f9f5a0a6cba11ee4b00e479c378eac4b646d5871d932d52e7')
+		alert('error');
+		
+	var t=9;	    
+}
+
+	
+	 //]]>
+</script >			
+  
+	</body>
+</html>
