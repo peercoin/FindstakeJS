@@ -2383,7 +2383,7 @@
 			for (var i = 0; i < exp; i++) {
 				mantissa *= 256.0;
 			}
-			var bn = new BigInteger('' + mantissa, 10);
+			var bn = new BigInteger('' + (mantissa | 0), 10);
 			bn = bn.shiftLeft((26 - exp) * 8);
 			return bn;
 		}
