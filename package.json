@@ -1,0 +1,25 @@
+{
+  "name": "findstakejs",
+  "version": "0.0.2",
+  "private": true,
+  "description": "Find out when your peercoins will mint in advance and turn on your Peerunity just in time for some stakes",
+  "scripts": {
+    "install_example": "cd simple-example"
+  },
+  "main": "./main.js",
+  "engines": {
+    "node": "*"
+  },
+  "keywords": [
+    "socket.io",
+    "rpc",
+    "peercoin"
+  ],
+  "dependencies": {
+    "async": "^0.9.0",
+    "bitcoin": "^2.2.0",
+    "express": "^4.11.1",
+    "level": "0.18.0",
+    "moment": "^2.9.0"
+  }
+}
