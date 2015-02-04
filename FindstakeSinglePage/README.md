@@ -4,14 +4,14 @@ FindStakeJS
  
 ##How to use:
 ------------
- * goto http://ppc.blockr.io/api/v1/address/unspent/yout-Peercoin-address to lookup tx and n
+ * goto http://ppc.blockr.io/api/v1/address/unspent/your-Peercoin-address to lookup tx and n
  * fill in a transaction id and index
  
     
 API for cross boundery access:
 ------------
 ``` js
-  var keytx='to'+ TXId + '_' + txindex;
+  var keytx='to'+ TXId + '_' + Txindex;
 
   var fileurl="https://googledrive.com/host/0B_v7IYUBEIMyR1ZfWWl6VjNnLTg/json/" + keytx + ".json";
 
