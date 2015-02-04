@@ -2373,6 +2373,8 @@
 		var coinDay = coin * day;
 
 		function DiffToTarget(diff) {
+      diff = (diff | 0); //floor it
+      //todo: perhaps user BigDecimal.js istead...
 			var mantissa = 0x0000ffff / diff;
 			var exp = 1;
 			var tmp = mantissa;
@@ -2554,7 +2556,7 @@
  
 		var UnspentOutputsToStake = globals.UnspentOutputsToStake = function UnspentOutputsToStake() {
 			this.arrStakeKernelTemplates = []; //
-			this.Bits = Mint.BigToCompact(Mint.DiffToTarget(parseFloat("14.56"))); //uint32
+			this.Bits = Mint.BigToCompact(Mint.DiffToTarget(parseFloat("15"))); //uint32
 			this.TxTime = (Date.now() / 1000 | 0); //int64
 			this.StartTime = this.TxTime;
 			this.MaxTime = this.TxTime + 3600;
