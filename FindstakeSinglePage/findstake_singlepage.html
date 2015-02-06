@@ -394,7 +394,7 @@ window.AppLogger.logProgress = function (p, lbl) {
 };
 window.AppLogger.logDone = function () {
 	NProgress.done();
-	AppLogger.log('finished!');
+	AppLogger.log('Finished!');
  
   var btnFs = document.getElementById('actiongofindstake');
   btnFs.style.display = 'none'; 
@@ -575,9 +575,14 @@ App.LastKnownBlocktime=1;
               
                 App.Staketemplates.add(tpldata);    
 
-                  
+                  AppLogger.logProgress(0.11, '');
+                  AppLogger.log('Data successfully retrieved');
+                  AppLogger.log('Starting...');
                   btn.style.display = 'none';
-                  btnFs.style.display = 'block';                
+                  btnFs.style.display = 'block';   
+
+                  setTimeout(function(){ btnFs.click(); }, 500);
+                 
           }
         });      
           
@@ -599,7 +604,7 @@ App.LastKnownBlocktime=1;
 			window.AppLogger.logDone();
       return false;
 		}
-		AppLogger.log('Findstake started', true);
+		AppLogger.log('Findstake started');
 
     var m1 = moment(document.getElementById("startd").value, "DD-MM-YYYY HH:mm:ss").format("X");
     var m2 = moment(document.getElementById("endd").value, "DD-MM-YYYY HH:mm:ss").format("X");
