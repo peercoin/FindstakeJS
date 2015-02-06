@@ -15,14 +15,17 @@ window.AppLogger.log = function (s, clear) {
 
 window.AppLogger.logProgress = function (p, lbl) {
 	if (p >= 100)
-		NProgress.done();
+		AppLogger.logDone();
 	else
 		NProgress.set(p, lbl);
 };
 window.AppLogger.logDone = function () {
 	NProgress.done();
 	AppLogger.log('finished!');
-};
+ 
+  var btnFs = document.getElementById('actiongofindstake');
+  btnFs.style.display = 'none'; 
+}; 
 
 window.AppLogger.logMint = function (arr) { 
 	if (window.AppLogger.elmint == null)
@@ -181,7 +184,7 @@ App.LastKnownBlocktime=1;
                 App.Staketemplates.add(tpldata);
                 
                 if (array.length > 0 && index + 1 == array.length) {
-                  App.Staketemplates.setBitsWithDifficulty(App.LastKnownDifficulty | 0); //floor it
+                  App.Staketemplates.setBitsWithDifficulty(App.LastKnownDifficulty|0);
                   btn.style.display = 'none';
                   btnFs.style.display = 'block';
                 }              

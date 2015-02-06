@@ -388,13 +388,16 @@ window.AppLogger.log = function (s, clear) {
 
 window.AppLogger.logProgress = function (p, lbl) {
 	if (p >= 100)
-		NProgress.done();
+		AppLogger.logDone();
 	else
 		NProgress.set(p, lbl);
 };
 window.AppLogger.logDone = function () {
 	NProgress.done();
 	AppLogger.log('finished!');
+ 
+  var btnFs = document.getElementById('actiongofindstake');
+  btnFs.style.display = 'none'; 
 };
 
 window.AppLogger.logMint = function (arr) { 
