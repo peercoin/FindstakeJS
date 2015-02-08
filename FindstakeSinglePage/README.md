@@ -11,9 +11,9 @@ FindStakeJS
 API for cross boundery access:
 ------------
 ``` js
-  var keytx='to'+ TXId + '_' + Txindex;
+  var keytx='to'+ TxId + '_' + TxIndex;
 
-  var fileurl="https://googledrive.com/host/0B_v7IYUBEIMyR1ZfWWl6VjNnLTg/json/" + keytx + ".json";
+  var fileurl="http://peercoinfindstakedata.divshot.io/json/" + keytx + ".json";
 
   $.ajax({
     url: fileurl,

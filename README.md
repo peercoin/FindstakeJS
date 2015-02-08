@@ -1,20 +1,20 @@
-FindStakeJS
+FindstakeJS
 =====
 ### Getting to know in advance when your Peercoins stake
 
-FindStakeJS originates from Kac-'s Findstake project, a tool written in Go to predict stakes but ported to JavaScript. UI, webserver and database all in one language.
+FindstakeJS originates from Kac-'s Findstake project, a tool written in Go to predict stakes but ported to JavaScript. UI, webserver and database all in one language.
 
 Most cryptocoin mining requires specialized hardware, but Peercoin minting can be done on any computer. Minting is energy-efficient, because it is based on the Peercoins you hold, rather than on your processing power.
 
 **But Peercoin can even be more energy-efficient! **
 
-With FindStakeJS, there is no need to leave Peerunity on 24-7 anymore. 
+With FindstakeJS, there is no need to leave Peerunity on 24-7 anymore. 
 Find out in advance and turn on your wallet software just before it counts and help secure the network.
 
 #### Features:
 
  * Easy to use interface. (But can be improved if you are a twitter bootstrap rockstar) 
- * Can be used without online data services, your Peerunity has already all the date it needs. 
+ * Can be used without online data services, your Peerunity has already all the data it needs. 
  * A command line option to update its internal database via Peerunityd rpc-json interface.
 
 Dependencies:
