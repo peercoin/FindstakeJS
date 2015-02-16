@@ -195,7 +195,12 @@ App.LastKnownBlocktime=1;
                   setTimeout(function(){ btnFs.click(); }, 500);
                 }              
             });              
+          }else{
+             AppLogger.log('No unspent outputs found. Output may not have past 30 days or database may need an update');
           }
+        })
+        .fail(function() {
+              AppLogger.log('No unspent outputs found. Output may not have past 30 days or database may need an update');
         });         
       }  
 		}
