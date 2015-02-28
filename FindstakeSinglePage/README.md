@@ -4,8 +4,9 @@ FindStakeJS
  
 ##How to use:
 ------------
- * goto http://ppc.blockr.io/api/v1/address/unspent/your-Peercoin-address to lookup tx and n
- * fill in a transaction id and index
+ * open index.html with a modern browser
+ * fill in a Peercoin Address and a start and end date
+ * click Go  
  
     
 API for cross boundery access:
