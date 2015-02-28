@@ -323,13 +323,6 @@ div.source-links {
           </div><!-- /container -->
         </div><!-- /newesletter --> 
  
- Difficulty <div class="input-group spinner2">
-  <input type="text" class="form-control" id="inputDiff" required="true" value="15">
-    <div class="input-group-btn-vertical">
-      <button class="btn btn-default"><i class="fa fa-caret-up"></i></button>
-      <button class="btn btn-default"><i class="fa fa-caret-down"></i></button>
-    </div>
-  </div>
  
           <hr />
           <h4 id="code_52">Find between</h4>
@@ -486,12 +479,7 @@ App.LastKnownBlocktime=1;
      
  
  
-  $('.spinner2 .btn:first-of-type').on('click', function() {
-    $('.spinner2 input').val( parseInt($('.spinner2 input').val(), 10) + 1);
-  });
-  $('.spinner2 .btn:last-of-type').on('click', function() {
-    $('.spinner2 input').val( parseInt($('.spinner2 input').val(), 10) - 1);
-  });    
+    
      
      
       $('#datetimepicker6').datetimepicker({
@@ -618,7 +606,7 @@ App.LastKnownBlocktime=1;
           success: function(dbdata){
             //"txo" : ["to79c0bcd9a15152a0a1582110f531c52eda9bcc803a596fcd2d72f54063706eb4_1"]
             var ctotal=dbdata.txo.length, count=0;
-            
+            App.LastKnownDifficulty = parseFloat(dbdata.difficulty);
             dbdata.txo.forEach(function(txout) {  
                getstakedata(txout, function() {
                
@@ -664,7 +652,7 @@ App.LastKnownBlocktime=1;
     var startx1 = parseInt(m1, 10);
     var endx = parseInt(m2, 10);
     
-    App.LastKnownDifficulty =  parseFloat(document.getElementById("inputDiff").value);
+    //App.LastKnownDifficulty =  parseFloat(document.getElementById("inputDiff").value);
     App.Staketemplates.setBitsWithDifficulty(App.LastKnownDifficulty|0);
     
     
