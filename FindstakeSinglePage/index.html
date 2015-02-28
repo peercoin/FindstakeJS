@@ -1,0 +1,3843 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         
+        <title>Peercoin FindstakeJS</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
+ 
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+		<script type="text/javascript">    
+    !function(a){"use strict";if("function"==typeof define&&define.amd)define(["jquery","moment"],a);else if("object"==typeof exports)a(require("jquery"),require("moment"));else{if(!jQuery)throw"bootstrap-datetimepicker requires jQuery to be loaded first";if(!moment)throw"bootstrap-datetimepicker requires Moment.js to be loaded first";a(jQuery,moment)}}(function(a,b){"use strict";if(!b)throw new Error("bootstrap-datetimepicker requires Moment.js to be loaded first");var c=function(c,d){var e,f,g,h,i,j={},k=b(),l=k.clone(),m=!0,n=!1,o=!1,p=0,q=[{clsName:"days",navFnc:"M",navStep:1},{clsName:"months",navFnc:"y",navStep:1},{clsName:"years",navFnc:"y",navStep:10}],r=["days","months","years"],s=["top","bottom","auto"],t=["left","right","auto"],u=["default","top","bottom"],v=function(a){if("string"!=typeof a||a.length>1)throw new TypeError("isEnabled expects a single character string parameter");switch(a){case"y":return-1!==g.indexOf("Y");case"M":return-1!==g.indexOf("M");case"d":return-1!==g.toLowerCase().indexOf("d");case"h":case"H":return-1!==g.toLowerCase().indexOf("h");case"m":return-1!==g.indexOf("m");case"s":return-1!==g.indexOf("s");default:return!1}},w=function(){return v("h")||v("m")||v("s")},x=function(){return v("y")||v("M")||v("d")},y=function(){var b=a("<thead>").append(a("<tr>").append(a("<th>").addClass("prev").attr("data-action","previous").append(a("<span>").addClass(d.icons.previous))).append(a("<th>").addClass("picker-switch").attr("data-action","pickerSwitch").attr("colspan",d.calendarWeeks?"6":"5")).append(a("<th>").addClass("next").attr("data-action","next").append(a("<span>").addClass(d.icons.next)))),c=a("<tbody>").append(a("<tr>").append(a("<td>").attr("colspan",d.calendarWeeks?"8":"7")));return[a("<div>").addClass("datepicker-days").append(a("<table>").addClass("table-condensed").append(b).append(a("<tbody>"))),a("<div>").addClass("datepicker-months").append(a("<table>").addClass("table-condensed").append(b.clone()).append(c.clone())),a("<div>").addClass("datepicker-years").append(a("<table>").addClass("table-condensed").append(b.clone()).append(c.clone()))]},z=function(){var b=a("<tr>"),c=a("<tr>"),e=a("<tr>");return v("h")&&(b.append(a("<td>").append(a("<a>").attr("href","#").addClass("btn").attr("data-action","incrementHours").append(a("<span>").addClass(d.icons.up)))),c.append(a("<td>").append(a("<span>").addClass("timepicker-hour").attr("data-time-component","hours").attr("data-action","showHours"))),e.append(a("<td>").append(a("<a>").attr("href","#").addClass("btn").attr("data-action","decrementHours").append(a("<span>").addClass(d.icons.down))))),v("m")&&(v("h")&&(b.append(a("<td>").addClass("separator")),c.append(a("<td>").addClass("separator").html(":")),e.append(a("<td>").addClass("separator"))),b.append(a("<td>").append(a("<a>").attr("href","#").addClass("btn").attr("data-action","incrementMinutes").append(a("<span>").addClass(d.icons.up)))),c.append(a("<td>").append(a("<span>").addClass("timepicker-minute").attr("data-time-component","minutes").attr("data-action","showMinutes"))),e.append(a("<td>").append(a("<a>").attr("href","#").addClass("btn").attr("data-action","decrementMinutes").append(a("<span>").addClass(d.icons.down))))),v("s")&&(v("m")&&(b.append(a("<td>").addClass("separator")),c.append(a("<td>").addClass("separator").html(":")),e.append(a("<td>").addClass("separator"))),b.append(a("<td>").append(a("<a>").attr("href","#").addClass("btn").attr("data-action","incrementSeconds").append(a("<span>").addClass(d.icons.up)))),c.append(a("<td>").append(a("<span>").addClass("timepicker-second").attr("data-time-component","seconds").attr("data-action","showSeconds"))),e.append(a("<td>").append(a("<a>").attr("href","#").addClass("btn").attr("data-action","decrementSeconds").append(a("<span>").addClass(d.icons.down))))),f||(b.append(a("<td>").addClass("separator")),c.append(a("<td>").append(a("<button>").addClass("btn btn-primary").attr("data-action","togglePeriod"))),e.append(a("<td>").addClass("separator"))),a("<div>").addClass("timepicker-picker").append(a("<table>").addClass("table-condensed").append([b,c,e]))},A=function(){var b=a("<div>").addClass("timepicker-hours").append(a("<table>").addClass("table-condensed")),c=a("<div>").addClass("timepicker-minutes").append(a("<table>").addClass("table-condensed")),d=a("<div>").addClass("timepicker-seconds").append(a("<table>").addClass("table-condensed")),e=[z()];return v("h")&&e.push(b),v("m")&&e.push(c),v("s")&&e.push(d),e},B=function(){var b=[];return d.showTodayButton&&b.push(a("<td>").append(a("<a>").attr("data-action","today").append(a("<span>").addClass(d.icons.today)))),!d.sideBySide&&x()&&w()&&b.push(a("<td>").append(a("<a>").attr("data-action","togglePicker").append(a("<span>").addClass(d.icons.time)))),d.showClear&&b.push(a("<td>").append(a("<a>").attr("data-action","clear").append(a("<span>").addClass(d.icons.clear)))),a("<table>").addClass("table-condensed").append(a("<tbody>").append(a("<tr>").append(b)))},C=function(){var b=a("<div>").addClass("bootstrap-datetimepicker-widget dropdown-menu"),c=a("<div>").addClass("datepicker").append(y()),e=a("<div>").addClass("timepicker").append(A()),g=a("<ul>").addClass("list-unstyled"),h=a("<li>").addClass("picker-switch"+(d.collapse?" accordion-toggle":"")).append(B());return f&&b.addClass("usetwentyfour"),d.sideBySide&&x()&&w()?(b.addClass("timepicker-sbs"),b.append(a("<div>").addClass("row").append(c.addClass("col-sm-6")).append(e.addClass("col-sm-6"))),b.append(h),b):("top"===d.toolbarPlacement&&g.append(h),x()&&g.append(a("<li>").addClass(d.collapse&&w()?"collapse in":"").append(c)),"default"===d.toolbarPlacement&&g.append(h),w()&&g.append(a("<li>").addClass(d.collapse&&x()?"collapse":"").append(e)),"bottom"===d.toolbarPlacement&&g.append(h),b.append(g))},D=function(){var b=c.data(),e={};return b.dateOptions&&b.dateOptions instanceof Object&&(e=a.extend(!0,e,b.dateOptions)),a.each(d,function(a){var c="date"+a.charAt(0).toUpperCase()+a.slice(1);void 0!==b[c]&&(e[a]=b[c])}),e},E=function(){var b,e=(n||c).position(),f=d.widgetPositioning.vertical,g=d.widgetPositioning.horizontal;if(d.widgetParent?b=d.widgetParent.append(o):c.is("input")?b=c.parent().append(o):(b=c,c.children().first().after(o)),"auto"===f&&(f=(n||c).offset().top+o.height()>a(window).height()+a(window).scrollTop()&&o.height()+c.outerHeight()<(n||c).offset().top?"top":"bottom"),"auto"===g&&(g=b.width()<e.left+o.outerWidth()?"right":"left"),"top"===f?o.addClass("top").removeClass("bottom"):o.addClass("bottom").removeClass("top"),"right"===g?o.addClass("pull-right"):o.removeClass("pull-right"),"relative"!==b.css("position")&&(b=b.parents().filter(function(){return"relative"===a(this).css("position")}).first()),0===b.length)throw new Error("datetimepicker component should be placed within a relative positioned container");o.css({top:"top"===f?"auto":e.top+c.outerHeight(),bottom:"top"===f?e.top+c.outerHeight():"auto",left:"left"===g?b.css("padding-left"):"auto",right:"left"===g?"auto":b.css("padding-right")})},F=function(a){"dp.change"===a.type&&(a.date&&a.date.isSame(a.oldDate)||!a.date&&!a.oldDate)||c.trigger(a)},G=function(a){o&&(a&&(i=Math.max(p,Math.min(2,i+a))),o.find(".datepicker > div").hide().filter(".datepicker-"+q[i].clsName).show())},H=function(){var b=a("<tr>"),c=l.clone().startOf("w");for(d.calendarWeeks===!0&&b.append(a("<th>").addClass("cw").text("#"));c.isBefore(l.clone().endOf("w"));)b.append(a("<th>").addClass("dow").text(c.format("dd"))),c.add(1,"d");o.find(".datepicker-days thead").append(b)},I=function(a){return d.disabledDates?d.disabledDates[a.format("YYYY-MM-DD")]===!0:!1},J=function(a){return d.enabledDates?d.enabledDates[a.format("YYYY-MM-DD")]===!0:!1},K=function(a,b){return a.isValid()?d.disabledDates&&I(a)?!1:d.enabledDates&&J(a)?!0:d.minDate&&a.isBefore(d.minDate,b)?!1:d.maxDate&&a.isAfter(d.maxDate,b)?!1:"d"===b&&-1!==d.daysOfWeekDisabled.indexOf(a.day())?!1:!0:!1},L=function(){for(var b=[],c=l.clone().startOf("y").hour(12);c.isSame(l,"y");)b.push(a("<span>").attr("data-action","selectMonth").addClass("month").text(c.format("MMM"))),c.add(1,"M");o.find(".datepicker-months td").empty().append(b)},M=function(){var b=o.find(".datepicker-months"),c=b.find("th"),d=b.find("tbody").find("span");b.find(".disabled").removeClass("disabled"),K(l.clone().subtract(1,"y"),"y")||c.eq(0).addClass("disabled"),c.eq(1).text(l.year()),K(l.clone().add(1,"y"),"y")||c.eq(2).addClass("disabled"),d.removeClass("active"),k.isSame(l,"y")&&d.eq(k.month()).addClass("active"),d.each(function(b){K(l.clone().month(b),"M")||a(this).addClass("disabled")})},N=function(){var a=o.find(".datepicker-years"),b=a.find("th"),c=l.clone().subtract(5,"y"),e=l.clone().add(6,"y"),f="";for(a.find(".disabled").removeClass("disabled"),d.minDate&&d.minDate.isAfter(c,"y")&&b.eq(0).addClass("disabled"),b.eq(1).text(c.year()+"-"+e.year()),d.maxDate&&d.maxDate.isBefore(e,"y")&&b.eq(2).addClass("disabled");!c.isAfter(e,"y");)f+='<span data-action="selectYear" class="year'+(c.isSame(k,"y")?" active":"")+(K(c,"y")?"":" disabled")+'">'+c.year()+"</span>",c.add(1,"y");a.find("td").html(f)},O=function(){var c,e,f,g=o.find(".datepicker-days"),h=g.find("th"),i=[];if(x()){for(g.find(".disabled").removeClass("disabled"),h.eq(1).text(l.format(d.dayViewHeaderFormat)),K(l.clone().subtract(1,"M"),"M")||h.eq(0).addClass("disabled"),K(l.clone().add(1,"M"),"M")||h.eq(2).addClass("disabled"),c=l.clone().startOf("M").startOf("week");!l.clone().endOf("M").endOf("w").isBefore(c,"d");)0===c.weekday()&&(e=a("<tr>"),d.calendarWeeks&&e.append('<td class="cw">'+c.week()+"</td>"),i.push(e)),f="",c.isBefore(l,"M")&&(f+=" old"),c.isAfter(l,"M")&&(f+=" new"),c.isSame(k,"d")&&!m&&(f+=" active"),K(c,"d")||(f+=" disabled"),c.isSame(b(),"d")&&(f+=" today"),(0===c.day()||6===c.day())&&(f+=" weekend"),e.append('<td data-action="selectDay" class="day'+f+'">'+c.date()+"</td>"),c.add(1,"d");g.find("tbody").empty().append(i),M(),N()}},P=function(){var b=o.find(".timepicker-hours table"),c=l.clone().startOf("d"),d=[],e=a("<tr>");for(l.hour()>11&&!f&&c.hour(12);c.isSame(l,"d")&&(f||l.hour()<12&&c.hour()<12||l.hour()>11);)c.hour()%4===0&&(e=a("<tr>"),d.push(e)),e.append('<td data-action="selectHour" class="hour'+(K(c,"h")?"":" disabled")+'">'+c.format(f?"HH":"hh")+"</td>"),c.add(1,"h");b.empty().append(d)},Q=function(){for(var b=o.find(".timepicker-minutes table"),c=l.clone().startOf("h"),e=[],f=a("<tr>"),g=1===d.stepping?5:d.stepping;l.isSame(c,"h");)c.minute()%(4*g)===0&&(f=a("<tr>"),e.push(f)),f.append('<td data-action="selectMinute" class="minute'+(K(c,"m")?"":" disabled")+'">'+c.format("mm")+"</td>"),c.add(g,"m");b.empty().append(e)},R=function(){for(var b=o.find(".timepicker-seconds table"),c=l.clone().startOf("m"),d=[],e=a("<tr>");l.isSame(c,"m");)c.second()%20===0&&(e=a("<tr>"),d.push(e)),e.append('<td data-action="selectSecond" class="second'+(K(c,"s")?"":" disabled")+'">'+c.format("ss")+"</td>"),c.add(5,"s");b.empty().append(d)},S=function(){var a=o.find(".timepicker span[data-time-component]");f||o.find(".timepicker [data-action=togglePeriod]").text(k.format("A")),a.filter("[data-time-component=hours]").text(k.format(f?"HH":"hh")),a.filter("[data-time-component=minutes]").text(k.format("mm")),a.filter("[data-time-component=seconds]").text(k.format("ss")),P(),Q(),R()},T=function(){o&&(O(),S())},U=function(a){var b=m?null:k;return a?(a=a.clone().locale(d.locale),1!==d.stepping&&a.minutes(Math.round(a.minutes()/d.stepping)*d.stepping%60).seconds(0),void(K(a)?(k=a,l=k.clone(),e.val(k.format(g)),c.data("date",k.format(g)),T(),m=!1,F({type:"dp.change",date:k.clone(),oldDate:b})):(e.val(m?"":k.format(g)),F({type:"dp.error",date:a})))):(m=!0,e.val(""),c.data("date",""),F({type:"dp.change",date:null,oldDate:b}),void T())},V=function(){var b=!1;return o?(o.find(".collapse").each(function(){var c=a(this).data("collapse");return c&&c.transitioning?(b=!0,!1):void 0}),b?j:(n&&n.hasClass("btn")&&n.toggleClass("active"),o.hide(),a(window).off("resize",E),o.off("click","[data-action]"),o.off("mousedown",!1),o.remove(),o=!1,F({type:"dp.hide",date:k.clone()}),j)):j},W={next:function(){l.add(q[i].navStep,q[i].navFnc),O()},previous:function(){l.subtract(q[i].navStep,q[i].navFnc),O()},pickerSwitch:function(){G(1)},selectMonth:function(b){var c=a(b.target).closest("tbody").find("span").index(a(b.target));l.month(c),i===p&&(U(k.clone().year(l.year()).month(l.month())),V()),G(-1),O()},selectYear:function(b){var c=parseInt(a(b.target).text(),10)||0;l.year(c),i===p&&(U(k.clone().year(l.year())),V()),G(-1),O()},selectDay:function(b){var c=l.clone();a(b.target).is(".old")&&c.subtract(1,"M"),a(b.target).is(".new")&&c.add(1,"M"),U(c.date(parseInt(a(b.target).text(),10))),w()||d.keepOpen||V()},incrementHours:function(){U(k.clone().add(1,"h"))},incrementMinutes:function(){U(k.clone().add(d.stepping,"m"))},incrementSeconds:function(){U(k.clone().add(1,"s"))},decrementHours:function(){U(k.clone().subtract(1,"h"))},decrementMinutes:function(){U(k.clone().subtract(d.stepping,"m"))},decrementSeconds:function(){U(k.clone().subtract(1,"s"))},togglePeriod:function(){U(k.clone().add(k.hours()>=12?-12:12,"h"))},togglePicker:function(b){var c,e=a(b.target),f=e.closest("ul"),g=f.find(".in"),h=f.find(".collapse:not(.in)");if(g&&g.length){if(c=g.data("collapse"),c&&c.transitioning)return;g.collapse("hide"),h.collapse("show"),e.is("span")?e.toggleClass(d.icons.time+" "+d.icons.date):e.find("span").toggleClass(d.icons.time+" "+d.icons.date)}},showPicker:function(){o.find(".timepicker > div:not(.timepicker-picker)").hide(),o.find(".timepicker .timepicker-picker").show()},showHours:function(){o.find(".timepicker .timepicker-picker").hide(),o.find(".timepicker .timepicker-hours").show()},showMinutes:function(){o.find(".timepicker .timepicker-picker").hide(),o.find(".timepicker .timepicker-minutes").show()},showSeconds:function(){o.find(".timepicker .timepicker-picker").hide(),o.find(".timepicker .timepicker-seconds").show()},selectHour:function(b){var c=parseInt(a(b.target).text(),10);f||(k.hours()>=12?12!==c&&(c+=12):12===c&&(c=0)),U(k.clone().hours(c)),W.showPicker.call(j)},selectMinute:function(b){U(k.clone().minutes(parseInt(a(b.target).text(),10))),W.showPicker.call(j)},selectSecond:function(b){U(k.clone().seconds(parseInt(a(b.target).text(),10))),W.showPicker.call(j)},clear:function(){U(null)},today:function(){U(b())}},X=function(b){return a(b.currentTarget).is(".disabled")?!1:(W[a(b.currentTarget).data("action")].apply(j,arguments),!1)},Y=function(){var c,f={year:function(a){return a.month(0).date(1).hours(0).seconds(0).minutes(0)},month:function(a){return a.date(1).hours(0).seconds(0).minutes(0)},day:function(a){return a.hours(0).seconds(0).minutes(0)},hour:function(a){return a.seconds(0).minutes(0)},minute:function(a){return a.seconds(0)}};return e.prop("disabled")||e.prop("readonly")||o?j:(d.useCurrent&&m&&(c=b(),"string"==typeof d.useCurrent&&(c=f[d.useCurrent](c)),U(c)),o=C(),H(),L(),o.find(".timepicker-hours").hide(),o.find(".timepicker-minutes").hide(),o.find(".timepicker-seconds").hide(),T(),G(),a(window).on("resize",E),o.on("click","[data-action]",X),o.on("mousedown",!1),n&&n.hasClass("btn")&&n.toggleClass("active"),o.show(),E(),e.is(":focus")||e.focus(),F({type:"dp.show"}),j)},Z=function(){return o?V():Y()},$=function(a){return a=b.isMoment(a)||a instanceof Date?b(a):b(a,h,d.useStrict),a.locale(d.locale),a},_=function(a){27===a.keyCode&&V()},ab=function(b){var c=a(b.target).val().trim(),d=c?$(c):null;return U(d),b.stopImmediatePropagation(),!1},bb=function(){e.on({change:ab,blur:V,keydown:_}),c.is("input")?e.on({focus:Y}):n&&(n.on("click",Z),n.on("mousedown",!1))},cb=function(){e.off({change:ab,blur:V,keydown:_}),c.is("input")?e.off({focus:Y}):n&&(n.off("click",Z),n.off("mousedown",!1))},db=function(b){var c={};return a.each(b,function(){var a=$(this);a.isValid()&&(c[a.format("YYYY-MM-DD")]=!0)}),Object.keys(c).length?c:!1},eb=function(){var a=d.format||"L LT";g=a.replace(/(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,function(a){return k.localeData().longDateFormat(a)||a}),h=d.extraFormats?d.extraFormats.slice():[],h.indexOf(a)<0&&h.indexOf(g)<0&&h.push(g),f=g.toLowerCase().indexOf("a")<1&&g.indexOf("h")<1,v("y")&&(p=2),v("M")&&(p=1),v("d")&&(p=0),i=Math.max(p,i),m||U(k)};if(j.destroy=function(){V(),cb(),c.removeData("DateTimePicker"),c.removeData("date")},j.toggle=Z,j.show=Y,j.hide=V,j.disable=function(){return V(),n&&n.hasClass("btn")&&n.addClass("disabled"),e.prop("disabled",!0),j},j.enable=function(){return n&&n.hasClass("btn")&&n.removeClass("disabled"),e.prop("disabled",!1),j},j.options=function(b){if(0===arguments.length)return a.extend(!0,{},d);if(!(b instanceof Object))throw new TypeError("options() options parameter should be an object");return a.extend(!0,d,b),a.each(d,function(a,b){if(void 0===j[a])throw new TypeError("option "+a+" is not recognized!");j[a](b)}),j},j.date=function(a){if(0===arguments.length)return m?null:k.clone();if(!(null===a||"string"==typeof a||b.isMoment(a)||a instanceof Date))throw new TypeError("date() parameter must be one of [null, string, moment or Date]");return U(null===a?null:$(a)),j},j.format=function(a){if(0===arguments.length)return d.format;if("string"!=typeof a&&("boolean"!=typeof a||a!==!1))throw new TypeError("format() expects a sting or boolean:false parameter "+a);return d.format=a,g&&eb(),j},j.dayViewHeaderFormat=function(a){if(0===arguments.length)return d.dayViewHeaderFormat;if("string"!=typeof a)throw new TypeError("dayViewHeaderFormat() expects a string parameter");return d.dayViewHeaderFormat=a,j},j.extraFormats=function(a){if(0===arguments.length)return d.extraFormats;if(a!==!1&&!(a instanceof Array))throw new TypeError("extraFormats() expects an array or false parameter");return d.extraFormats=a,h&&eb(),j},j.disabledDates=function(b){if(0===arguments.length)return d.disabledDates?a.extend({},d.disabledDates):d.disabledDates;if(!b)return d.disabledDates=!1,T(),j;if(!(b instanceof Array))throw new TypeError("disabledDates() expects an array parameter");return d.disabledDates=db(b),d.enabledDates=!1,T(),j},j.enabledDates=function(b){if(0===arguments.length)return d.enabledDates?a.extend({},d.enabledDates):d.enabledDates;if(!b)return d.enabledDates=!1,T(),j;if(!(b instanceof Array))throw new TypeError("enabledDates() expects an array parameter");return d.enabledDates=db(b),d.disabledDates=!1,T(),j},j.daysOfWeekDisabled=function(a){if(0===arguments.length)return d.daysOfWeekDisabled.splice(0);if(!(a instanceof Array))throw new TypeError("daysOfWeekDisabled() expects an array parameter");return d.daysOfWeekDisabled=a.reduce(function(a,b){return b=parseInt(b,10),b>6||0>b||isNaN(b)?a:(-1===a.indexOf(b)&&a.push(b),a)},[]).sort(),T(),j},j.maxDate=function(a){if(0===arguments.length)return d.maxDate?d.maxDate.clone():d.maxDate;if("boolean"==typeof a&&a===!1)return d.maxDate=!1,T(),j;var b=$(a);if(!b.isValid())throw new TypeError("maxDate() Could not parse date parameter: "+a);if(d.minDate&&b.isBefore(d.minDate))throw new TypeError("maxDate() date parameter is before options.minDate: "+b.format(g));return d.maxDate=b,d.maxDate.isBefore(a)&&U(d.maxDate),T(),j},j.minDate=function(a){if(0===arguments.length)return d.minDate?d.minDate.clone():d.minDate;if("boolean"==typeof a&&a===!1)return d.minDate=!1,T(),j;var b=$(a);if(!b.isValid())throw new TypeError("minDate() Could not parse date parameter: "+a);if(d.maxDate&&b.isAfter(d.maxDate))throw new TypeError("minDate() date parameter is after options.maxDate: "+b.format(g));return d.minDate=b,d.minDate.isAfter(a)&&U(d.minDate),T(),j},j.defaultDate=function(a){if(0===arguments.length)return d.defaultDate?d.defaultDate.clone():d.defaultDate;if(!a)return d.defaultDate=!1,j;var b=$(a);if(!b.isValid())throw new TypeError("defaultDate() Could not parse date parameter: "+a);if(!K(b))throw new TypeError("defaultDate() date passed is invalid according to component setup validations");return d.defaultDate=b,d.defaultDate&&""===e.val().trim()&&U(d.defaultDate),j},j.locale=function(a){if(0===arguments.length)return d.locale;if(!b.localeData(a))throw new TypeError("locale() locale "+a+" is not loaded from moment locales!");return d.locale=a,k.locale(d.locale),l.locale(d.locale),g&&eb(),o&&(V(),Y()),j},j.stepping=function(a){return 0===arguments.length?d.stepping:(a=parseInt(a,10),(isNaN(a)||1>a)&&(a=1),d.stepping=a,j)},j.useCurrent=function(a){var b=["year","month","day","hour","minute"];if(0===arguments.length)return d.useCurrent;if("boolean"!=typeof a&&"string"!=typeof a)throw new TypeError("useCurrent() expects a boolean or string parameter");if("string"==typeof a&&-1===b.indexOf(a.toLowerCase()))throw new TypeError("useCurrent() expects a string parameter of "+b.join(", "));return d.useCurrent=a,j},j.collapse=function(a){if(0===arguments.length)return d.collapse;if("boolean"!=typeof a)throw new TypeError("collapse() expects a boolean parameter");return d.collapse===a?j:(d.collapse=a,o&&(V(),Y()),j)},j.icons=function(b){if(0===arguments.length)return a.extend({},d.icons);if(!(b instanceof Object))throw new TypeError("icons() expects parameter to be an Object");return a.extend(d.icons,b),o&&(V(),Y()),j},j.useStrict=function(a){if(0===arguments.length)return d.useStrict;if("boolean"!=typeof a)throw new TypeError("useStrict() expects a boolean parameter");return d.useStrict=a,j},j.sideBySide=function(a){if(0===arguments.length)return d.sideBySide;if("boolean"!=typeof a)throw new TypeError("sideBySide() expects a boolean parameter");return d.sideBySide=a,o&&(V(),Y()),j},j.viewMode=function(a){if(0===arguments.length)return d.viewMode;if("string"!=typeof a)throw new TypeError("viewMode() expects a string parameter");if(-1===r.indexOf(a))throw new TypeError("viewMode() parameter must be one of ("+r.join(", ")+") value");return d.viewMode=a,i=Math.max(r.indexOf(a),p),G(),j},j.toolbarPlacement=function(a){if(0===arguments.length)return d.toolbarPlacement;if("string"!=typeof a)throw new TypeError("toolbarPlacement() expects a string parameter");if(-1===u.indexOf(a))throw new TypeError("toolbarPlacement() parameter must be one of ("+u.join(", ")+") value");return d.toolbarPlacement=a,o&&(V(),Y()),j},j.widgetPositioning=function(b){if(0===arguments.length)return a.extend({},d.widgetPositioning);if("[object Object]"!=={}.toString.call(b))throw new TypeError("widgetPositioning() expects an object variable");if(b.horizontal){if("string"!=typeof b.horizontal)throw new TypeError("widgetPositioning() horizontal variable must be a string");if(b.horizontal=b.horizontal.toLowerCase(),-1===t.indexOf(b.horizontal))throw new TypeError("widgetPositioning() expects horizontal parameter to be one of ("+t.join(", ")+")");d.widgetPositioning.horizontal=b.horizontal}if(b.vertical){if("string"!=typeof b.vertical)throw new TypeError("widgetPositioning() vertical variable must be a string");if(b.vertical=b.vertical.toLowerCase(),-1===s.indexOf(b.vertical))throw new TypeError("widgetPositioning() expects vertical parameter to be one of ("+s.join(", ")+")");d.widgetPositioning.vertical=b.vertical}return T(),j},j.calendarWeeks=function(a){if(0===arguments.length)return d.calendarWeeks;if("boolean"!=typeof a)throw new TypeError("calendarWeeks() expects parameter to be a boolean value");return d.calendarWeeks=a,T(),j},j.showTodayButton=function(a){if(0===arguments.length)return d.showTodayButton;if("boolean"!=typeof a)throw new TypeError("showTodayButton() expects a boolean parameter");return d.showTodayButton=a,o&&(V(),Y()),j},j.showClear=function(a){if(0===arguments.length)return d.showClear;if("boolean"!=typeof a)throw new TypeError("showClear() expects a boolean parameter");return d.showClear=a,o&&(V(),Y()),j},j.widgetParent=function(b){if(0===arguments.length)return d.widgetParent;if("string"==typeof b&&(b=a(b)),null!==b&&"string"!=typeof b&&!(b instanceof jQuery))throw new TypeError("widgetParent() expects a string or a jQuery object parameter");return d.widgetParent=b,o&&(V(),Y()),j},j.keepOpen=function(a){if(0===arguments.length)return d.format;if("boolean"!=typeof a)throw new TypeError("keepOpen() expects a boolean parameter");return d.keepOpen=a,j},c.is("input"))e=c;else if(e=c.find(".datepickerinput"),0===e.size())e=c.find("input");else if(!e.is("input"))throw new Error('CSS class "datepickerinput" cannot be applied to non input element');if(c.hasClass("input-group")&&(n=c.find(0===c.find(".datepickerbutton").size()?'[class^="input-group-"]':".datepickerbutton")),!e.is("input"))throw new Error("Could not initialize DateTimePicker without an input element");return a.extend(!0,d,D()),j.options(d),eb(),bb(),e.prop("disabled")&&j.disable(),0!==e.val().trim().length?U($(e.val().trim())):d.defaultDate&&U(d.defaultDate),j};a.fn.datetimepicker=function(b){return this.each(function(){var d=a(this);d.data("DateTimePicker")||(b=a.extend(!0,{},a.fn.datetimepicker.defaults,b),d.data("DateTimePicker",c(d,b)))})},a.fn.datetimepicker.defaults={format:!1,dayViewHeaderFormat:"MMMM YYYY",extraFormats:!1,stepping:1,minDate:!1,maxDate:!1,useCurrent:!0,collapse:!0,locale:b.locale(),defaultDate:!1,disabledDates:!1,enabledDates:!1,icons:{time:"glyphicon glyphicon-time",date:"glyphicon glyphicon-calendar",up:"glyphicon glyphicon-chevron-up",down:"glyphicon glyphicon-chevron-down",previous:"glyphicon glyphicon-chevron-left",next:"glyphicon glyphicon-chevron-right",today:"glyphicon glyphicon-screenshot",clear:"glyphicon glyphicon-trash"},useStrict:!1,sideBySide:!1,daysOfWeekDisabled:[],calendarWeeks:!1,viewMode:"days",toolbarPlacement:"default",showTodayButton:!1,showClear:!1,widgetPositioning:{horizontal:"auto",vertical:"auto"},widgetParent:null,keepOpen:!1}});
+    </script>       
+    
+   <style>
+ body {
+    padding-top: 70px;
+}
+
+ul.nav li.main {
+    font-weight: bold;
+}
+
+div.col-md-3 {
+    padding-left: 0;
+}
+
+div.source-links {
+    float: right;
+}
+
+/*
+ * Side navigation
+ *
+ * Scrollspy and affixed enhanced navigation to highlight sections and secondary
+ * sections of docs content.
+ */
+
+/* By default it's not affixed in mobile views, so undo that */
+.bs-sidebar.affix {
+    position: static;
+}
+
+.bs-sidebar.well {
+    padding: 0;
+}
+
+/* First level of nav */
+.bs-sidenav {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding-top:    10px;
+    padding-bottom: 10px;
+    border-radius: 5px;
+}
+
+/* All levels of nav */
+.bs-sidebar .nav > li > a {
+    display: block;
+    padding: 5px 20px;
+}
+.bs-sidebar .nav > li > a:hover,
+.bs-sidebar .nav > li > a:focus {
+    text-decoration: none;
+    border-right: 1px solid;
+}
+.bs-sidebar .nav > .active > a,
+.bs-sidebar .nav > .active:hover > a,
+.bs-sidebar .nav > .active:focus > a {
+    font-weight: bold;
+    background-color: transparent;
+    border-right: 1px solid;
+}
+
+/* Nav: second level (shown on .active) */
+.bs-sidebar .nav .nav {
+    display: none; /* Hide by default, but at >768px, show it */
+    margin-bottom: 8px;
+}
+.bs-sidebar .nav .nav > li > a {
+    padding-top:    3px;
+    padding-bottom: 3px;
+    padding-left: 30px;
+    font-size: 90%;
+}
+
+/* Show and affix the side nav when space allows it */
+@media (min-width: 992px) {
+    .bs-sidebar .nav > .active > ul {
+        display: block;
+    }
+    /* Widen the fixed sidebar */
+    .bs-sidebar.affix,
+    .bs-sidebar.affix-bottom {
+        width: 213px;
+    }
+    .bs-sidebar.affix {
+        position: fixed; /* Undo the static from mobile first approach */
+        top: 80px;
+    }
+    .bs-sidebar.affix-bottom {
+        position: absolute; /* Undo the static from mobile first approach */
+    }
+    .bs-sidebar.affix-bottom .bs-sidenav,
+    .bs-sidebar.affix .bs-sidenav {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}
+@media (min-width: 1200px) {
+    /* Widen the fixed sidebar again */
+    .bs-sidebar.affix-bottom,
+    .bs-sidebar.affix {
+        width: 263px;
+    }
+}
+
+
+
+
+/* Newsletter */
+.newsletter {
+	background-color: #f8f8f8;
+	margin-top: 20px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.newsletter form {
+	margin-top: 10px;
+}
+
+.newsletter input[type=text] {
+	border: 1px solid #D8D8D8;
+	background-color: #FFF;
+	font-size: 25px;
+	height: 50px;
+	width: 100%;
+	padding: 10px 10px 10px 10px;
+	margin-bottom: 5px;
+}
+
+.newsletter input[type=submit] {
+	border: 0px solid #D8D8D8;
+	background-color: rgba(0, 0, 0, 0.05);
+	font-size: 25px;
+	height: 50px;
+	width: 100%;
+	color: #474747;
+	padding: 10px 10px 10px 10px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+.btn-xlarge {
+    padding: 18px 28px;
+    font-size: 22px; //change this to your desired size
+    line-height: normal;
+    -webkit-border-radius: 8px;
+       -moz-border-radius: 8px;
+            border-radius: 8px;
+}
+.ppcimg{margin:8px; height:120px;}
+
+
+
+#nprogress {
+  pointer-events: none;
+}
+#nprogress .bar {
+  background: #034EA2;
+  position: fixed;
+  z-index: 600;
+  top: 51px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+}
+#nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  width: 8px;
+  height: 100%;
+  box-shadow: 0 0 10px #034EA2, 0 0 5px #034EA2;
+  opacity: 1.0;
+}
+#nprogress .status {
+  display: block;
+  position: fixed;
+  z-index: 100;
+  top: 54px;
+  right: 10px;
+  color: #034EA2;
+}
+
+	.list-group{
+		width: 196px;
+	}
+    .bs-example{
+    	margin:7px;
+    }
+
+
+   
+   
+   
+ .bootstrap-datetimepicker-widget.dropdown-menu{margin:2px 0;padding:4px;width:19em}@media (min-width:768px){.bootstrap-datetimepicker-widget.dropdown-menu.timepicker-sbs{width:38em}}@media (min-width:992px){.bootstrap-datetimepicker-widget.dropdown-menu.timepicker-sbs{width:38em}}@media (min-width:1200px){.bootstrap-datetimepicker-widget.dropdown-menu.timepicker-sbs{width:38em}}.bootstrap-datetimepicker-widget.dropdown-menu:before,.bootstrap-datetimepicker-widget.dropdown-menu:after{content:'';display:inline-block;position:absolute}.bootstrap-datetimepicker-widget.dropdown-menu.bottom:before{border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid #ccc;border-bottom-color:rgba(0,0,0,.2);top:-7px;left:7px}.bootstrap-datetimepicker-widget.dropdown-menu.bottom:after{border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:6px solid #fff;top:-6px;left:8px}.bootstrap-datetimepicker-widget.dropdown-menu.top:before{border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #ccc;border-top-color:rgba(0,0,0,.2);bottom:-7px;left:6px}.bootstrap-datetimepicker-widget.dropdown-menu.top:after{border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #fff;bottom:-6px;left:7px}.bootstrap-datetimepicker-widget.dropdown-menu.pull-right:before{left:auto;right:6px}.bootstrap-datetimepicker-widget.dropdown-menu.pull-right:after{left:auto;right:7px}.bootstrap-datetimepicker-widget .list-unstyled{margin:0}.bootstrap-datetimepicker-widget a[data-action]{padding:6px 0}.bootstrap-datetimepicker-widget a[data-action]:active{box-shadow:none}.bootstrap-datetimepicker-widget .timepicker-hour,.bootstrap-datetimepicker-widget .timepicker-minute,.bootstrap-datetimepicker-widget .timepicker-second{width:54px;font-weight:700;font-size:1.2em;margin:0}.bootstrap-datetimepicker-widget button[data-action]{padding:6px}.bootstrap-datetimepicker-widget .btn[data-action=incrementHours]::after{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;content:"Increment Hours"}.bootstrap-datetimepicker-widget .btn[data-action=incrementMinutes]::after{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;content:"Increment Minutes"}.bootstrap-datetimepicker-widget .btn[data-action=decrementHours]::after{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;content:"Decrement Hours"}.bootstrap-datetimepicker-widget .btn[data-action=decrementMinutes]::after{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;content:"Decrement Minutes"}.bootstrap-datetimepicker-widget .btn[data-action=showHours]::after{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;content:"Show Hours"}.bootstrap-datetimepicker-widget .btn[data-action=showMinutes]::after{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;content:"Show Minutes"}.bootstrap-datetimepicker-widget .btn[data-action=togglePeriod]::after{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;content:"Toggle AM/PM"}.bootstrap-datetimepicker-widget .picker-switch{text-align:center}.bootstrap-datetimepicker-widget .picker-switch::after{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;content:"Toggle Date and Time Screens"}.bootstrap-datetimepicker-widget .picker-switch td{padding:0;margin:0;height:auto;width:auto;line-height:inherit}.bootstrap-datetimepicker-widget .picker-switch td span{line-height:2.5;height:2.5em;width:100%}.bootstrap-datetimepicker-widget table{width:100%;margin:0}.bootstrap-datetimepicker-widget td,.bootstrap-datetimepicker-widget th{text-align:center;border-radius:4px}.bootstrap-datetimepicker-widget th{height:20px;line-height:20px;width:20px}.bootstrap-datetimepicker-widget th.picker-switch{width:145px}.bootstrap-datetimepicker-widget th.disabled,.bootstrap-datetimepicker-widget th.disabled:hover{background:0 0;color:#777;cursor:not-allowed}.bootstrap-datetimepicker-widget th.prev::after{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;content:"Previous Month"}.bootstrap-datetimepicker-widget th.next::after{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;content:"Next Month"}.bootstrap-datetimepicker-widget thead tr:first-child th{cursor:pointer}.bootstrap-datetimepicker-widget thead tr:first-child th:hover{background:#eee}.bootstrap-datetimepicker-widget td{height:54px;line-height:54px;width:54px}.bootstrap-datetimepicker-widget td.cw{font-size:.8em;height:20px;line-height:20px;color:#777}.bootstrap-datetimepicker-widget td.day{height:20px;line-height:20px;width:20px}.bootstrap-datetimepicker-widget td.day:hover,.bootstrap-datetimepicker-widget td.hour:hover,.bootstrap-datetimepicker-widget td.minute:hover,.bootstrap-datetimepicker-widget td.second:hover{background:#eee;cursor:pointer}.bootstrap-datetimepicker-widget td.old,.bootstrap-datetimepicker-widget td.new{color:#777}.bootstrap-datetimepicker-widget td.today{position:relative}.bootstrap-datetimepicker-widget td.today:before{content:'';display:inline-block;border-left:7px solid transparent;border-bottom:7px solid #428bca;border-top-color:rgba(0,0,0,.2);position:absolute;bottom:4px;right:4px}.bootstrap-datetimepicker-widget td.active,.bootstrap-datetimepicker-widget td.active:hover{background-color:#428bca;color:#fff;text-shadow:0 -1px 0 rgba(0,0,0,.25)}.bootstrap-datetimepicker-widget td.active.today:before{border-bottom-color:#fff}.bootstrap-datetimepicker-widget td.disabled,.bootstrap-datetimepicker-widget td.disabled:hover{background:0 0;color:#777;cursor:not-allowed}.bootstrap-datetimepicker-widget td span{display:inline-block;width:54px;height:54px;line-height:54px;margin:2px 1.5px;cursor:pointer;border-radius:4px}.bootstrap-datetimepicker-widget td span:hover{background:#eee}.bootstrap-datetimepicker-widget td span.active{background-color:#428bca;color:#fff;text-shadow:0 -1px 0 rgba(0,0,0,.25)}.bootstrap-datetimepicker-widget td span.old{color:#777}.bootstrap-datetimepicker-widget td span.disabled,.bootstrap-datetimepicker-widget td span.disabled:hover{background:0 0;color:#777;cursor:not-allowed}.bootstrap-datetimepicker-widget.usetwentyfour td.hour{height:27px;line-height:27px}.input-group.date .input-group-addon{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0}   
+   
+   .spinner, .spinner2 {
+  width: 100px;
+}
+.spinner input, .spinner2 input {
+  text-align: right;
+}
+.input-group-btn-vertical {
+  position: relative;
+  white-space: nowrap;
+  width: 1%;
+  vertical-align: middle;
+  display: table-cell;
+}
+.input-group-btn-vertical > .btn {
+  display: block;
+  float: none;
+  width: 100%;
+  max-width: 100%;
+  padding: 8px;
+  margin-left: -1px;
+  position: relative;
+  border-radius: 0;
+}
+.input-group-btn-vertical > .btn:first-child {
+  border-top-right-radius: 4px;
+}
+.input-group-btn-vertical > .btn:last-child {
+  margin-top: -2px;
+  border-bottom-right-radius: 4px;
+}
+.input-group-btn-vertical i{
+  position: absolute;
+  top: 0;
+  left: 4px;
+}
+   </style>
+    </head>
+
+    <body>
+ 
+    
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+             
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+        <!-- Expander button -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>          
+        </button> 
+        <!-- Main title -->
+         
+        <a class="navbar-brand" href="."><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAAAXCAYAAAAIqmGLAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNBKCAvMAAAxLSURBVGhD7Zp5bBzVHcfXBAINFfH62nvXe9nenb13Zw/vMTt72l4ntkMcUgLlUGiBloKgHC2UtASVlAYkqPgDUQQBSlNiWolTHIUUhIJAoaiCQsWlUhSaQHGaQpN4Yk+/783s7Kx3EyWkf+YnffTe+91vfrteX5oT8v+T9b+L2zd8lNx03VvJdec8GuiT1ccvHMedPLJ6dW9t1bfc41Nr2NqZZ+VXTK0t1FatKa1ctSY3NnmWZ2Rk3Rmy+wk5vJw08XPf2DUfhg9d+Lxn9/mv2f8z8YTuMug7JPNxyNjUmi9qU2uEscnpeaziYqh+cvoAeGF0YvVZGzZsOEkOPSHNsiR9sevCc1+xiSsf180lrtZ/kH7o1PnALUtXwHZ8g8KDF4B41Kxc/XytdrZWDj8hDTk5uMZ8QWHmm2L8nqWib+Op+wZ+cPoe54aTH/N6vUtln68n1RWrBCAeC5XxqedOvKMWyfT0EofbPcbctuTAwC0a0b5RI1rHet8wfPe05xwOx3LZ6+tJuTYhVGqTooo/V8YnJssrpgrl2tTaUm3yPvjMNftMiKWxyVVyihMiSQeG4bMXDM+brlwy33vZkoNGru9Jc9J4o8vlOr7P9NLoCqE0ulKsUxxd+YhsUqQwOjFZHF0xD1/4SBRHVjwlm0+ILIFA4HS7y3Wm3T7we7vb9YDTOXAu9iz55kx2+XpSrNaEQnVcVBiptQxpGm/lQqX2fqFag48EXxn7RDZT8U5PL+XLI5V8ZfRWvlp7GvYd+erYFq46ur5SqXTJbm0Fl+jMV0bW5cujd4OX+Mroi1jvzBfHJlC76et5plbT5ssjl/KVkUsI2J8HNflg7uBL1VU4/wGxO3OlMQ8NkIV8eeZKo7F8aeTaXHnkYfjsoJRGH8yVq1fy/JhNdq1LR7ZQjXDF6g1caWQmX6y+jv0fucLIHVyhMplMJr8h+ykS5bieDFe8LJnJ/ziRyV+fzhcuz+TzCWLLlUoejq9cUifHl8aIHnc/LVusrMsWKg/kitVXsX8S65VssdhN7FTQqABEFS1DIoJGX8EDEHFJClcc+Zds0mTK5USuOPIOfMR25ErVvbli5WzZXS3kQaxHU7N4AMhZFbFvplD5G8eVQ7K/hjxM5IJNplDZHY2OL8vw5RnsyZnCcaWYHKLJ8pVh2HfiQSwAsUFZIcOXLpLdNblcyZ3ly9vBAhDbAf+PMZBxOYRKmq8y0BObmMlLK2pfR2wZrrCW6hSKO7LZiiXNld5YpBfTEp8Oc5x070yhLKibBS1Dio6PL8vypT3qJtP50tvEhkZL2O9XmmsHiqPoQoorrKYJJelIc8WfgYV6g8hTb7CJYa7wRSZTdJCgbDZrQIxIkWx70lzhCkUnMywPKZnjzx7O8QfhR3zbkyuImUzBS/2zhXgqy88SXQO+hRRIZnkhmeUuJnFE0mmeIXpKtr5ydEjJdGGK6ih5Ee+2j5MZ7l2yV5NUk+F2RaOl5RoECU0NcIWWISHhxkYBCSS5O5PJ9KKJzxcV2gG+l8rlL4fPm3W9VDT/aaBcPp3kjKMYmpiHjuhJQ4dSGW7rcJY7H+ebkpncZ9ARPSWRzj1O4khNRZ8mem4uMZybxUr2xI/CDnOxZCaTxn6urlOxAHbF07mPEunsLNZ95HODZdlu9LUbiBLZOm/B5x6sL4MFlZ5wKJbKDpPe2HSaUfQpCTaVpUNCj2NsKoPzsZL+CR5WVlBfAOdXkbwWS6RH2UTmEuy3K4VlECzE0+lgfDizqVmffZl8fpGmiJCv2/D9sN5wnBRNDq8nNjzB19XNINdGGiRLJJnzs8n0vOKTTB9MJLh+8iCxJ+cmYiCaHP4A68M4b00kMoFYYvgvRL+IP8VSKR9K0M8x0i/LZgZozfjwJsSIaqLJ1H3qO0USqauiRK8iEk9tJzaWTTPRREqMxlWwKTqkaCJRVusRIzN8RyKR0EUiWUOETW2RdEmFMJt8FcHDgtJUsrl4W+KpBTR6O3nlIeE/63rsF6KJdIY0pBYUurHREGCTT8ZiqfAi3Ww0Gm35WSLMJrbTZlm56Vj8CuJHzwAXUJG4FbZT5FBNMJpMy/oGscTb8FkmuzQJ+QAPReK74COG6kTj/yUvCtmFCqkRisX/DuADonExGGX3RyIRQ5BlGXJWE4iydEjBSJwPUt86rBiKsC/QpLKQuwUjsc+DEZbayRqIxGY1oSgrKAVVhduB5IdQbDN5ZUUiSX/DRhLGBCS+C+tmhXBscyDMPkuL1gmz76PwD5t0kdhufzhC/YNYyZ4Av7/CRuwy0Xvj8fgZgXBMXMT75EUj35VKIBTZEAhHYWuA/OfI5hZhmIgTF5oHYoPIM7K5SXyh8K2wEbtCIBweCQaDDD0HJXyEQIgOiQlGeF8wDF0DJhi+hiZUiS8QfrHJxx+a0yCpoFykqUEJFBLAZ4Fw5OFQKMbKuRAXnVY3qTSn3qublWEC4U/A3epGjhavP/SYC0PCRXB5XCAQonj9wRm5LUWYQPD+ur2OJxxe/G22Ih6/P8v4g3goQZKP4vEHfiWbmwS279R9vD5pHWL8l3o8QcbrC0DXhDQkJsh7cFaDmCtoQpV4vP4ZD+MX6wx5/YIGRQSlIC0aeM7jC435fMEpny/Eeb1h/MDsOlXOociQ339eI4bGNbG4IQXG/+GQz//rtrY6qibVDHl9W8lP77gcuaDCoNf3W7ktRYYY32+o3etTYBjGIptbZJBheOQhuRQGPMydsrlJ3EPeiwY9jKhmYIhZ7/R4mCYd1XvpkAYHGZ6eKV6JIaZlSO4hzwxiSBzFPegRNEgmqBMPepm2PyctFteQr9woSgsfQvNbUfi+I4EaP0PxX6obAXub/TxtGRz0riNDQuOkeQXXoKdlSM5Bz12SfQh2CeeAZ1I2t4jL5Qm7BuCnxj3U9lk43YPXuwYGkQ+4JdxuT8np9DD1cx3XwAAdktM5yDf0AxSHa6BlSA7nwAz0xFZHIAWFo2lssTidjAWNLqiaXUAjK2XzEcXhdp9fb1Rq1v2lzebVy+YjChmS1Lxbwe5ytQzJ4XJdrPg4JewON/kuTPlOTS02m62z3+HaZ3e6xDr9DueeNr/B7oD+NbsDPg32W61DBgseCmwkTsHmcNEh2ZxOXtHb6zZHy5Bs/c4Zarc7KLZ+h6BBAcFOLlBvzuE6qiERwaV2AhSUsTt39ff3k1+DtPv7yRLygMnGbrfrbHaHoG7aane8aHK5zNRzkeABnkYge5IDsaIaa7+9ZUjw74f+IC5JLgrsxE+02PofJPVlNyp6vb4XSwdsTxAfNRab7UeSlySW/v4J+C1Ybf1iHYu1fwdMHRaLhYGN1GhgsdEhmWw2XtFZZSy2liGZLbYZi9UmmutYrIIGRQSrDQ1RSFH7UQ/JbLOtbSpKsR1CoZ1mq3UTmrjebLbejEKP4vwxit4vh2pMVuu9SiONhg6Cp0wmy0+NZusNJotls8lsfcZktsxi/20SR4YEH+KrYLJYW4ZEBDm2IF6UsCgYTeb9JrP5FaPJ8rTRbHkT5wPkzwlmszkO+/wi30MGk+leg9m8Tm8032IwmvZDR/QNjBbyhz2NDkNabEOsNCSTiW/WU1vLkAxG4wxqiCoEDZoV1E3hfNRDgiwxmkwPqYsfCRSkv0oiggfSpTea3lnU0GHRG413kLiurq4zmm1GUW8wtB2S1WrV6vTGd/QG4nNkDAZDlMToDIZrwTxyQi+h0x+Web3e+AtaDKLT6RhJr2+g09EhYeUbOr3YR+jraxlSX59uhtoUdIIGSQVVUVGvNxzLkCDRU3Q6w+1IeKA5eTt0e8lDlgM1vb29+l6d7lnoF9Acmm6mt5mXSAyJl859DXr72g6JCHkxwP4EmAfEV+xpopeCXi6QQzQ9PX0XQbe3buvpacssYr4Pd+VLu1arZbp7esQmurvpkLDy0rlBT09Py5DgNwNIHKWru1vAg+p7pKevb1ud7t7eq2X/YxIUdCP2NjTyJtgL5sB+sKerp+c1rHd29fWV4br4L7od9ALdPVvQ0HtdXd1fYp3D+hX0/0DsC1hvJg+AOOMVv0yLi4BtKq6imQ4vJyFHHgN+QNvV9R5yfYV1Dus+8C7i70f/9J1UF7zKdVpt90attmtnZ6f23/Cbw0r8d4Kb8M5o+W8g6K1gplOr3Ubp1G5b3tVFf6nc2dnpx3kGK/QKTb9FJ7Jcq72m2afzkf8BN007pUrG/KcAAAAASUVORK5CYII="/></a></div>
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+          <!-- Main navigation -->
+          <ul class="nav navbar-nav">
+            <li>
+              <a href=".">Find stake</a>
+            </li>
+          </ul>
+          <!-- Search, Navigation and Repo links -->
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="http://peercoin.net">Peercoin</a>
+            </li>
+            <li>
+              <a href="https://github.com/jointhepartypooper/FindstakeJS/tree/master/FindstakeSinglePage">GitHub</a>
+            </li>            
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+           
+        
+          <div class="bs-sidebar hidden-print affix well" role="complementary">
+             <img class="ppcimg" src="data:image/png;base64,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"/>
+             <div class="bs-example">
+                <div class="list-group" id="listmints">
+                    <a href="#" class="list-group-item active">
+                        <span class="glyphicon glyphicon-camera"></span> Found stakes 
+                    </a>
+                </div>
+            </div> 
+          </div>
+        </div>
+        <div class="col-md-9" role="main">
+    
+        <div class="newsletter">
+          <div class="container centered"> 	 
+         
+                <div class="col-sm-7">
+                  <input type="text" id="inputAdrtx" placeholder="Peercoin Address..." required="true" />                                
+                  
+                </div>
+                <div class="col-sm-2"> 
+                    <a href="." id="actiongo" class="btn btn-primary">GO</a>
+                </div>          
+           
+          </div><!-- /container -->
+        </div><!-- /newesletter --> 
+ 
+ Difficulty <div class="input-group spinner2">
+  <input type="text" class="form-control" id="inputDiff" required="true" value="15">
+    <div class="input-group-btn-vertical">
+      <button class="btn btn-default"><i class="fa fa-caret-up"></i></button>
+      <button class="btn btn-default"><i class="fa fa-caret-down"></i></button>
+    </div>
+  </div>
+ 
+          <hr />
+          <h4 id="code_52">Find between</h4>
+          <div class="container">
+            <div class='col-md-4'>
+                  <div class="form-group">
+                      <div class='input-group date' id='datetimepicker6'>
+                          <input type='text' class="form-control" id="startd" required="true" />
+                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                          </span>
+                      </div>
+                  </div>
+            </div>
+            <div class='col-md-4'>
+                      <div class='input-group date' id='datetimepicker7'>
+                          <input type='text' class="form-control" id="endd" required="true" />
+                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                          </span>
+                      </div>
+            </div>
+          </div>
+           <div class="container">
+            <div class="col-sm-9" style="height:130px;">
+              <div class="form-group">
+                <a href="." class="btn btn-primary btn-xlarge" id="actiongofindstake" style="display: none;"   >Find Stakes</a>
+              </div>
+            </div>
+ 
+          </div>
+          <h4 id="code_5">messages</h4>
+           <div id="divresults">
+ 
+           </div>
+        </div>
+      </div>
+    </div>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+    <script type="text/javascript" >
+    
+    
+    
+
+
+// In case we forget to take out console statements. IE becomes very unhappy when we forget. Let's not make IE unhappy
+if (typeof(console) === 'undefined') {
+	var console = {}
+	console.log = console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile = function () {};
+}
+window.AppLogger = {};
+window.AppLogger.log = function (s, clear) {
+	if (window.AppLogger.el == null)
+		window.AppLogger.el = document.getElementById("divresults");
+ 
+	window.AppLogger.el.innerHTML = clear ? '<pre>'+s+'</pre>' : window.AppLogger.el.innerHTML + '<pre>'+s+'</pre>';
+};
+
+window.AppLogger.logProgress = function (p, lbl) {
+	if (p >= 100)
+		AppLogger.logDone();
+	else
+		NProgress.set(p, lbl);
+};
+window.AppLogger.logDone = function () {
+	NProgress.done();
+	AppLogger.log('Finished!');
+ 
+  var btnFs = document.getElementById('actiongofindstake');
+  btnFs.style.display = 'none'; 
+};
+
+window.AppLogger.logMint = function (arr) { 
+	if (window.AppLogger.elmint == null)
+		window.AppLogger.elmint = document.getElementById("listmints");
+	if (window.AppLogger.arrmints == null)
+		window.AppLogger.arrmints = [];
+
+	AppLogger.arrmints = AppLogger.arrmints.concat(arr);
+  var mpfoundstakes={};
+	var tmp = '<a href="javascript:void(0)" class="list-group-item active"><span class="glyphicon glyphicon-camera"></span> Found stakes</a>';
+	AppLogger.arrmints.forEach(function (result) {
+    var keydups='fs'+moment.unix(result.foundstake).format('MM_DD_hh_mm');
+    if (mpfoundstakes[keydups] == null){
+      mpfoundstakes[keydups]= true;
+      var t = moment.unix(result.foundstake).format('MMM Do, hh:mm');
+      
+        console.log('Mint@' + t + ' min diff: ' + result.mindifficulty.toFixed(1));
+      tmp += '<a href="javascript:void(0)" class="list-group-item"><span class="glyphicon glyphicon-leaf"></span> ' + t +
+        '<span class="badge">' + result.mindifficulty.toFixed(1) + '</span></a>';           
+      
+    }    
+	});
+	AppLogger.elmint.innerHTML =  '' + tmp + '';
+};
+window.App = {};
+App.Staketemplates = null;
+App.LastKnownDifficulty=1; 
+App.LastKnownHeight=1;
+App.LastKnownBlocktime=1;
+
+
+
+// BEGIN implementation of setZeroTimeout
+
+// Only add setZeroTimeout to the window object, and hide everything
+// else in a closure.
+(function () {
+	var timeouts = [];
+	var messageName = "zero-timeout-message";
+
+	// Like setTimeout, but only takes a function argument.  There's
+	// no time argument (always zero) and no arguments (you have to
+	// use a closure).
+	function setZeroTimeout(fn) {
+		timeouts.push(fn);
+		window.postMessage(messageName, "*");
+	}
+
+	function handleMessage(event) {
+		if (event.source == window && event.data == messageName) {
+			event.stopPropagation();
+			if (timeouts.length > 0) {
+				var fn = timeouts.shift();
+				fn();
+			}
+		}
+	}
+
+	window.addEventListener("message", handleMessage, true);
+
+	// Add the one thing we want added to the window object.
+	window.setZeroTimeout = setZeroTimeout;
+})();
+
+//onready
+  $(function () {
+     
+ 
+ 
+  $('.spinner2 .btn:first-of-type').on('click', function() {
+    $('.spinner2 input').val( parseInt($('.spinner2 input').val(), 10) + 1);
+  });
+  $('.spinner2 .btn:last-of-type').on('click', function() {
+    $('.spinner2 input').val( parseInt($('.spinner2 input').val(), 10) - 1);
+  });    
+     
+     
+      $('#datetimepicker6').datetimepicker({
+        format: 'DD-MM-YYYY HH:mm:ss'
+      });
+      $('#datetimepicker7').datetimepicker({
+        format: 'DD-MM-YYYY HH:mm:ss'
+      });
+      $("#datetimepicker6").on("dp.change",function (e) {
+          $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+      });
+      $("#datetimepicker7").on("dp.change",function (e) {
+          $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+      });
+      
+        //need webserver for same origin constraint
+       /* $.get("/peercoin/info", function(data, status){
+
+          //{"result":1,"data":{"difficulty":14.16506387,"lastupdatedblock":152723,"lastupdatedblocktime":1420777722}}
+          
+          if (data && data.result && data.data!=null){
+            if (data.data.difficulty)
+              window.App.LastKnownDifficulty=data.data.difficulty;
+
+            if (data.data.lastupdatedblock)
+              window.App.LastKnownHeight=data.data.lastupdatedblock; 
+            
+            if (data.data.lastupdatedblocktime)
+              window.App.LastKnownBlocktime=data.data.lastupdatedblocktime;      
+                  
+            AppLogger.log('Difficulty: '+data.data.difficulty.toFixed(1)+ ' Block data available from May 2014 to ' + moment.unix(data.data.lastupdatedblocktime).format('DD/MM/YYYY'));
+          }
+        });      
+            */
+	var btnFs = document.getElementById('actiongofindstake');
+ 
+  function isNumber(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+  }
+ 
+	function cancelDefaultAction(e) {
+		var evt = e ? e : window.event;
+		if (evt.preventDefault)
+			evt.preventDefault();
+		evt.returnValue = false;
+		return false;
+	}
+	document.querySelector('#actiongo').addEventListener('click', function (e) {
+		e.preventDefault();
+    
+		var btn = document.getElementById("actiongo"), 
+              inputAdrtx = document.getElementById("inputAdrtx").value;
+		
+    var peercoinaddress='';
+      try {
+        var peeradr =	new Peercoin.Address(inputAdrtx); 
+        peercoinaddress = peeradr.toString();        
+      }
+      catch(err) {
+          Applogger.log('unknown Peercoin address');;
+      }
+		  if (peercoinaddress.length==0) {
+        return false;
+      }
+    
+    
+     
+    
+    
+		if (btn.innerHTML == "GO") {
+			btn.innerHTML = "STOP";
+
+		} else {
+			if (window.Staketemplates != null)
+				App.Staketemplates.stop();
+			btn.innerHTML = "GO";
+
+			window.AppLogger.logDone();
+		}
+
+		if (peercoinaddress) {
+      App.Staketemplates = new Peercoin.UnspentOutputsToStake();      
+      var getstakedata=function (txkey, cb) {
+                 
+          //var txkey='to'+inputAdrtx+'_'+inputAdrtxn;
+          if (txkey) {      
+          //jasonp call
+            $.ajax({
+              url: "http://peercoinfindstakedata.divshot.io/json/"+ txkey +".json",
+              dataType: "jsonp",
+              jsonpCallback: txkey, /* Unique function name */
+              success: function(dbdata){
+                
+                     var tpldata = {
+                        BlockFromTime : dbdata.BlockFromTime,
+                        StakeModifier : BigInteger.fromByteArrayUnsigned(Crypto.util.hexToBytes(dbdata.StakeModifier16)),
+                        PrevTxOffset : dbdata.PrevTxOffset,
+                        PrevTxTime : dbdata.PrevTxTime,
+                        PrevTxOutIndex : dbdata.PrevTxOutIndex,
+                        PrevTxOutValue : dbdata.PrevTxOutValue 
+                      };
+                  
+                    App.Staketemplates.add(tpldata);   
+                    cb();                    
+ 
+              }
+            });      
+              
+          }  
+        };      
+              
+            
+            
+			AppLogger.logProgress(0.01, 'retrieving data...');
+      
+      var   prog=0.10;
+  	  if (peercoinaddress) {      
+      //jasonp call
+        $.ajax({
+          url: "http://hook.io/jointhepartypooper/hookGetFindstakeData?PeercoinAddress="+ peercoinaddress+"&run=true",
+          accepts: { text: "*/*" },
+          dataType: "jsonp",
+          jsonpCallback: peercoinaddress, /* Unique function name */
+          success: function(dbdata){
+            //"txo" : ["to79c0bcd9a15152a0a1582110f531c52eda9bcc803a596fcd2d72f54063706eb4_1"]
+            var ctotal=dbdata.txo.length, count=0;
+            
+            dbdata.txo.forEach(function(txout) {  
+               getstakedata(txout, function() {
+               
+                 count++;
+                 prog=prog+0.01;
+                 AppLogger.logProgress(prog, '');
+                 if (count==ctotal) {
+                   
+                      //'AppLogger.logProgress(0.11, '');
+                      AppLogger.log('Data successfully retrieved');
+                      AppLogger.log('Starting...');
+                      btn.style.display = 'none';
+                      btnFs.style.display = 'block';   
+
+                      setTimeout(function(){ btnFs.click(); }, 500);                   
+                 }               
+               });             
+            });               
+          }
+        });                
+      }  
+		}
+		return cancelDefaultAction(e);
+	});
+
+	document.querySelector('#actiongofindstake').addEventListener('click', function (e) {
+		e.preventDefault();
+
+		if (btnFs.innerHTML == "Find Stakes") {
+			btnFs.innerHTML = "STOP";
+
+		} else {
+			App.Staketemplates.stop();
+			btnFs.innerHTML = "Find Stakes";
+
+			window.AppLogger.logDone();
+      return false;
+		}
+		AppLogger.log('Findstake started');
+
+    var m1 = moment(document.getElementById("startd").value, "DD-MM-YYYY HH:mm:ss").format("X");
+    var m2 = moment(document.getElementById("endd").value, "DD-MM-YYYY HH:mm:ss").format("X");
+    var startx1 = parseInt(m1, 10);
+    var endx = parseInt(m2, 10);
+    
+    App.LastKnownDifficulty =  parseFloat(document.getElementById("inputDiff").value);
+    App.Staketemplates.setBitsWithDifficulty(App.LastKnownDifficulty|0);
+    
+    
+    if (!isNumber(m1) || !isNumber(m2)){
+      AppLogger.log('please provide dates')
+      //App.Staketemplates.stop();
+			btnFs.innerHTML = "Find Stakes";
+
+			window.AppLogger.logDone();
+    }else{
+      App.Staketemplates.setStartStop(startx1, endx);
+      App.Staketemplates.findStake(window.AppLogger.logMint, AppLogger.logProgress);
+      
+    }
+    
+    
+
+		return cancelDefaultAction(e);
+	});      
+      
+      
+      
+  });//onready
+
+
+ 
+
+/* fork of http://ricostacruz.com/nprogress */
+
+;(function(factory) {
+
+  if (typeof module === 'function') {
+    module.exports = factory();
+  } else if (typeof define === 'function' && define.amd) {
+    define(factory);
+  } else {
+    this.NProgress = factory();
+  }
+
+})(function() {
+  var NProgress = {};
+
+  NProgress.version = '0.1.2';
+
+  var Settings = NProgress.settings = {
+    minimum: 0.08,
+    easing: 'ease',
+    positionUsing: '',
+    speed: 200,
+    trickle: true,
+    trickleRate: 0.02,
+    trickleSpeed: 800,
+    showStatus: true,
+    barSelector: '[role="bar"]',
+    statusSelector: '[role="status"]',
+    template: '<div class="bar" role="bar"><div class="peg"></div></div><div class="status" role="status"></div></div>'
+  };
+
+  NProgress.configure = function(options) {
+    var key, value;
+    for (key in options) {
+      value = options[key];
+      if (value !== undefined && options.hasOwnProperty(key)) Settings[key] = value;
+    }
+
+    return this;
+  };
+
+  NProgress.status = null;
+  NProgress.statuslabel = '';
+
+  NProgress.set = function(n, nl) {
+    var started = NProgress.isStarted();
+
+    n = clamp(n, Settings.minimum, 1);
+    NProgress.status = (n === 1 ? null : n);
+	NProgress.statuslabel = nl || NProgress.statuslabel || '';
+
+    var progress = NProgress.render(!started),
+        bar      = progress.querySelector(Settings.barSelector),
+        speed    = Settings.speed,
+        ease     = Settings.easing;
+
+    progress.offsetWidth; /* Repaint */
+	NProgress.setStatusHtml(progress);
+	
+    queue(function(next) {
+      // Set positionUsing if it hasn't already been set
+      if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+
+      // Add transition
+      css(bar, barPositionCSS(n, speed, ease));
+
+      if (n === 1) {
+        // Fade out
+        css(progress, { 
+          transition: 'none', 
+          opacity: 1 
+        });
+        progress.offsetWidth; /* Repaint */
+		NProgress.setStatusHtml(progress);
+		
+        setTimeout(function() {
+          css(progress, { 
+            transition: 'all ' + speed + 'ms linear', 
+            opacity: 0 
+          });
+          setTimeout(function() {
+            NProgress.remove();
+            next();
+          }, speed);
+        }, speed);
+      } else {
+        setTimeout(next, speed);
+      }
+    });
+
+    return this;
+  };
+
+  NProgress.isStarted = function() {
+    return typeof NProgress.status === 'number';
+  };
+
+  NProgress.start = function() {
+    if (!NProgress.status) NProgress.set(0);
+
+    var work = function() {
+      setTimeout(function() {
+        if (!NProgress.status) return;
+        NProgress.trickle();
+        work();
+      }, Settings.trickleSpeed);
+    };
+
+    if (Settings.trickle) work();
+
+    return this;
+  };
+
+  NProgress.done = function(force) {
+    if (!force && !NProgress.status) return this;
+
+    return NProgress.inc(0.3 + 0.5 * Math.random()).set(1);
+  };
+
+  NProgress.inc = function(amount) {
+    var n = NProgress.status;
+
+    if (!n) {
+      return NProgress.start();
+    } else {
+      if (typeof amount !== 'number') {
+        amount = (1 - n) * clamp(Math.random() * n, 0.1, 0.95);
+      }
+
+      n = clamp(n + amount, 0, 0.994);
+      return NProgress.set(n);
+    }
+  };
+
+  NProgress.trickle = function() {
+    return NProgress.inc(Math.random() * Settings.trickleRate);
+  };
+
+  NProgress.render = function(fromStart) {
+    if (NProgress.isRendered()) return document.getElementById('nprogress');
+
+    addClass(document.documentElement, 'nprogress-busy');
+    
+    var progress = document.createElement('div');
+    progress.id = 'nprogress';
+    progress.innerHTML = Settings.template;
+
+    var bar      = progress.querySelector(Settings.barSelector),
+        perc     = fromStart ? '-100' : toBarPerc(NProgress.status || 0);
+    
+    css(bar, {
+      transition: 'all 0 linear',
+      transform: 'translate3d(' + perc + '%,0,0)'
+    });
+
+    if (!Settings.showStatus) {
+      var statuselm = progress.querySelector(Settings.statusSelector);
+      statuselm && removeElement(statuselm);
+    }	
+
+    document.body.appendChild(progress);
+    return progress;
+  };
+
+  //displays addtional text as progress
+  NProgress.setStatusHtml = function(progress) {  
+	if (Settings.showStatus && progress && NProgress.statuslabel){
+		progress.querySelector(Settings.statusSelector).innerHTML = NProgress.statuslabel;
+	}	  
+  };    
+
+  NProgress.remove = function() {
+    removeClass(document.documentElement, 'nprogress-busy');
+    var progress = document.getElementById('nprogress');
+    progress && removeElement(progress);
+  };
+
+  NProgress.isRendered = function() {
+    return !!document.getElementById('nprogress');
+  };
+
+  // Determine which positioning CSS rule to use.
+  NProgress.getPositioningCSS = function() {
+    // Sniff on document.body.style
+    var bodyStyle = document.body.style;
+
+    // Sniff prefixes
+    var vendorPrefix = ('WebkitTransform' in bodyStyle) ? 'Webkit' :
+                       ('MozTransform' in bodyStyle) ? 'Moz' :
+                       ('msTransform' in bodyStyle) ? 'ms' :
+                       ('OTransform' in bodyStyle) ? 'O' : '';
+
+    if (vendorPrefix + 'Perspective' in bodyStyle) {
+      // Modern browsers with 3D support, e.g. Webkit, IE10
+      return 'translate3d';
+    } else if (vendorPrefix + 'Transform' in bodyStyle) {
+      // Browsers without 3D support, e.g. IE9
+      return 'translate';
+    } else {
+      // Browsers without translate() support, e.g. IE7-8
+      return 'margin';
+    }
+  };
+
+  function clamp(n, min, max) {
+    if (n < min) return min;
+    if (n > max) return max;
+    return n;
+  }
+
+  function toBarPerc(n) {
+    return (-1 + n) * 100;
+  }
+
+  function barPositionCSS(n, speed, ease) {
+    var barCSS;
+
+    if (Settings.positionUsing === 'translate3d') {
+      barCSS = { transform: 'translate3d('+toBarPerc(n)+'%,0,0)' };
+    } else if (Settings.positionUsing === 'translate') {
+      barCSS = { transform: 'translate('+toBarPerc(n)+'%,0)' };
+    } else {
+      barCSS = { 'margin-left': toBarPerc(n)+'%' };
+    }
+
+    barCSS.transition = 'all '+speed+'ms '+ease;
+
+    return barCSS;
+  }
+
+  var queue = (function() {
+    var pending = [];
+    
+    function next() {
+      var fn = pending.shift();
+      if (fn) {
+        fn(next);
+      }
+    }
+
+    return function(fn) {
+      pending.push(fn);
+      if (pending.length == 1) next();
+    };
+  })();
+
+  // internal. Applies css properties to an element
+  var css = (function() {
+    var cssPrefixes = [ 'Webkit', 'O', 'Moz', 'ms' ],
+        cssProps    = {};
+
+    function camelCase(string) {
+      return string.replace(/^-ms-/, 'ms-').replace(/-([\da-z])/gi, function(match, letter) {
+        return letter.toUpperCase();
+      });
+    }
+
+    function getVendorProp(name) {
+      var style = document.body.style;
+      if (name in style) return name;
+
+      var i = cssPrefixes.length,
+          capName = name.charAt(0).toUpperCase() + name.slice(1),
+          vendorName;
+      while (i--) {
+        vendorName = cssPrefixes[i] + capName;
+        if (vendorName in style) return vendorName;
+      }
+
+      return name;
+    }
+
+    function getStyleProp(name) {
+      name = camelCase(name);
+      return cssProps[name] || (cssProps[name] = getVendorProp(name));
+    }
+
+    function applyCss(element, prop, value) {
+      prop = getStyleProp(prop);
+      element.style[prop] = value;
+    }
+
+    return function(element, properties) {
+      var args = arguments,
+          prop, 
+          value;
+
+      if (args.length == 2) {
+        for (prop in properties) {
+          value = properties[prop];
+          if (value !== undefined && properties.hasOwnProperty(prop)) applyCss(element, prop, value);
+        }
+      } else {
+        applyCss(element, args[1], args[2]);
+      }
+    }
+  })();
+ 
+  function hasClass(element, name) {
+    var list = typeof element == 'string' ? element : classList(element);
+    return list.indexOf(' ' + name + ' ') >= 0;
+  }
+
+  function addClass(element, name) {
+    var oldList = classList(element),
+        newList = oldList + name;
+
+    if (hasClass(oldList, name)) return; 
+
+    // Trim the opening space.
+    element.className = newList.substring(1);
+  }
+
+  function removeClass(element, name) {
+    var oldList = classList(element),
+        newList;
+
+    if (!hasClass(element, name)) return;
+
+    // Replace the class name.
+    newList = oldList.replace(' ' + name + ' ', ' ');
+
+    // Trim the opening and closing spaces.
+    element.className = newList.substring(1, newList.length - 1);
+  }
+
+  function classList(element) {
+    return (' ' + (element.className || '') + ' ').replace(/\s+/gi, ' ');
+  }
+
+  function removeElement(element) {
+    element && element.parentNode && element.parentNode.removeChild(element);
+  }
+
+  return NProgress;
+});
+
+
+
+
+// this module includes BigInteger, Peercoin, Address, Mint, kernel, Crypto and utils. requires Q
+(function (globals) {
+
+	var Peercoin = globals.Peercoin = {};
+	/////////////////////////////////////
+
+	/*!
+	 * Basic JavaScript BN library - subset useful for RSA encryption. v1.3
+	 *
+	 * Copyright (c) 2005  Tom Wu
+	 * All Rights Reserved.
+	 * BSD License
+	 * http://www-cs-students.stanford.edu/~tjw/jsbn/LICENSE
+	 *
+	 * Copyright Stephan Thomas
+	 * Copyright bitaddress.org
+	 */
+
+	(function (globals) {
+
+		// (public) Constructor function of Global BigInteger object
+		var BigInteger = globals.BigInteger = function BigInteger(a, b, c) {
+			if (a != null)
+				if ("number" == typeof a)
+					this.fromNumber(a, b, c);
+				else if (b == null && "string" != typeof a)
+					this.fromString(a, 256);
+				else
+					this.fromString(a, b);
+		};
+
+		// Bits per digit
+		var dbits;
+
+		// JavaScript engine analysis
+		var canary = 0xdeadbeefcafe;
+		var j_lm = ((canary & 0xffffff) == 0xefcafe);
+
+		// return new, unset BigInteger
+		function nbi() {
+			return new BigInteger(null);
+		}
+
+		// am: Compute w_j += (x*this_i), propagate carries,
+		// c is initial carry, returns final carry.
+		// c < 3*dvalue, x < 2*dvalue, this_i < dvalue
+		// We need to select the fastest one that works in this environment.
+
+		// am1: use a single mult and divide to get the high bits,
+		// max digit bits should be 26 because
+		// max internal value = 2*dvalue^2-2*dvalue (< 2^53)
+		function am1(i, x, w, j, c, n) {
+			while (--n >= 0) {
+				var v = x * this[i++] + w[j] + c;
+				c = Math.floor(v / 0x4000000);
+				w[j++] = v & 0x3ffffff;
+			}
+			return c;
+		}
+		// am2 avoids a big mult-and-extract completely.
+		// Max digit bits should be <= 30 because we do bitwise ops
+		// on values up to 2*hdvalue^2-hdvalue-1 (< 2^31)
+		function am2(i, x, w, j, c, n) {
+			var xl = x & 0x7fff,
+			xh = x >> 15;
+			while (--n >= 0) {
+				var l = this[i] & 0x7fff;
+				var h = this[i++] >> 15;
+				var m = xh * l + h * xl;
+				l = xl * l + ((m & 0x7fff) << 15) + w[j] + (c & 0x3fffffff);
+				c = (l >>> 30) + (m >>> 15) + xh * h + (c >>> 30);
+				w[j++] = l & 0x3fffffff;
+			}
+			return c;
+		}
+		// Alternately, set max digit bits to 28 since some
+		// browsers slow down when dealing with 32-bit numbers.
+		function am3(i, x, w, j, c, n) {
+			var xl = x & 0x3fff,
+			xh = x >> 14;
+			while (--n >= 0) {
+				var l = this[i] & 0x3fff;
+				var h = this[i++] >> 14;
+				var m = xh * l + h * xl;
+				l = xl * l + ((m & 0x3fff) << 14) + w[j] + c;
+				c = (l >> 28) + (m >> 14) + xh * h;
+				w[j++] = l & 0xfffffff;
+			}
+			return c;
+		}
+		if (j_lm && (navigator.appName == "Microsoft Internet Explorer")) {
+			BigInteger.prototype.am = am2;
+			dbits = 30;
+		} else if (j_lm && (navigator.appName != "Netscape")) {
+			BigInteger.prototype.am = am1;
+			dbits = 26;
+		} else { // Mozilla/Netscape seems to prefer am3
+			BigInteger.prototype.am = am3;
+			dbits = 28;
+		}
+
+		BigInteger.prototype.DB = dbits;
+		BigInteger.prototype.DM = ((1 << dbits) - 1);
+		BigInteger.prototype.DV = (1 << dbits);
+
+		var BI_FP = 52;
+		BigInteger.prototype.FV = Math.pow(2, BI_FP);
+		BigInteger.prototype.F1 = BI_FP - dbits;
+		BigInteger.prototype.F2 = 2 * dbits - BI_FP;
+
+		// Digit conversions
+		var BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
+		var BI_RC = new Array();
+		var rr,
+		vv;
+		rr = "0".charCodeAt(0);
+		for (vv = 0; vv <= 9; ++vv)
+			BI_RC[rr++] = vv;
+		rr = "a".charCodeAt(0);
+		for (vv = 10; vv < 36; ++vv)
+			BI_RC[rr++] = vv;
+		rr = "A".charCodeAt(0);
+		for (vv = 10; vv < 36; ++vv)
+			BI_RC[rr++] = vv;
+
+		function int2char(n) {
+			return BI_RM.charAt(n);
+		}
+		function intAt(s, i) {
+			var c = BI_RC[s.charCodeAt(i)];
+			return (c == null) ? -1 : c;
+		}
+
+		// return bigint initialized to value
+		function nbv(i) {
+			var r = nbi();
+			r.fromInt(i);
+			return r;
+		}
+
+		// returns bit length of the integer x
+		function nbits(x) {
+			var r = 1,
+			t;
+			if ((t = x >>> 16) != 0) {
+				x = t;
+				r += 16;
+			}
+			if ((t = x >> 8) != 0) {
+				x = t;
+				r += 8;
+			}
+			if ((t = x >> 4) != 0) {
+				x = t;
+				r += 4;
+			}
+			if ((t = x >> 2) != 0) {
+				x = t;
+				r += 2;
+			}
+			if ((t = x >> 1) != 0) {
+				x = t;
+				r += 1;
+			}
+			return r;
+		}
+
+		// (protected) copy this to r
+		BigInteger.prototype.copyTo = function (r) {
+			for (var i = this.t - 1; i >= 0; --i)
+				r[i] = this[i];
+			r.t = this.t;
+			r.s = this.s;
+		};
+
+		// (protected) set from integer value x, -DV <= x < DV
+		BigInteger.prototype.fromInt = function (x) {
+			this.t = 1;
+			this.s = (x < 0) ? -1 : 0;
+			if (x > 0)
+				this[0] = x;
+			else if (x < -1)
+				this[0] = x + this.DV;
+			else
+				this.t = 0;
+		};
+
+		// (protected) set from string and radix
+		BigInteger.prototype.fromString = function (s, b) {
+			var k;
+			if (b == 16)
+				k = 4;
+			else if (b == 8)
+				k = 3;
+			else if (b == 256)
+				k = 8; // byte array
+			else if (b == 2)
+				k = 1;
+			else if (b == 32)
+				k = 5;
+			else if (b == 4)
+				k = 2;
+			else {
+				this.fromRadix(s, b);
+				return;
+			}
+			this.t = 0;
+			this.s = 0;
+			var i = s.length,
+			mi = false,
+			sh = 0;
+			while (--i >= 0) {
+				var x = (k == 8) ? s[i] & 0xff : intAt(s, i);
+				if (x < 0) {
+					if (s.charAt(i) == "-")
+						mi = true;
+					continue;
+				}
+				mi = false;
+				if (sh == 0)
+					this[this.t++] = x;
+				else if (sh + k > this.DB) {
+					this[this.t - 1] |= (x & ((1 << (this.DB - sh)) - 1)) << sh;
+					this[this.t++] = (x >> (this.DB - sh));
+				} else
+					this[this.t - 1] |= x << sh;
+				sh += k;
+				if (sh >= this.DB)
+					sh -= this.DB;
+			}
+			if (k == 8 && (s[0] & 0x80) != 0) {
+				this.s = -1;
+				if (sh > 0)
+					this[this.t - 1] |= ((1 << (this.DB - sh)) - 1) << sh;
+			}
+			this.clamp();
+			if (mi)
+				BigInteger.ZERO.subTo(this, this);
+		};
+
+		// (protected) clamp off excess high words
+		BigInteger.prototype.clamp = function () {
+			var c = this.s & this.DM;
+			while (this.t > 0 && this[this.t - 1] == c)
+				--this.t;
+		};
+
+		// (protected) r = this << n*DB
+		BigInteger.prototype.dlShiftTo = function (n, r) {
+			var i;
+			for (i = this.t - 1; i >= 0; --i)
+				r[i + n] = this[i];
+			for (i = n - 1; i >= 0; --i)
+				r[i] = 0;
+			r.t = this.t + n;
+			r.s = this.s;
+		};
+
+		// (protected) r = this >> n*DB
+		BigInteger.prototype.drShiftTo = function (n, r) {
+			for (var i = n; i < this.t; ++i)
+				r[i - n] = this[i];
+			r.t = Math.max(this.t - n, 0);
+			r.s = this.s;
+		};
+
+		// (protected) r = this << n
+		BigInteger.prototype.lShiftTo = function (n, r) {
+			var bs = n % this.DB;
+			var cbs = this.DB - bs;
+			var bm = (1 << cbs) - 1;
+			var ds = Math.floor(n / this.DB),
+			c = (this.s << bs) & this.DM,
+			i;
+			for (i = this.t - 1; i >= 0; --i) {
+				r[i + ds + 1] = (this[i] >> cbs) | c;
+				c = (this[i] & bm) << bs;
+			}
+			for (i = ds - 1; i >= 0; --i)
+				r[i] = 0;
+			r[ds] = c;
+			r.t = this.t + ds + 1;
+			r.s = this.s;
+			r.clamp();
+		};
+
+		// (protected) r = this >> n
+		BigInteger.prototype.rShiftTo = function (n, r) {
+			r.s = this.s;
+			var ds = Math.floor(n / this.DB);
+			if (ds >= this.t) {
+				r.t = 0;
+				return;
+			}
+			var bs = n % this.DB;
+			var cbs = this.DB - bs;
+			var bm = (1 << bs) - 1;
+			r[0] = this[ds] >> bs;
+			for (var i = ds + 1; i < this.t; ++i) {
+				r[i - ds - 1] |= (this[i] & bm) << cbs;
+				r[i - ds] = this[i] >> bs;
+			}
+			if (bs > 0)
+				r[this.t - ds - 1] |= (this.s & bm) << cbs;
+			r.t = this.t - ds;
+			r.clamp();
+		};
+
+		// (protected) r = this - a
+		BigInteger.prototype.subTo = function (a, r) {
+			var i = 0,
+			c = 0,
+			m = Math.min(a.t, this.t);
+			while (i < m) {
+				c += this[i] - a[i];
+				r[i++] = c & this.DM;
+				c >>= this.DB;
+			}
+			if (a.t < this.t) {
+				c -= a.s;
+				while (i < this.t) {
+					c += this[i];
+					r[i++] = c & this.DM;
+					c >>= this.DB;
+				}
+				c += this.s;
+			} else {
+				c += this.s;
+				while (i < a.t) {
+					c -= a[i];
+					r[i++] = c & this.DM;
+					c >>= this.DB;
+				}
+				c -= a.s;
+			}
+			r.s = (c < 0) ? -1 : 0;
+			if (c < -1)
+				r[i++] = this.DV + c;
+			else if (c > 0)
+				r[i++] = c;
+			r.t = i;
+			r.clamp();
+		};
+
+		// (protected) r = this * a, r != this,a (HAC 14.12)
+		// "this" should be the larger one if appropriate.
+		BigInteger.prototype.multiplyTo = function (a, r) {
+			var x = this.abs(),
+			y = a.abs();
+			var i = x.t;
+			r.t = i + y.t;
+			while (--i >= 0)
+				r[i] = 0;
+			for (i = 0; i < y.t; ++i)
+				r[i + x.t] = x.am(0, y[i], r, i, 0, x.t);
+			r.s = 0;
+			r.clamp();
+			if (this.s != a.s)
+				BigInteger.ZERO.subTo(r, r);
+		};
+
+		// (protected) r = this^2, r != this (HAC 14.16)
+		BigInteger.prototype.squareTo = function (r) {
+			var x = this.abs();
+			var i = r.t = 2 * x.t;
+			while (--i >= 0)
+				r[i] = 0;
+			for (i = 0; i < x.t - 1; ++i) {
+				var c = x.am(i, x[i], r, 2 * i, 0, 1);
+				if ((r[i + x.t] += x.am(i + 1, 2 * x[i], r, 2 * i + 1, c, x.t - i - 1)) >= x.DV) {
+					r[i + x.t] -= x.DV;
+					r[i + x.t + 1] = 1;
+				}
+			}
+			if (r.t > 0)
+				r[r.t - 1] += x.am(i, x[i], r, 2 * i, 0, 1);
+			r.s = 0;
+			r.clamp();
+		};
+
+		// (protected) divide this by m, quotient and remainder to q, r (HAC 14.20)
+		// r != q, this != m.  q or r may be null.
+		BigInteger.prototype.divRemTo = function (m, q, r) {
+			var pm = m.abs();
+			if (pm.t <= 0)
+				return;
+			var pt = this.abs();
+			if (pt.t < pm.t) {
+				if (q != null)
+					q.fromInt(0);
+				if (r != null)
+					this.copyTo(r);
+				return;
+			}
+			if (r == null)
+				r = nbi();
+			var y = nbi(),
+			ts = this.s,
+			ms = m.s;
+			var nsh = this.DB - nbits(pm[pm.t - 1]); // normalize modulus
+			if (nsh > 0) {
+				pm.lShiftTo(nsh, y);
+				pt.lShiftTo(nsh, r);
+			} else {
+				pm.copyTo(y);
+				pt.copyTo(r);
+			}
+			var ys = y.t;
+			var y0 = y[ys - 1];
+			if (y0 == 0)
+				return;
+			var yt = y0 * (1 << this.F1) + ((ys > 1) ? y[ys - 2] >> this.F2 : 0);
+			var d1 = this.FV / yt,
+			d2 = (1 << this.F1) / yt,
+			e = 1 << this.F2;
+			var i = r.t,
+			j = i - ys,
+			t = (q == null) ? nbi() : q;
+			y.dlShiftTo(j, t);
+			if (r.compareTo(t) >= 0) {
+				r[r.t++] = 1;
+				r.subTo(t, r);
+			}
+			BigInteger.ONE.dlShiftTo(ys, t);
+			t.subTo(y, y); // "negative" y so we can replace sub with am later
+			while (y.t < ys)
+				y[y.t++] = 0;
+			while (--j >= 0) {
+				// Estimate quotient digit
+				var qd = (r[--i] == y0) ? this.DM : Math.floor(r[i] * d1 + (r[i - 1] + e) * d2);
+				if ((r[i] += y.am(0, qd, r, j, 0, ys)) < qd) { // Try it out
+					y.dlShiftTo(j, t);
+					r.subTo(t, r);
+					while (r[i] < --qd)
+						r.subTo(t, r);
+				}
+			}
+			if (q != null) {
+				r.drShiftTo(ys, q);
+				if (ts != ms)
+					BigInteger.ZERO.subTo(q, q);
+			}
+			r.t = ys;
+			r.clamp();
+			if (nsh > 0)
+				r.rShiftTo(nsh, r); // Denormalize remainder
+			if (ts < 0)
+				BigInteger.ZERO.subTo(r, r);
+		};
+
+		// (protected) return "-1/this % 2^DB"; useful for Mont. reduction
+		// justification:
+		//         xy == 1 (mod m)
+		//         xy =  1+km
+		//   xy(2-xy) = (1+km)(1-km)
+		// x[y(2-xy)] = 1-k^2m^2
+		// x[y(2-xy)] == 1 (mod m^2)
+		// if y is 1/x mod m, then y(2-xy) is 1/x mod m^2
+		// should reduce x and y(2-xy) by m^2 at each step to keep size bounded.
+		// JS multiply "overflows" differently from C/C++, so care is needed here.
+		BigInteger.prototype.invDigit = function () {
+			if (this.t < 1)
+				return 0;
+			var x = this[0];
+			if ((x & 1) == 0)
+				return 0;
+			var y = x & 3; // y == 1/x mod 2^2
+			y = (y * (2 - (x & 0xf) * y)) & 0xf; // y == 1/x mod 2^4
+			y = (y * (2 - (x & 0xff) * y)) & 0xff; // y == 1/x mod 2^8
+			y = (y * (2 - (((x & 0xffff) * y) & 0xffff))) & 0xffff; // y == 1/x mod 2^16
+			// last step - calculate inverse mod DV directly;
+			// assumes 16 < DB <= 32 and assumes ability to handle 48-bit ints
+			y = (y * (2 - x * y % this.DV)) % this.DV; // y == 1/x mod 2^dbits
+			// we really want the negative inverse, and -DV < y < DV
+			return (y > 0) ? this.DV - y : -y;
+		};
+
+		// (protected) true iff this is even
+		BigInteger.prototype.isEven = function () {
+			return ((this.t > 0) ? (this[0] & 1) : this.s) == 0;
+		};
+
+		// (protected) this^e, e < 2^32, doing sqr and mul with "r" (HAC 14.79)
+		BigInteger.prototype.exp = function (e, z) {
+			if (e > 0xffffffff || e < 1)
+				return BigInteger.ONE;
+			var r = nbi(),
+			r2 = nbi(),
+			g = z.convert(this),
+			i = nbits(e) - 1;
+			g.copyTo(r);
+			while (--i >= 0) {
+				z.sqrTo(r, r2);
+				if ((e & (1 << i)) > 0)
+					z.mulTo(r2, g, r);
+				else {
+					var t = r;
+					r = r2;
+					r2 = t;
+				}
+			}
+			return z.revert(r);
+		};
+
+		// (public) return string representation in given radix
+		BigInteger.prototype.toString = function (b) {
+			if (this.s < 0)
+				return "-" + this.negate().toString(b);
+			var k;
+			if (b == 16)
+				k = 4;
+			else if (b == 8)
+				k = 3;
+			else if (b == 2)
+				k = 1;
+			else if (b == 32)
+				k = 5;
+			else if (b == 4)
+				k = 2;
+			else
+				return this.toRadix(b);
+			var km = (1 << k) - 1,
+			d,
+			m = false,
+			r = "",
+			i = this.t;
+			var p = this.DB - (i * this.DB) % k;
+			if (i-- > 0) {
+				if (p < this.DB && (d = this[i] >> p) > 0) {
+					m = true;
+					r = int2char(d);
+				}
+				while (i >= 0) {
+					if (p < k) {
+						d = (this[i] & ((1 << p) - 1)) << (k - p);
+						d |= this[--i] >> (p += this.DB - k);
+					} else {
+						d = (this[i] >> (p -= k)) & km;
+						if (p <= 0) {
+							p += this.DB;
+							--i;
+						}
+					}
+					if (d > 0)
+						m = true;
+					if (m)
+						r += int2char(d);
+				}
+			}
+			return m ? r : "0";
+		};
+
+		// (public) -this
+		BigInteger.prototype.negate = function () {
+			var r = nbi();
+			BigInteger.ZERO.subTo(this, r);
+			return r;
+		};
+
+		// (public) |this|
+		BigInteger.prototype.abs = function () {
+			return (this.s < 0) ? this.negate() : this;
+		};
+
+		// (public) return + if this > a, - if this < a, 0 if equal
+		BigInteger.prototype.compareTo = function (a) {
+			var r = this.s - a.s;
+			if (r != 0)
+				return r;
+			var i = this.t;
+			r = i - a.t;
+			if (r != 0)
+				return (this.s < 0) ? -r : r;
+			while (--i >= 0)
+				if ((r = this[i] - a[i]) != 0)
+					return r;
+			return 0;
+		}
+
+		// (public) return the number of bits in "this"
+		BigInteger.prototype.bitLength = function () {
+			if (this.t <= 0)
+				return 0;
+			return this.DB * (this.t - 1) + nbits(this[this.t - 1]^(this.s & this.DM));
+		};
+
+		// (public) this mod a
+		BigInteger.prototype.mod = function (a) {
+			var r = nbi();
+			this.abs().divRemTo(a, null, r);
+			if (this.s < 0 && r.compareTo(BigInteger.ZERO) > 0)
+				a.subTo(r, r);
+			return r;
+		}
+
+		// (public) this^e % m, 0 <= e < 2^32
+		BigInteger.prototype.modPowInt = function (e, m) {
+			var z;
+			if (e < 256 || m.isEven())
+				z = new Classic(m);
+			else
+				z = new Montgomery(m);
+			return this.exp(e, z);
+		};
+
+		// "constants"
+		BigInteger.ZERO = nbv(0);
+		BigInteger.ONE = nbv(1);
+
+		// Copyright (c) 2005-2009  Tom Wu
+		// All Rights Reserved.
+		// See "LICENSE" for details.
+		// Extended JavaScript BN functions, required for RSA private ops.
+		// Version 1.1: new BigInteger("0", 10) returns "proper" zero
+		// Version 1.2: square() API, isProbablePrime fix
+
+
+		// return index of lowest 1-bit in x, x < 2^31
+		function lbit(x) {
+			if (x == 0)
+				return -1;
+			var r = 0;
+			if ((x & 0xffff) == 0) {
+				x >>= 16;
+				r += 16;
+			}
+			if ((x & 0xff) == 0) {
+				x >>= 8;
+				r += 8;
+			}
+			if ((x & 0xf) == 0) {
+				x >>= 4;
+				r += 4;
+			}
+			if ((x & 3) == 0) {
+				x >>= 2;
+				r += 2;
+			}
+			if ((x & 1) == 0)
+				++r;
+			return r;
+		}
+
+		// return number of 1 bits in x
+		function cbit(x) {
+			var r = 0;
+			while (x != 0) {
+				x &= x - 1;
+				++r;
+			}
+			return r;
+		}
+
+		var lowprimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997];
+		var lplim = (1 << 26) / lowprimes[lowprimes.length - 1];
+
+		// (protected) return x s.t. r^x < DV
+		BigInteger.prototype.chunkSize = function (r) {
+			return Math.floor(Math.LN2 * this.DB / Math.log(r));
+		};
+
+		// (protected) convert to radix string
+		BigInteger.prototype.toRadix = function (b) {
+			if (b == null)
+				b = 10;
+			if (this.signum() == 0 || b < 2 || b > 36)
+				return "0";
+			var cs = this.chunkSize(b);
+			var a = Math.pow(b, cs);
+			var d = nbv(a),
+			y = nbi(),
+			z = nbi(),
+			r = "";
+			this.divRemTo(d, y, z);
+			while (y.signum() > 0) {
+				r = (a + z.intValue()).toString(b).substr(1) + r;
+				y.divRemTo(d, y, z);
+			}
+			return z.intValue().toString(b) + r;
+		};
+
+		// (protected) convert from radix string
+		BigInteger.prototype.fromRadix = function (s, b) {
+			this.fromInt(0);
+			if (b == null)
+				b = 10;
+			var cs = this.chunkSize(b);
+			var d = Math.pow(b, cs),
+			mi = false,
+			j = 0,
+			w = 0;
+			for (var i = 0; i < s.length; ++i) {
+				var x = intAt(s, i);
+				if (x < 0) {
+					if (s.charAt(i) == "-" && this.signum() == 0)
+						mi = true;
+					continue;
+				}
+				w = b * w + x;
+				if (++j >= cs) {
+					this.dMultiply(d);
+					this.dAddOffset(w, 0);
+					j = 0;
+					w = 0;
+				}
+			}
+			if (j > 0) {
+				this.dMultiply(Math.pow(b, j));
+				this.dAddOffset(w, 0);
+			}
+			if (mi)
+				BigInteger.ZERO.subTo(this, this);
+		};
+
+		// (protected) alternate constructor
+		BigInteger.prototype.fromNumber = function (a, b, c) {
+			if ("number" == typeof b) {
+				// new BigInteger(int,int,RNG)
+				if (a < 2)
+					this.fromInt(1);
+				else {
+					this.fromNumber(a, c);
+					if (!this.testBit(a - 1)) // force MSB set
+						this.bitwiseTo(BigInteger.ONE.shiftLeft(a - 1), op_or, this);
+					if (this.isEven())
+						this.dAddOffset(1, 0); // force odd
+					while (!this.isProbablePrime(b)) {
+						this.dAddOffset(2, 0);
+						if (this.bitLength() > a)
+							this.subTo(BigInteger.ONE.shiftLeft(a - 1), this);
+					}
+				}
+			} else {
+				// new BigInteger(int,RNG)
+				var x = new Array(),
+				t = a & 7;
+				x.length = (a >> 3) + 1;
+				b.nextBytes(x);
+				if (t > 0)
+					x[0] &= ((1 << t) - 1);
+				else
+					x[0] = 0;
+				this.fromString(x, 256);
+			}
+		};
+
+		// (protected) r = this op a (bitwise)
+		BigInteger.prototype.bitwiseTo = function (a, op, r) {
+			var i,
+			f,
+			m = Math.min(a.t, this.t);
+			for (i = 0; i < m; ++i)
+				r[i] = op(this[i], a[i]);
+			if (a.t < this.t) {
+				f = a.s & this.DM;
+				for (i = m; i < this.t; ++i)
+					r[i] = op(this[i], f);
+				r.t = this.t;
+			} else {
+				f = this.s & this.DM;
+				for (i = m; i < a.t; ++i)
+					r[i] = op(f, a[i]);
+				r.t = a.t;
+			}
+			r.s = op(this.s, a.s);
+			r.clamp();
+		};
+
+		// (protected) this op (1<<n)
+		BigInteger.prototype.changeBit = function (n, op) {
+			var r = BigInteger.ONE.shiftLeft(n);
+			this.bitwiseTo(r, op, r);
+			return r;
+		};
+
+		// (protected) r = this + a
+		BigInteger.prototype.addTo = function (a, r) {
+			var i = 0,
+			c = 0,
+			m = Math.min(a.t, this.t);
+			while (i < m) {
+				c += this[i] + a[i];
+				r[i++] = c & this.DM;
+				c >>= this.DB;
+			}
+			if (a.t < this.t) {
+				c += a.s;
+				while (i < this.t) {
+					c += this[i];
+					r[i++] = c & this.DM;
+					c >>= this.DB;
+				}
+				c += this.s;
+			} else {
+				c += this.s;
+				while (i < a.t) {
+					c += a[i];
+					r[i++] = c & this.DM;
+					c >>= this.DB;
+				}
+				c += a.s;
+			}
+			r.s = (c < 0) ? -1 : 0;
+			if (c > 0)
+				r[i++] = c;
+			else if (c < -1)
+				r[i++] = this.DV + c;
+			r.t = i;
+			r.clamp();
+		};
+
+		// (protected) this *= n, this >= 0, 1 < n < DV
+		BigInteger.prototype.dMultiply = function (n) {
+			this[this.t] = this.am(0, n - 1, this, 0, 0, this.t);
+			++this.t;
+			this.clamp();
+		};
+
+		// (protected) this += n << w words, this >= 0
+		BigInteger.prototype.dAddOffset = function (n, w) {
+			if (n == 0)
+				return;
+			while (this.t <= w)
+				this[this.t++] = 0;
+			this[w] += n;
+			while (this[w] >= this.DV) {
+				this[w] -= this.DV;
+				if (++w >= this.t)
+					this[this.t++] = 0;
+				++this[w];
+			}
+		};
+
+		// (protected) r = lower n words of "this * a", a.t <= n
+		// "this" should be the larger one if appropriate.
+		BigInteger.prototype.multiplyLowerTo = function (a, n, r) {
+			var i = Math.min(this.t + a.t, n);
+			r.s = 0; // assumes a,this >= 0
+			r.t = i;
+			while (i > 0)
+				r[--i] = 0;
+			var j;
+			for (j = r.t - this.t; i < j; ++i)
+				r[i + this.t] = this.am(0, a[i], r, i, 0, this.t);
+			for (j = Math.min(a.t, n); i < j; ++i)
+				this.am(0, a[i], r, i, 0, n - i);
+			r.clamp();
+		};
+
+		// (protected) r = "this * a" without lower n words, n > 0
+		// "this" should be the larger one if appropriate.
+		BigInteger.prototype.multiplyUpperTo = function (a, n, r) {
+			--n;
+			var i = r.t = this.t + a.t - n;
+			r.s = 0; // assumes a,this >= 0
+			while (--i >= 0)
+				r[i] = 0;
+			for (i = Math.max(n - this.t, 0); i < a.t; ++i)
+				r[this.t + i - n] = this.am(n - i, a[i], r, 0, 0, this.t + i - n);
+			r.clamp();
+			r.drShiftTo(1, r);
+		};
+
+		// (protected) this % n, n < 2^26
+		BigInteger.prototype.modInt = function (n) {
+			if (n <= 0)
+				return 0;
+			var d = this.DV % n,
+			r = (this.s < 0) ? n - 1 : 0;
+			if (this.t > 0)
+				if (d == 0)
+					r = this[0] % n;
+				else
+					for (var i = this.t - 1; i >= 0; --i)
+						r = (d * r + this[i]) % n;
+			return r;
+		};
+
+		// (protected) true if probably prime (HAC 4.24, Miller-Rabin)
+		BigInteger.prototype.millerRabin = function (t) {
+			var n1 = this.subtract(BigInteger.ONE);
+			var k = n1.getLowestSetBit();
+			if (k <= 0)
+				return false;
+			var r = n1.shiftRight(k);
+			t = (t + 1) >> 1;
+			if (t > lowprimes.length)
+				t = lowprimes.length;
+			var a = nbi();
+			for (var i = 0; i < t; ++i) {
+				//Pick bases at random, instead of starting at 2
+				a.fromInt(lowprimes[Math.floor(Math.random() * lowprimes.length)]);
+				var y = a.modPow(r, this);
+				if (y.compareTo(BigInteger.ONE) != 0 && y.compareTo(n1) != 0) {
+					var j = 1;
+					while (j++ < k && y.compareTo(n1) != 0) {
+						y = y.modPowInt(2, this);
+						if (y.compareTo(BigInteger.ONE) == 0)
+							return false;
+					}
+					if (y.compareTo(n1) != 0)
+						return false;
+				}
+			}
+			return true;
+		};
+
+		// (public)
+		BigInteger.prototype.clone = function () {
+			var r = nbi();
+			this.copyTo(r);
+			return r;
+		};
+
+		// (public) return value as integer
+		BigInteger.prototype.intValue = function () {
+			if (this.s < 0) {
+				if (this.t == 1)
+					return this[0] - this.DV;
+				else if (this.t == 0)
+					return -1;
+			} else if (this.t == 1)
+				return this[0];
+			else if (this.t == 0)
+				return 0;
+			// assumes 16 < DB < 32
+			return ((this[1] & ((1 << (32 - this.DB)) - 1)) << this.DB) | this[0];
+		};
+
+		// (public) return value as byte
+		BigInteger.prototype.byteValue = function () {
+			return (this.t == 0) ? this.s : (this[0] << 24) >> 24;
+		};
+
+		// (public) return value as short (assumes DB>=16)
+		BigInteger.prototype.shortValue = function () {
+			return (this.t == 0) ? this.s : (this[0] << 16) >> 16;
+		};
+
+		// (public) 0 if this == 0, 1 if this > 0
+		BigInteger.prototype.signum = function () {
+			if (this.s < 0)
+				return -1;
+			else if (this.t <= 0 || (this.t == 1 && this[0] <= 0))
+				return 0;
+			else
+				return 1;
+		};
+
+		// (public) convert to bigendian byte array
+		BigInteger.prototype.toByteArray = function () {
+			var i = this.t,
+			r = new Array();
+			r[0] = this.s;
+			var p = this.DB - (i * this.DB) % 8,
+			d,
+			k = 0;
+			if (i-- > 0) {
+				if (p < this.DB && (d = this[i] >> p) != (this.s & this.DM) >> p)
+					r[k++] = d | (this.s << (this.DB - p));
+				while (i >= 0) {
+					if (p < 8) {
+						d = (this[i] & ((1 << p) - 1)) << (8 - p);
+						d |= this[--i] >> (p += this.DB - 8);
+					} else {
+						d = (this[i] >> (p -= 8)) & 0xff;
+						if (p <= 0) {
+							p += this.DB;
+							--i;
+						}
+					}
+					if ((d & 0x80) != 0)
+						d |= -256;
+					if (k == 0 && (this.s & 0x80) != (d & 0x80))
+						++k;
+					if (k > 0 || d != this.s)
+						r[k++] = d;
+				}
+			}
+			return r;
+		};
+
+		BigInteger.prototype.equals = function (a) {
+			return (this.compareTo(a) == 0);
+		};
+		BigInteger.prototype.min = function (a) {
+			return (this.compareTo(a) < 0) ? this : a;
+		};
+		BigInteger.prototype.max = function (a) {
+			return (this.compareTo(a) > 0) ? this : a;
+		};
+
+		// (public) this & a
+		function op_and(x, y) {
+			return x & y;
+		}
+		BigInteger.prototype.and = function (a) {
+			var r = nbi();
+			this.bitwiseTo(a, op_and, r);
+			return r;
+		};
+
+		// (public) this | a
+		function op_or(x, y) {
+			return x | y;
+		}
+		BigInteger.prototype.or = function (a) {
+			var r = nbi();
+			this.bitwiseTo(a, op_or, r);
+			return r;
+		};
+
+		// (public) this ^ a
+		function op_xor(x, y) {
+			return x^y;
+		}
+		BigInteger.prototype.xor = function (a) {
+			var r = nbi();
+			this.bitwiseTo(a, op_xor, r);
+			return r;
+		};
+
+		// (public) this & ~a
+		function op_andnot(x, y) {
+			return x & ~y;
+		}
+		BigInteger.prototype.andNot = function (a) {
+			var r = nbi();
+			this.bitwiseTo(a, op_andnot, r);
+			return r;
+		};
+
+		// (public) ~this
+		BigInteger.prototype.not = function () {
+			var r = nbi();
+			for (var i = 0; i < this.t; ++i)
+				r[i] = this.DM & ~this[i];
+			r.t = this.t;
+			r.s = ~this.s;
+			return r;
+		};
+
+		// (public) this << n
+		BigInteger.prototype.shiftLeft = function (n) {
+			var r = nbi();
+			if (n < 0)
+				this.rShiftTo(-n, r);
+			else
+				this.lShiftTo(n, r);
+			return r;
+		};
+
+		// (public) this >> n
+		BigInteger.prototype.shiftRight = function (n) {
+			var r = nbi();
+			if (n < 0)
+				this.lShiftTo(-n, r);
+			else
+				this.rShiftTo(n, r);
+			return r;
+		};
+
+		// (public) returns index of lowest 1-bit (or -1 if none)
+		BigInteger.prototype.getLowestSetBit = function () {
+			for (var i = 0; i < this.t; ++i)
+				if (this[i] != 0)
+					return i * this.DB + lbit(this[i]);
+			if (this.s < 0)
+				return this.t * this.DB;
+			return -1;
+		};
+
+		// (public) return number of set bits
+		BigInteger.prototype.bitCount = function () {
+			var r = 0,
+			x = this.s & this.DM;
+			for (var i = 0; i < this.t; ++i)
+				r += cbit(this[i]^x);
+			return r;
+		};
+
+		// (public) true iff nth bit is set
+		BigInteger.prototype.testBit = function (n) {
+			var j = Math.floor(n / this.DB);
+			if (j >= this.t)
+				return (this.s != 0);
+			return ((this[j] & (1 << (n % this.DB))) != 0);
+		};
+
+		// (public) this | (1<<n)
+		BigInteger.prototype.setBit = function (n) {
+			return this.changeBit(n, op_or);
+		};
+		// (public) this & ~(1<<n)
+		BigInteger.prototype.clearBit = function (n) {
+			return this.changeBit(n, op_andnot);
+		};
+		// (public) this ^ (1<<n)
+		BigInteger.prototype.flipBit = function (n) {
+			return this.changeBit(n, op_xor);
+		};
+		// (public) this + a
+		BigInteger.prototype.add = function (a) {
+			var r = nbi();
+			this.addTo(a, r);
+			return r;
+		};
+		// (public) this - a
+		BigInteger.prototype.subtract = function (a) {
+			var r = nbi();
+			this.subTo(a, r);
+			return r;
+		};
+		// (public) this * a
+		BigInteger.prototype.multiply = function (a) {
+			var r = nbi();
+			this.multiplyTo(a, r);
+			return r;
+		};
+		// (public) this / a
+		BigInteger.prototype.divide = function (a) {
+			var r = nbi();
+			this.divRemTo(a, r, null);
+			return r;
+		};
+		// (public) this % a
+		BigInteger.prototype.remainder = function (a) {
+			var r = nbi();
+			this.divRemTo(a, null, r);
+			return r;
+		};
+		// (public) [this/a,this%a]
+		BigInteger.prototype.divideAndRemainder = function (a) {
+			var q = nbi(),
+			r = nbi();
+			this.divRemTo(a, q, r);
+			return new Array(q, r);
+		};
+
+		// (public) this^e % m (HAC 14.85)
+		BigInteger.prototype.modPow = function (e, m) {
+			var i = e.bitLength(),
+			k,
+			r = nbv(1),
+			z;
+			if (i <= 0)
+				return r;
+			else if (i < 18)
+				k = 1;
+			else if (i < 48)
+				k = 3;
+			else if (i < 144)
+				k = 4;
+			else if (i < 768)
+				k = 5;
+			else
+				k = 6;
+			if (i < 8)
+				z = new Classic(m);
+			else if (m.isEven())
+				z = new Barrett(m);
+			else
+				z = new Montgomery(m);
+
+			// precomputation
+			var g = new Array(),
+			n = 3,
+			k1 = k - 1,
+			km = (1 << k) - 1;
+			g[1] = z.convert(this);
+			if (k > 1) {
+				var g2 = nbi();
+				z.sqrTo(g[1], g2);
+				while (n <= km) {
+					g[n] = nbi();
+					z.mulTo(g2, g[n - 2], g[n]);
+					n += 2;
+				}
+			}
+
+			var j = e.t - 1,
+			w,
+			is1 = true,
+			r2 = nbi(),
+			t;
+			i = nbits(e[j]) - 1;
+			while (j >= 0) {
+				if (i >= k1)
+					w = (e[j] >> (i - k1)) & km;
+				else {
+					w = (e[j] & ((1 << (i + 1)) - 1)) << (k1 - i);
+					if (j > 0)
+						w |= e[j - 1] >> (this.DB + i - k1);
+				}
+
+				n = k;
+				while ((w & 1) == 0) {
+					w >>= 1;
+					--n;
+				}
+				if ((i -= n) < 0) {
+					i += this.DB;
+					--j;
+				}
+				if (is1) { // ret == 1, don't bother squaring or multiplying it
+					g[w].copyTo(r);
+					is1 = false;
+				} else {
+					while (n > 1) {
+						z.sqrTo(r, r2);
+						z.sqrTo(r2, r);
+						n -= 2;
+					}
+					if (n > 0)
+						z.sqrTo(r, r2);
+					else {
+						t = r;
+						r = r2;
+						r2 = t;
+					}
+					z.mulTo(r2, g[w], r);
+				}
+				while (j >= 0 && (e[j] & (1 << i)) == 0) {
+					z.sqrTo(r, r2);
+					t = r;
+					r = r2;
+					r2 = t;
+					if (--i < 0) {
+						i = this.DB - 1;
+						--j;
+					}
+				}
+			}
+			return z.revert(r);
+		};
+
+		// (public) 1/this % m (HAC 14.61)
+		BigInteger.prototype.modInverse = function (m) {
+			var ac = m.isEven();
+			if ((this.isEven() && ac) || m.signum() == 0)
+				return BigInteger.ZERO;
+			var u = m.clone(),
+			v = this.clone();
+			var a = nbv(1),
+			b = nbv(0),
+			c = nbv(0),
+			d = nbv(1);
+			while (u.signum() != 0) {
+				while (u.isEven()) {
+					u.rShiftTo(1, u);
+					if (ac) {
+						if (!a.isEven() || !b.isEven()) {
+							a.addTo(this, a);
+							b.subTo(m, b);
+						}
+						a.rShiftTo(1, a);
+					} else if (!b.isEven())
+						b.subTo(m, b);
+					b.rShiftTo(1, b);
+				}
+				while (v.isEven()) {
+					v.rShiftTo(1, v);
+					if (ac) {
+						if (!c.isEven() || !d.isEven()) {
+							c.addTo(this, c);
+							d.subTo(m, d);
+						}
+						c.rShiftTo(1, c);
+					} else if (!d.isEven())
+						d.subTo(m, d);
+					d.rShiftTo(1, d);
+				}
+				if (u.compareTo(v) >= 0) {
+					u.subTo(v, u);
+					if (ac)
+						a.subTo(c, a);
+					b.subTo(d, b);
+				} else {
+					v.subTo(u, v);
+					if (ac)
+						c.subTo(a, c);
+					d.subTo(b, d);
+				}
+			}
+			if (v.compareTo(BigInteger.ONE) != 0)
+				return BigInteger.ZERO;
+			if (d.compareTo(m) >= 0)
+				return d.subtract(m);
+			if (d.signum() < 0)
+				d.addTo(m, d);
+			else
+				return d;
+			if (d.signum() < 0)
+				return d.add(m);
+			else
+				return d;
+		};
+
+		// (public) this^e
+		BigInteger.prototype.pow = function (e) {
+			return this.exp(e, new NullExp());
+		};
+
+		// (public) gcd(this,a) (HAC 14.54)
+		BigInteger.prototype.gcd = function (a) {
+			var x = (this.s < 0) ? this.negate() : this.clone();
+			var y = (a.s < 0) ? a.negate() : a.clone();
+			if (x.compareTo(y) < 0) {
+				var t = x;
+				x = y;
+				y = t;
+			}
+			var i = x.getLowestSetBit(),
+			g = y.getLowestSetBit();
+			if (g < 0)
+				return x;
+			if (i < g)
+				g = i;
+			if (g > 0) {
+				x.rShiftTo(g, x);
+				y.rShiftTo(g, y);
+			}
+			while (x.signum() > 0) {
+				if ((i = x.getLowestSetBit()) > 0)
+					x.rShiftTo(i, x);
+				if ((i = y.getLowestSetBit()) > 0)
+					y.rShiftTo(i, y);
+				if (x.compareTo(y) >= 0) {
+					x.subTo(y, x);
+					x.rShiftTo(1, x);
+				} else {
+					y.subTo(x, y);
+					y.rShiftTo(1, y);
+				}
+			}
+			if (g > 0)
+				y.lShiftTo(g, y);
+			return y;
+		};
+
+		// (public) test primality with certainty >= 1-.5^t
+		BigInteger.prototype.isProbablePrime = function (t) {
+			var i,
+			x = this.abs();
+			if (x.t == 1 && x[0] <= lowprimes[lowprimes.length - 1]) {
+				for (i = 0; i < lowprimes.length; ++i)
+					if (x[0] == lowprimes[i])
+						return true;
+				return false;
+			}
+			if (x.isEven())
+				return false;
+			i = 1;
+			while (i < lowprimes.length) {
+				var m = lowprimes[i],
+				j = i + 1;
+				while (j < lowprimes.length && m < lplim)
+					m *= lowprimes[j++];
+				m = x.modInt(m);
+				while (i < j)
+					if (m % lowprimes[i++] == 0)
+						return false;
+			}
+			return x.millerRabin(t);
+		};
+
+		// JSBN-specific extension
+
+		// (public) this^2
+		BigInteger.prototype.square = function () {
+			var r = nbi();
+			this.squareTo(r);
+			return r;
+		};
+
+		// NOTE: BigInteger interfaces not implemented in jsbn:
+		// BigInteger(int signum, byte[] magnitude)
+		// double doubleValue()
+		// float floatValue()
+		// int hashCode()
+		// long longValue()
+		// static BigInteger valueOf(long val)
+
+
+		// Copyright Stephan Thomas (start) --- //
+		// https://raw.github.com/bitcoinjs/bitcoinjs-lib/07f9d55ccb6abd962efb6befdd37671f85ea4ff9/src/util.js
+		// BigInteger monkey patching
+		BigInteger.valueOf = nbv;
+
+		/**
+		 * Returns a byte array representation of the big integer.
+		 *
+		 * This returns the absolute of the contained value in big endian
+		 * form. A value of zero results in an empty array.
+		 */
+		BigInteger.prototype.toByteArrayUnsigned = function () {
+			var ba = this.abs().toByteArray();
+			if (ba.length) {
+				if (ba[0] == 0) {
+					ba = ba.slice(1);
+				}
+				return ba.map(function (v) {
+					return (v < 0) ? v + 256 : v;
+				});
+			} else {
+				// Empty array, nothing to do
+				return ba;
+			}
+		};
+
+		/**
+		 * Turns a byte array into a big integer.
+		 *
+		 * This function will interpret a byte array as a big integer in big
+		 * endian notation and ignore leading zeros.
+		 */
+		BigInteger.fromByteArrayUnsigned = function (ba) {
+			if (!ba.length) {
+				return ba.valueOf(0);
+			} else if (ba[0] & 0x80) {
+				// Prepend a zero so the BigInteger class doesn't mistake this
+				// for a negative integer.
+				return new BigInteger([0].concat(ba));
+			} else {
+				return new BigInteger(ba);
+			}
+		};
+
+		/**
+		 * Converts big integer to signed byte representation.
+		 *
+		 * The format for this value uses a the most significant bit as a sign
+		 * bit. If the most significant bit is already occupied by the
+		 * absolute value, an extra byte is prepended and the sign bit is set
+		 * there.
+		 *
+		 * Examples:
+		 *
+		 *      0 =>     0x00
+		 *      1 =>     0x01
+		 *     -1 =>     0x81
+		 *    127 =>     0x7f
+		 *   -127 =>     0xff
+		 *    128 =>   0x0080
+		 *   -128 =>   0x8080
+		 *    255 =>   0x00ff
+		 *   -255 =>   0x80ff
+		 *  16300 =>   0x3fac
+		 * -16300 =>   0xbfac
+		 *  62300 => 0x00f35c
+		 * -62300 => 0x80f35c
+		 */
+		BigInteger.prototype.toByteArraySigned = function () {
+			var val = this.abs().toByteArrayUnsigned();
+			var neg = this.compareTo(BigInteger.ZERO) < 0;
+
+			if (neg) {
+				if (val[0] & 0x80) {
+					val.unshift(0x80);
+				} else {
+					val[0] |= 0x80;
+				}
+			} else {
+				if (val[0] & 0x80) {
+					val.unshift(0x00);
+				}
+			}
+
+			return val;
+		};
+
+		/**
+		 * Parse a signed big integer byte representation.
+		 *
+		 * For details on the format please see BigInteger.toByteArraySigned.
+		 */
+		BigInteger.fromByteArraySigned = function (ba) {
+			// Check for negative value
+			if (ba[0] & 0x80) {
+				// Remove sign bit
+				ba[0] &= 0x7f;
+
+				return BigInteger.fromByteArrayUnsigned(ba).negate();
+			} else {
+				return BigInteger.fromByteArrayUnsigned(ba);
+			}
+		};
+		// Copyright Stephan Thomas (end) --- //
+
+
+		// ****** REDUCTION ******* //
+
+		// Modular reduction using "classic" algorithm
+		var Classic = globals.Classic = function Classic(m) {
+			this.m = m;
+		}
+		Classic.prototype.convert = function (x) {
+			if (x.s < 0 || x.compareTo(this.m) >= 0)
+				return x.mod(this.m);
+			else
+				return x;
+		};
+		Classic.prototype.revert = function (x) {
+			return x;
+		};
+		Classic.prototype.reduce = function (x) {
+			x.divRemTo(this.m, null, x);
+		};
+		Classic.prototype.mulTo = function (x, y, r) {
+			x.multiplyTo(y, r);
+			this.reduce(r);
+		};
+		Classic.prototype.sqrTo = function (x, r) {
+			x.squareTo(r);
+			this.reduce(r);
+		};
+
+		// Montgomery reduction
+		var Montgomery = globals.Montgomery = function Montgomery(m) {
+			this.m = m;
+			this.mp = m.invDigit();
+			this.mpl = this.mp & 0x7fff;
+			this.mph = this.mp >> 15;
+			this.um = (1 << (m.DB - 15)) - 1;
+			this.mt2 = 2 * m.t;
+		}
+		// xR mod m
+		Montgomery.prototype.convert = function (x) {
+			var r = nbi();
+			x.abs().dlShiftTo(this.m.t, r);
+			r.divRemTo(this.m, null, r);
+			if (x.s < 0 && r.compareTo(BigInteger.ZERO) > 0)
+				this.m.subTo(r, r);
+			return r;
+		}
+		// x/R mod m
+		Montgomery.prototype.revert = function (x) {
+			var r = nbi();
+			x.copyTo(r);
+			this.reduce(r);
+			return r;
+		};
+		// x = x/R mod m (HAC 14.32)
+		Montgomery.prototype.reduce = function (x) {
+			while (x.t <= this.mt2) // pad x so am has enough room later
+				x[x.t++] = 0;
+			for (var i = 0; i < this.m.t; ++i) {
+				// faster way of calculating u0 = x[i]*mp mod DV
+				var j = x[i] & 0x7fff;
+				var u0 = (j * this.mpl + (((j * this.mph + (x[i] >> 15) * this.mpl) & this.um) << 15)) & x.DM;
+				// use am to combine the multiply-shift-add into one call
+				j = i + this.m.t;
+				x[j] += this.m.am(0, u0, x, i, 0, this.m.t);
+				// propagate carry
+				while (x[j] >= x.DV) {
+					x[j] -= x.DV;
+					x[++j]++;
+				}
+			}
+			x.clamp();
+			x.drShiftTo(this.m.t, x);
+			if (x.compareTo(this.m) >= 0)
+				x.subTo(this.m, x);
+		};
+		// r = "xy/R mod m"; x,y != r
+		Montgomery.prototype.mulTo = function (x, y, r) {
+			x.multiplyTo(y, r);
+			this.reduce(r);
+		};
+		// r = "x^2/R mod m"; x != r
+		Montgomery.prototype.sqrTo = function (x, r) {
+			x.squareTo(r);
+			this.reduce(r);
+		};
+
+		// A "null" reducer
+		var NullExp = globals.NullExp = function NullExp() {}
+		NullExp.prototype.convert = function (x) {
+			return x;
+		};
+		NullExp.prototype.revert = function (x) {
+			return x;
+		};
+		NullExp.prototype.mulTo = function (x, y, r) {
+			x.multiplyTo(y, r);
+		};
+		NullExp.prototype.sqrTo = function (x, r) {
+			x.squareTo(r);
+		};
+
+		// Barrett modular reduction
+		var Barrett = globals.Barrett = function Barrett(m) {
+			// setup Barrett
+			this.r2 = nbi();
+			this.q3 = nbi();
+			BigInteger.ONE.dlShiftTo(2 * m.t, this.r2);
+			this.mu = this.r2.divide(m);
+			this.m = m;
+		}
+		Barrett.prototype.convert = function (x) {
+			if (x.s < 0 || x.t > 2 * this.m.t)
+				return x.mod(this.m);
+			else if (x.compareTo(this.m) < 0)
+				return x;
+			else {
+				var r = nbi();
+				x.copyTo(r);
+				this.reduce(r);
+				return r;
+			}
+		};
+		Barrett.prototype.revert = function (x) {
+			return x;
+		};
+		// x = x mod m (HAC 14.42)
+		Barrett.prototype.reduce = function (x) {
+			x.drShiftTo(this.m.t - 1, this.r2);
+			if (x.t > this.m.t + 1) {
+				x.t = this.m.t + 1;
+				x.clamp();
+			}
+			this.mu.multiplyUpperTo(this.r2, this.m.t + 1, this.q3);
+			this.m.multiplyLowerTo(this.q3, this.m.t + 1, this.r2);
+			while (x.compareTo(this.r2) < 0)
+				x.dAddOffset(1, this.m.t + 1);
+			x.subTo(this.r2, x);
+			while (x.compareTo(this.m) >= 0)
+				x.subTo(this.m, x);
+		};
+		// r = x*y mod m; x,y != r
+		Barrett.prototype.mulTo = function (x, y, r) {
+			x.multiplyTo(y, r);
+			this.reduce(r);
+		};
+		// r = x^2 mod m; x != r
+		Barrett.prototype.sqrTo = function (x, r) {
+			x.squareTo(r);
+			this.reduce(r);
+		};
+
+	})(globals);
+
+	/////////////////////////////////////
+	(function (Peercoin, BigInteger) {
+		Peercoin.Base58 = {
+			alphabet : "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
+			validRegex : /^[1-9A-HJ-NP-Za-km-z]+$/,
+			base : BigInteger.valueOf(58),
+
+			/**
+			 * Convert a byte array to a base58-encoded string.
+			 *
+			 * Written by Mike Hearn for PeercoinJ.
+			 *   Copyright (c) 2011 Google Inc.
+			 *
+			 * Ported to JavaScript by Stefan Thomas.
+			 */
+			encode : function (input) {
+				var bi = BigInteger.fromByteArrayUnsigned(input);
+				var chars = [];
+				while (bi.compareTo(B58.base) >= 0) {
+					var mod = bi.mod(B58.base);
+					chars.unshift(B58.alphabet[mod.intValue()]);
+					bi = bi.subtract(mod).divide(B58.base);
+				}
+				chars.unshift(B58.alphabet[bi.intValue()]);
+
+				// Convert leading zeros too.
+				for (var i = 0; i < input.length; i++) {
+					if (input[i] == 0x00) {
+						chars.unshift(B58.alphabet[0]);
+					} else
+						break;
+				}
+
+				return chars.join('');
+			},
+
+			/**
+			 * Convert a base58-encoded string to a byte array.
+			 *
+			 * Written by Mike Hearn for BitcoinJ.
+			 *   Copyright (c) 2011 Google Inc.
+			 *
+			 * Ported to JavaScript by Stefan Thomas.
+			 */
+			decode : function (input) {
+				var bi = BigInteger.valueOf(0);
+				var leadingZerosNum = 0;
+				for (var i = input.length - 1; i >= 0; i--) {
+					var alphaIndex = B58.alphabet.indexOf(input[i]);
+					if (alphaIndex < 0) {
+						throw "Invalid character";
+					}
+					bi = bi.add(BigInteger.valueOf(alphaIndex)
+							.multiply(B58.base.pow(input.length - 1 - i)));
+
+					// This counts leading zero bytes
+					if (input[i] == "1")
+						leadingZerosNum++;
+					else
+						leadingZerosNum = 0;
+				}
+				var bytes = bi.toByteArrayUnsigned();
+
+				// Add leading zeros
+				while (leadingZerosNum-- > 0)
+					bytes.unshift(0);
+
+				return bytes;
+			}
+		};
+
+		var B58 = Peercoin.Base58;
+
+	})(Peercoin, globals.BigInteger);
+
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	// add Crypto stuff
+	////////////////////////////////////////////////////////////////////////////////////////////
+	(function (globals) {
+
+		if (typeof Crypto == "undefined" || !Crypto.util) {
+			(function () {
+
+				var base64map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+				// Global Crypto object
+				var Crypto = globals.Crypto = {};
+
+				// Crypto utilities
+				var util = Crypto.util = {
+
+					// Bit-wise rotate left
+					rotl : function (n, b) {
+						return (n << b) | (n >>> (32 - b));
+					},
+
+					// Bit-wise rotate right
+					rotr : function (n, b) {
+						return (n << (32 - b)) | (n >>> b);
+					},
+
+					// Swap big-endian to little-endian and vice versa
+					endian : function (n) {
+
+						// If number given, swap endian
+						if (n.constructor == Number) {
+							return util.rotl(n, 8) & 0x00FF00FF |
+							util.rotl(n, 24) & 0xFF00FF00;
+						}
+
+						// Else, assume array and swap all items
+						for (var i = 0; i < n.length; i++)
+							n[i] = util.endian(n[i]);
+						return n;
+
+					},
+
+					// Generate an array of any length of random bytes
+					randomBytes : function (n) {
+						for (var bytes = []; n > 0; n--)
+							bytes.push(Math.floor(Math.random() * 256));
+						return bytes;
+					},
+
+					// Convert a byte array to big-endian 32-bit words
+					bytesToWords : function (bytes) {
+						for (var words = [], i = 0, b = 0; i < bytes.length; i++, b += 8)
+							words[b >>> 5] |= (bytes[i] & 0xFF) << (24 - b % 32);
+						return words;
+					},
+
+					// Convert big-endian 32-bit words to a byte array
+					wordsToBytes : function (words) {
+						for (var bytes = [], b = 0; b < words.length * 32; b += 8)
+							bytes.push((words[b >>> 5] >>> (24 - b % 32)) & 0xFF);
+						return bytes;
+					},
+
+					// Convert a byte array to a hex string
+					bytesToHex : function (bytes) {
+						for (var hex = [], i = 0; i < bytes.length; i++) {
+							hex.push((bytes[i] >>> 4).toString(16));
+							hex.push((bytes[i] & 0xF).toString(16));
+						}
+						return hex.join("");
+					},
+
+					// Convert a hex string to a byte array
+					hexToBytes : function (hex) {
+						for (var bytes = [], c = 0; c < hex.length; c += 2)
+							bytes.push(parseInt(hex.substr(c, 2), 16));
+						return bytes;
+					},
+
+					// Convert a byte array to a base-64 string
+					bytesToBase64 : function (bytes) {
+						for (var base64 = [], i = 0; i < bytes.length; i += 3) {
+							var triplet = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+							for (var j = 0; j < 4; j++) {
+								if (i * 8 + j * 6 <= bytes.length * 8)
+									base64.push(base64map.charAt((triplet >>> 6 * (3 - j)) & 0x3F));
+								else
+									base64.push("=");
+							}
+						}
+
+						return base64.join("");
+					},
+
+					// Convert a base-64 string to a byte array
+					base64ToBytes : function (base64) {
+						// Remove non-base-64 characters
+						base64 = base64.replace(/[^A-Z0-9+\/]/ig, "");
+
+						for (var bytes = [], i = 0, imod4 = 0; i < base64.length; imod4 = ++i % 4) {
+							if (imod4 == 0)
+								continue;
+							bytes.push(((base64map.indexOf(base64.charAt(i - 1)) & (Math.pow(2, -2 * imod4 + 8) - 1)) << (imod4 * 2)) |
+								(base64map.indexOf(base64.charAt(i)) >>> (6 - imod4 * 2)));
+						}
+
+						return bytes;
+					}
+
+				};
+
+				// Crypto character encodings
+				var charenc = Crypto.charenc = {};
+
+				// UTF-8 encoding
+				var UTF8 = charenc.UTF8 = {
+
+					// Convert a string to a byte array
+					stringToBytes : function (str) {
+						return Binary.stringToBytes(unescape(encodeURIComponent(str)));
+					},
+
+					// Convert a byte array to a string
+					bytesToString : function (bytes) {
+						return decodeURIComponent(escape(Binary.bytesToString(bytes)));
+					}
+
+				};
+
+				// Binary encoding
+				var Binary = charenc.Binary = {
+
+					// Convert a string to a byte array
+					stringToBytes : function (str) {
+						for (var bytes = [], i = 0; i < str.length; i++)
+							bytes.push(str.charCodeAt(i) & 0xFF);
+						return bytes;
+					},
+
+					// Convert a byte array to a string
+					bytesToString : function (bytes) {
+						for (var str = [], i = 0; i < bytes.length; i++)
+							str.push(String.fromCharCode(bytes[i]));
+						return str.join("");
+					}
+
+				};
+
+			})();
+			////////////////////////
+
+			(function (globalsCrypto) {
+
+				// Shortcuts
+				var C = globalsCrypto,
+				util = C.util,
+				charenc = C.charenc,
+				UTF8 = charenc.UTF8,
+				Binary = charenc.Binary;
+
+				// Convert a byte array to little-endian 32-bit words
+				util.bytesToLWords = function (bytes) {
+
+					var output = Array(bytes.length >> 2);
+					for (var i = 0; i < output.length; i++)
+						output[i] = 0;
+					for (var i = 0; i < bytes.length * 8; i += 8)
+						output[i >> 5] |= (bytes[i / 8] & 0xFF) << (i % 32);
+					return output;
+				};
+
+				// Convert little-endian 32-bit words to a byte array
+				util.lWordsToBytes = function (words) {
+					var output = [];
+					for (var i = 0; i < words.length * 32; i += 8)
+						output.push((words[i >> 5] >>> (i % 32)) & 0xff);
+					return output;
+				};
+
+				// Public API
+				var RIPEMD160 = C.RIPEMD160 = function (message, options) {
+					var digestbytes = util.lWordsToBytes(RIPEMD160._rmd160(message));
+					return options && options.asBytes ? digestbytes :
+					options && options.asString ? Binary.bytesToString(digestbytes) :
+					util.bytesToHex(digestbytes);
+				};
+
+				// The core
+				RIPEMD160._rmd160 = function (message) {
+					// Convert to byte array
+					if (message.constructor == String)
+						message = UTF8.stringToBytes(message);
+
+					var x = util.bytesToLWords(message),
+					len = message.length * 8;
+
+					/* append padding */
+					x[len >> 5] |= 0x80 << (len % 32);
+					x[(((len + 64) >>> 9) << 4) + 14] = len;
+
+					var h0 = 0x67452301;
+					var h1 = 0xefcdab89;
+					var h2 = 0x98badcfe;
+					var h3 = 0x10325476;
+					var h4 = 0xc3d2e1f0;
+
+					for (var i = 0; i < x.length; i += 16) {
+						var T;
+						var A1 = h0,
+						B1 = h1,
+						C1 = h2,
+						D1 = h3,
+						E1 = h4;
+						var A2 = h0,
+						B2 = h1,
+						C2 = h2,
+						D2 = h3,
+						E2 = h4;
+						for (var j = 0; j <= 79; ++j) {
+							T = safe_add(A1, rmd160_f(j, B1, C1, D1));
+							T = safe_add(T, x[i + rmd160_r1[j]]);
+							T = safe_add(T, rmd160_K1(j));
+							T = safe_add(bit_rol(T, rmd160_s1[j]), E1);
+							A1 = E1;
+							E1 = D1;
+							D1 = bit_rol(C1, 10);
+							C1 = B1;
+							B1 = T;
+							T = safe_add(A2, rmd160_f(79 - j, B2, C2, D2));
+							T = safe_add(T, x[i + rmd160_r2[j]]);
+							T = safe_add(T, rmd160_K2(j));
+							T = safe_add(bit_rol(T, rmd160_s2[j]), E2);
+							A2 = E2;
+							E2 = D2;
+							D2 = bit_rol(C2, 10);
+							C2 = B2;
+							B2 = T;
+						}
+						T = safe_add(h1, safe_add(C1, D2));
+						h1 = safe_add(h2, safe_add(D1, E2));
+						h2 = safe_add(h3, safe_add(E1, A2));
+						h3 = safe_add(h4, safe_add(A1, B2));
+						h4 = safe_add(h0, safe_add(B1, C2));
+						h0 = T;
+					}
+					return [h0, h1, h2, h3, h4];
+				}
+
+				function rmd160_f(j, x, y, z) {
+					return (0 <= j && j <= 15) ? (x^y^z) :
+					(16 <= j && j <= 31) ? (x & y) | (~x & z) :
+					(32 <= j && j <= 47) ? (x | ~y)^z :
+					(48 <= j && j <= 63) ? (x & z) | (y & ~z) :
+					(64 <= j && j <= 79) ? x^(y | ~z) :
+					"rmd160_f: j out of range";
+				}
+				function rmd160_K1(j) {
+					return (0 <= j && j <= 15) ? 0x00000000 :
+					(16 <= j && j <= 31) ? 0x5a827999 :
+					(32 <= j && j <= 47) ? 0x6ed9eba1 :
+					(48 <= j && j <= 63) ? 0x8f1bbcdc :
+					(64 <= j && j <= 79) ? 0xa953fd4e :
+					"rmd160_K1: j out of range";
+				}
+				function rmd160_K2(j) {
+					return (0 <= j && j <= 15) ? 0x50a28be6 :
+					(16 <= j && j <= 31) ? 0x5c4dd124 :
+					(32 <= j && j <= 47) ? 0x6d703ef3 :
+					(48 <= j && j <= 63) ? 0x7a6d76e9 :
+					(64 <= j && j <= 79) ? 0x00000000 :
+					"rmd160_K2: j out of range";
+				}
+				var rmd160_r1 = [
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+					7, 4, 13, 1, 10, 6, 15, 3, 12, 0, 9, 5, 2, 14, 11, 8,
+					3, 10, 14, 4, 9, 15, 8, 1, 2, 7, 0, 6, 13, 11, 5, 12,
+					1, 9, 11, 10, 0, 8, 12, 4, 13, 3, 7, 15, 14, 5, 6, 2,
+					4, 0, 5, 9, 7, 12, 2, 10, 14, 1, 3, 8, 11, 6, 15, 13
+				];
+				var rmd160_r2 = [
+					5, 14, 7, 0, 9, 2, 11, 4, 13, 6, 15, 8, 1, 10, 3, 12,
+					6, 11, 3, 7, 0, 13, 5, 10, 14, 15, 8, 12, 4, 9, 1, 2,
+					15, 5, 1, 3, 7, 14, 6, 9, 11, 8, 12, 2, 10, 0, 4, 13,
+					8, 6, 4, 1, 3, 11, 15, 0, 5, 12, 2, 13, 9, 7, 10, 14,
+					12, 15, 10, 4, 1, 5, 8, 7, 6, 2, 13, 14, 0, 3, 9, 11
+				];
+				var rmd160_s1 = [
+					11, 14, 15, 12, 5, 8, 7, 9, 11, 13, 14, 15, 6, 7, 9, 8,
+					7, 6, 8, 13, 11, 9, 7, 15, 7, 12, 15, 9, 11, 7, 13, 12,
+					11, 13, 6, 7, 14, 9, 13, 15, 14, 8, 13, 6, 5, 12, 7, 5,
+					11, 12, 14, 15, 14, 15, 9, 8, 9, 14, 5, 6, 8, 6, 5, 12,
+					9, 15, 5, 11, 6, 8, 13, 12, 5, 12, 13, 14, 11, 8, 5, 6
+				];
+				var rmd160_s2 = [
+					8, 9, 9, 11, 13, 15, 15, 5, 7, 7, 8, 11, 14, 14, 12, 6,
+					9, 13, 15, 7, 12, 8, 9, 11, 7, 7, 12, 7, 6, 15, 13, 11,
+					9, 7, 15, 11, 8, 6, 6, 14, 12, 13, 5, 14, 13, 13, 7, 5,
+					15, 5, 8, 11, 14, 14, 6, 14, 6, 9, 12, 9, 12, 5, 15, 8,
+					8, 5, 12, 9, 12, 5, 14, 6, 8, 13, 6, 5, 15, 13, 11, 11
+				];
+
+				/*
+				 * Add integers, wrapping at 2^32. This uses 16-bit operations internally
+				 * to work around bugs in some JS interpreters.
+				 */
+				function safe_add(x, y) {
+					var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+					var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+					return (msw << 16) | (lsw & 0xFFFF);
+				}
+
+				/*
+				 * Bitwise rotate a 32-bit number to the left.
+				 */
+				function bit_rol(num, cnt) {
+					return (num << cnt) | (num >>> (32 - cnt));
+				}
+
+			})(globals.Crypto);
+
+			/////////////////////////////////////////////////////////////////////////////////
+
+			(function (globalsCrypto) {
+
+				// Shortcuts
+				var C = globalsCrypto,
+				util = C.util,
+				charenc = C.charenc,
+				UTF8 = charenc.UTF8,
+				Binary = charenc.Binary;
+
+				// Constants
+				var K = [0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5,
+					0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5,
+					0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3,
+					0x72BE5D74, 0x80DEB1FE, 0x9BDC06A7, 0xC19BF174,
+					0xE49B69C1, 0xEFBE4786, 0x0FC19DC6, 0x240CA1CC,
+					0x2DE92C6F, 0x4A7484AA, 0x5CB0A9DC, 0x76F988DA,
+					0x983E5152, 0xA831C66D, 0xB00327C8, 0xBF597FC7,
+					0xC6E00BF3, 0xD5A79147, 0x06CA6351, 0x14292967,
+					0x27B70A85, 0x2E1B2138, 0x4D2C6DFC, 0x53380D13,
+					0x650A7354, 0x766A0ABB, 0x81C2C92E, 0x92722C85,
+					0xA2BFE8A1, 0xA81A664B, 0xC24B8B70, 0xC76C51A3,
+					0xD192E819, 0xD6990624, 0xF40E3585, 0x106AA070,
+					0x19A4C116, 0x1E376C08, 0x2748774C, 0x34B0BCB5,
+					0x391C0CB3, 0x4ED8AA4A, 0x5B9CCA4F, 0x682E6FF3,
+					0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208,
+					0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2];
+
+				// Public API
+				var SHA256 = C.SHA256 = function (message, options) {
+					var digestbytes = util.wordsToBytes(SHA256._sha256(message));
+					return options && options.asBytes ? digestbytes :
+					options && options.asString ? Binary.bytesToString(digestbytes) :
+					util.bytesToHex(digestbytes);
+				};
+
+				// The core
+				SHA256._sha256 = function (message) {
+
+					// Convert to byte array
+					if (message.constructor == String)
+						message = UTF8.stringToBytes(message);
+					/* else, assume byte array already */
+
+					var m = util.bytesToWords(message),
+					l = message.length * 8,
+					H = [0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
+						0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19],
+					w = [],
+					a,
+					b,
+					c,
+					d,
+					e,
+					f,
+					g,
+					h,
+					i,
+					j,
+					t1,
+					t2;
+
+					// Padding
+					m[l >> 5] |= 0x80 << (24 - l % 32);
+					m[((l + 64 >> 9) << 4) + 15] = l;
+
+					for (var i = 0; i < m.length; i += 16) {
+
+						a = H[0];
+						b = H[1];
+						c = H[2];
+						d = H[3];
+						e = H[4];
+						f = H[5];
+						g = H[6];
+						h = H[7];
+
+						for (var j = 0; j < 64; j++) {
+
+							if (j < 16)
+								w[j] = m[j + i];
+							else {
+
+								var gamma0x = w[j - 15],
+								gamma1x = w[j - 2],
+								gamma0 = ((gamma0x << 25) | (gamma0x >>> 7))^
+								((gamma0x << 14) | (gamma0x >>> 18))^
+								(gamma0x >>> 3),
+								gamma1 = ((gamma1x << 15) | (gamma1x >>> 17))^
+								((gamma1x << 13) | (gamma1x >>> 19))^
+								(gamma1x >>> 10);
+
+								w[j] = gamma0 + (w[j - 7] >>> 0) +
+									gamma1 + (w[j - 16] >>> 0);
+
+							}
+
+							var ch = e & f^~e & g,
+							maj = a & b^a & c^b & c,
+							sigma0 = ((a << 30) | (a >>> 2))^
+							((a << 19) | (a >>> 13))^
+							((a << 10) | (a >>> 22)),
+							sigma1 = ((e << 26) | (e >>> 6))^
+							((e << 21) | (e >>> 11))^
+							((e << 7) | (e >>> 25));
+
+							t1 = (h >>> 0) + sigma1 + ch + (K[j]) + (w[j] >>> 0);
+							t2 = sigma0 + maj;
+
+							h = g;
+							g = f;
+							f = e;
+							e = (d + t1) >>> 0;
+							d = c;
+							c = b;
+							b = a;
+							a = (t1 + t2) >>> 0;
+
+						}
+
+						H[0] += a;
+						H[1] += b;
+						H[2] += c;
+						H[3] += d;
+						H[4] += e;
+						H[5] += f;
+						H[6] += g;
+						H[7] += h;
+
+					}
+
+					return H;
+
+				};
+
+				// Package private blocksize
+				SHA256._blocksize = 16;
+
+				SHA256._digestsize = 32;
+
+			})(globals.Crypto);
+			/////////////
+		}
+
+	})(globals);
+
+	//////////////////extends with Address////////////////////////////////////////////////////////////
+
+	//https://raw.github.com/bitcoinjs/bitcoinjs-lib/09e8c6e184d6501a0c2c59d73ca64db5c0d3eb95/src/address.js
+	Peercoin.Address = function (bytes) {
+		if ("string" == typeof bytes) {
+			bytes = Peercoin.Address.decodeString(bytes);
+		}
+		this.hash = bytes;
+		this.version = Peercoin.Address.networkVersion;
+	};
+
+	Peercoin.Address.networkVersion = 0x37; // Peercoin mainnet
+
+	/**
+	 * Serialize this object as a standard Peercoin address.
+	 *
+	 * Returns the address as a base58-encoded string in the standardized format.
+	 */
+	Peercoin.Address.prototype.toString = function () {
+		// Get a copy of the hash
+		var hash = this.hash.slice(0);
+
+		// Version
+		hash.unshift(this.version);
+		var checksum = Crypto.SHA256(Crypto.SHA256(hash, {
+					asBytes : true
+				}), {
+				asBytes : true
+			});
+		var bytes = hash.concat(checksum.slice(0, 4));
+		return Peercoin.Base58.encode(bytes);
+	};
+
+	Peercoin.Address.prototype.getHashBase64 = function () {
+		return Crypto.util.bytesToBase64(this.hash);
+	};
+
+	/**
+	 * Parse a Peercoin address contained in a string.
+	 */
+	Peercoin.Address.decodeString = function (string) {
+		var bytes = Peercoin.Base58.decode(string);
+		var hash = bytes.slice(0, 21);
+		var checksum = Crypto.SHA256(Crypto.SHA256(hash, {
+					asBytes : true
+				}), {
+				asBytes : true
+			});
+
+		if (checksum[0] != bytes[21] ||
+			checksum[1] != bytes[22] ||
+			checksum[2] != bytes[23] ||
+			checksum[3] != bytes[24]) {
+			throw "Checksum validation failed!";
+		}
+
+		var version = hash.shift();
+
+		if (version != Peercoin.Address.networkVersion) {
+			throw "Version " + version + " not supported!";
+		}
+
+		return hash;
+	};
+
+	// Peercoin utility functions
+	Peercoin.Util = {
+		/**
+		 * Cross-browser compatibility version of Array.isArray.
+		 */
+		isArray : Array.isArray || function (o) {
+			return Object.prototype.toString.call(o) === '[object Array]';
+		},
+		/**
+		 * Create an array of a certain length filled with a specific value.
+		 */
+		makeFilledArray : function (len, val) {
+			var array = [];
+			var i = 0;
+			while (i < len) {
+				array[i++] = val;
+			}
+			return array;
+		},
+		/**
+		 * Turn an integer into a "var_int".
+		 *
+		 * "var_int" is a variable length integer used by Peercoin's binary format.
+		 *
+		 * Returns a byte array.
+		 */
+		numToVarInt : function (i) {
+			if (i < 0xfd) {
+				// unsigned char
+				return [i];
+			} else if (i <= 1 << 16) {
+				// unsigned short (LE)
+				return [0xfd, i >>> 8, i & 255];
+			} else if (i <= 1 << 32) {
+				// unsigned int (LE)
+				return [0xfe].concat(Crypto.util.wordsToBytes([i]));
+			} else {
+				// unsigned long long (LE)
+				return [0xff].concat(Crypto.util.wordsToBytes([i >>> 32, i]));
+			}
+		},
+		/**
+		 * Parse a Peercoin value byte array, returning a BigInteger.
+		 */
+		valueToBigInt : function (valueBuffer) {
+			if (valueBuffer instanceof BigInteger)
+				return valueBuffer;
+
+			// Prepend zero byte to prevent interpretation as negative integer
+			return BigInteger.fromByteArrayUnsigned(valueBuffer);
+		},
+		/**
+		 * Format a Peercoin value as a string.
+		 *
+		 * Takes a BigInteger or byte-array and returns that amount of Peercoins in a
+		 * nice standard formatting.
+		 *
+		 * Examples:
+		 * 12.3555
+		 * 0.1234
+		 * 900.99998888
+		 * 34.00
+		 */
+		formatValue : function (valueBuffer) {
+			var value = this.valueToBigInt(valueBuffer).toString();
+			var integerPart = value.length > 8 ? value.substr(0, value.length - 8) : '0';
+			var decimalPart = value.length > 8 ? value.substr(value.length - 8) : value;
+			while (decimalPart.length < 8)
+				decimalPart = "0" + decimalPart;
+			decimalPart = decimalPart.replace(/0*$/, '');
+			while (decimalPart.length < 2)
+				decimalPart += "0";
+			return integerPart + "." + decimalPart;
+		},
+		/**
+		 * Parse a floating point string as a Peercoin value.
+		 *
+		 * Keep in mind that parsing user input is messy. You should always display
+		 * the parsed value back to the user to make sure we understood his input
+		 * correctly.
+		 */
+		parseValue : function (valueString) {
+			// TODO: Detect other number formats (e.g. comma as decimal separator)
+			var valueComp = valueString.split('.');
+			var integralPart = valueComp[0];
+			var fractionalPart = valueComp[1] || "0";
+			while (fractionalPart.length < 8)
+				fractionalPart += "0";
+			fractionalPart = fractionalPart.replace(/^0+/g, '');
+			var value = BigInteger.valueOf(parseInt(integralPart));
+			value = value.multiply(BigInteger.valueOf(100000000));
+			value = value.add(BigInteger.valueOf(parseInt(fractionalPart)));
+			return value;
+		},
+		/**
+		 * Calculate RIPEMD160(SHA256(data)).
+		 *
+		 * Takes an arbitrary byte array as inputs and returns the hash as a byte
+		 * array.
+		 */
+		sha256ripe160 : function (data) {
+			return Crypto.RIPEMD160(Crypto.SHA256(data, {
+					asBytes : true
+				}), {
+				asBytes : true
+			});
+		},
+		// double sha256
+		dsha256 : function (data) {
+			return Crypto.SHA256(Crypto.SHA256(data, {
+					asBytes : true
+				}), {
+				asBytes : true
+			});
+		}
+	};
+	//////////////////////////////////////////
+	(function (globals) {
+
+		var day = 60 * 60 * 24;
+		var stakeMaxAge = 90 * day;
+		var coin = 1000000;
+		var coinDay = coin * day;
+
+		function DiffToTarget(diff) {
+      //floor it
+      diff = (diff |0);
+			var mantissa = 0x0000ffff / diff;
+			var exp = 1;
+			var tmp = mantissa;
+			while (tmp >= 256.0) {
+				tmp /= 256.0;
+				exp++;
+			}
+			for (var i = 0; i < exp; i++) {
+				mantissa *= 256.0;
+			}
+			var bn = new BigInteger('' + (mantissa | 0), 10);
+			bn = bn.shiftLeft((26 - exp) * 8);
+			return bn;
+		}
+		function IncCompact(compact) {
+			var mantissa = compact & 0x007fffff;
+			var neg = compact & 0x00800000;
+			var exponent = (compact >> 24);
+
+			if (exponent <= 3) {
+				mantissa += (1 << (8 * (3 - exponent)));
+			} else {
+				mantissa++;
+			}
+
+			if (mantissa >= 0x00800000) {
+				mantissa >>= 8;
+				exponent++;
+			}
+			return (exponent << 24) | mantissa | neg;
+		}
+
+		// BigToCompact converts a whole number N to a compact representation using
+		// an unsigned 32-bit number.  The compact representation only provides 23 bits
+		// of precision, so values larger than (2^23 - 1) only encode the most
+		// significant digits of the number.  See CompactToBig for details.
+		function BigToCompact(n) {
+			// No need to do any work if it's zero.
+			if (n.equals(BigInteger.ZERO)) {
+				return 0;
+			}
+
+			// Since the base for the exponent is 256, the exponent can be treated
+			// as the number of bytes.  So, shift the number right or left
+			// accordingly.  This is equivalent to:
+			// mantissa = mantissa / 256^(exponent-3)
+			var mantissa; // uint32   var	mantissa = compact & 0x007fffff,
+
+			var exponent = n.toByteArrayUnsigned().length;
+			if (exponent <= 3) {
+				mantissa = n.and(new BigInteger('4294967295', 10)).intValue();
+				mantissa <<= 8 * (3 - exponent);
+			} else {
+				// Use a copy to avoid modifying the caller's original number.
+				var tn = new BigInteger(n.toString(), 10);
+				mantissa = tn.shiftRight(8 * (exponent - 3)).and(new BigInteger('4294967295', 10)).intValue();
+			}
+
+			// When the mantissa already has the sign bit set, the number is too
+			// large to fit into the available 23-bits, so divide the number by 256
+			// and increment the exponent accordingly.
+			if ((mantissa & 0x00800000) != 0) {
+				mantissa >>= 8;
+				exponent++;
+			}
+
+			// Pack the exponent, sign bit, and mantissa into an unsigned 32-bit
+			// int and return it.
+			var compact = ((exponent << 24) | mantissa);
+
+			if (n.compareTo(BigInteger.ZERO) < 0) {
+				compact |= 0x00800000
+			}
+			return compact;
+		}
+		function CompactToDiff(bits) {
+			var nShift = (bits >> 24) & 0xff;
+			var diff = 1.0 * (0x0000ffff) / (bits & 0x00ffffff);
+			for (var n = 0; nShift < 29; nShift++) {
+				diff *= 256.0;
+			}
+			for (var n = 0; nShift > 29; nShift--) {
+				diff /= 256.0;
+			}
+			return diff;
+		}
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		// CompactToBig converts a compact representation of a whole number N to an
+		// unsigned 32-bit number.  The representation is similar to IEEE754 floating
+		// point numbers.
+		//
+		// Like IEEE754 floating point, there are three basic components: the sign,
+		// the exponent, and the mantissa.  They are broken out as follows:
+		//
+		//	* the most significant 8 bits represent the unsigned base 256 exponent
+		// 	* bit 23 (the 24th bit) represents the sign bit
+		//	* the least significant 23 bits represent the mantissa
+		//
+		//	-------------------------------------------------
+		//	|   Exponent     |    Sign    |    Mantissa     |
+		//	-------------------------------------------------
+		//	| 8 bits [31-24] | 1 bit [23] | 23 bits [22-00] |
+		//	-------------------------------------------------
+		//
+		// The formula to calculate N is:
+		// 	N = (-1^sign) * mantissa * 256^(exponent-3)
+		//
+		// This compact form is only used in bitcoin to encode unsigned 256-bit numbers
+		// which represent difficulty targets, thus there really is not a need for a
+		// sign bit, but it is implemented here to stay consistent with bitcoind.
+		function CompactToBig(compact) {
+			// Extract the mantissa, sign bit, and exponent.
+			var mantissa = compact & 0x007fffff,
+			isNegative = (compact & 0x00800000) != 0,
+			exponent = (compact >> 24) >>> 0;
+
+			// Since the base for the exponent is 256, the exponent can be treated
+			// as the number of bytes to represent the full 256-bit number.  So,
+			// treat the exponent as the number of bytes and shift the mantissa
+			// right or left accordingly.  This is equivalent to:
+			// N = mantissa * 256^(exponent-3)
+			var bn;
+			if (exponent <= 3) {
+				mantissa >>= 8 * (3 - exponent)
+				bn = new BigInteger('' + mantissa, 10);
+			} else {
+				bn = new BigInteger('' + mantissa, 10);
+				bn = bn.shiftLeft(8 * (exponent - 3));
+			}
+			// Make it negative if the sign bit is set.
+			if (isNegative) {
+				bn = bn.multiply(new BigInteger('-1', 10));
+			}
+
+			return bn;
+		}
+
+		globals.Mint = {
+			DiffToTarget : DiffToTarget,
+			IncCompact : IncCompact,
+			BigToCompact : BigToCompact,
+			CompactToDiff : CompactToDiff,
+			CompactToBig : CompactToBig,
+			Coin : coin
+		};
+	}
+		(globals.Peercoin));
+	/////////////////////////////////////////
+	//kernel stuff
+	//////////////////////////////////////////
+	(function (globals) {
+
+		var day = 60 * 60 * 24;
+		var stakeMaxAge = 90 * day;
+		var coin = 1000000;
+		var coinDay = coin * day;
+		var minStakeMinAge = 2592000;
+
+		var Mint = globals.Mint;
+
+		var StakeKernelTemplate = globals.StakeKernelTemplate = function StakeKernelTemplate(tpl, manager) {
+
+			this.BlockFromTime = tpl.BlockFromTime; // int64
+			this.StakeModifier = tpl.StakeModifier; //uint64  => BigInteger!!!
+			this.PrevTxOffset = tpl.PrevTxOffset; //uint32
+			this.PrevTxTime = tpl.PrevTxTime; //int64
+			this.PrevTxOutIndex = tpl.PrevTxOutIndex; //uint32
+			this.PrevTxOutValue = tpl.PrevTxOutValue; //int64
+			this.UnspentOutputs = manager;
+			this.IsProtocolV03 = ('IsProtocolV03' in tpl) ? tpl.IsProtocolV03 : true; //bool
+			this.StakeMinAge = ('StakeMinAge' in tpl) ? tpl.StakeMinAge : minStakeMinAge; //int64
+			this.Bits = ('Bits' in tpl) ? tpl.Bits : this.setBitsWithDifficulty(parseFloat("10.33")); //uint32
+			//	this.TxTime = ('TxTime' in tpl) ? tpl.TxTime : (Date.now() / 1000 | 0); //int64
+			//	this.StartTime = this.TxTime;
+			//this.Stop = false;
+			this.Results = [];
+      this.maxResults = 7;
+		};
+ 
+		var UnspentOutputsToStake = globals.UnspentOutputsToStake = function UnspentOutputsToStake() {
+			this.arrStakeKernelTemplates = []; //
+			this.Bits = Mint.BigToCompact(Mint.DiffToTarget(parseFloat("15"))); //uint32
+			this.TxTime = (Date.now() / 1000 | 0); //int64
+			this.StartTime = this.TxTime;
+			this.MaxTime = this.TxTime + 3600;
+			this.Stop = false;
+			this.Results = [];
+      this.orgtpl=[];
+		};
+		UnspentOutputsToStake.prototype.add = function (tpldata) {
+			var that = this;
+			var addr = true;
+			that.orgtpl.some(function (el) {
+
+				if ((el.PrevTxOffset == tpldata.PrevTxOffset && el.PrevTxOutIndex == tpldata.PrevTxOutIndex &&
+						el.PrevTxOutValue == tpldata.PrevTxOutValue &&
+						el.StakeModifier.toString() == tpldata.StakeModifier.toString())) {
+					addr = false;
+					return true;
+				}
+			});
+
+			if (addr) {
+				that.orgtpl.push(tpldata);
+				this.arrStakeKernelTemplates.push(new StakeKernelTemplate(tpldata, that));
+			}
+		};
+		UnspentOutputsToStake.prototype.setBitsWithDifficulty = function (diff) {
+			var that = this;
+			that.Bits = Mint.BigToCompact(Mint.DiffToTarget(diff));
+			this.arrStakeKernelTemplates.forEach(function (element, index, array) {
+				element.Bits = that.Bits;
+			});
+		};
+		UnspentOutputsToStake.prototype.setStartStop = function (start, stop) {
+			var that = this;
+			that.TxTime = start;
+			that.StartTime = that.TxTime;
+			that.MaxTime = stop;
+		};
+
+		UnspentOutputsToStake.prototype.stop = function () {
+			this.Stop = true;
+			/*this.arrStakeKernelTemplates.forEach(function (element, index, array) {
+			element.Stop = true;
+			});*/
+		};
+
+		UnspentOutputsToStake.prototype.findStakeAt = function () {
+			var stakesfound = [],
+			that = this;
+      
+      //filter out oudated templates
+      var newarrKT=[];
+			this.arrStakeKernelTemplates.forEach(function (element, index, array) {   
+  
+        if ((element.UnspentOutputs.TxTime < element.PrevTxTime) || 
+            (element.BlockFromTime + element.StakeMinAge > element.UnspentOutputs.TxTime)) { // Transaction timestamp violation
+         // console.log("CheckStakeKernelHash() : nTime violation");// Min age requirement
+
+        }else{
+          newarrKT.push(element);
+        }     
+      });
+      this.arrStakeKernelTemplates=newarrKT;
+      
+			this.arrStakeKernelTemplates.forEach(function (element, index, array) {
+
+				//if (!that.Stop && element.Results.length < element.maxResults) {
+        if (!that.Stop) {
+					var resultobj = element.CheckStakeKernelHash(); //{succes: succes, hash, minTarget:minTarget}
+
+					if (resultobj.success) {
+						var comp = Mint.IncCompact(Mint.BigToCompact(resultobj.minTarget));
+						var diff = Mint.CompactToDiff(comp);
+						if (diff < 0.25) {
+							console.log('hmmm is this min diff ok: ' + diff);
+              //element.maxResults=1;
+              //debugger;
+             // console.log(element)
+						}
+             
+               var res = {
+                "foundstake" : that.TxTime,
+                "mindifficulty" : ((diff * 10) / 10)
+              };
+              element.Results.push(res);
+              stakesfound.push(res);             
+            
+					}
+				}
+			});
+
+			return stakesfound;
+		};
+		
+		UnspentOutputsToStake.prototype.findStake = function (mintcallback, progresscallback) {
+
+			var that = this;
+			that.Results = [];
+			var progressWhen = 0;
+
+			var loop = function () {
+				progressWhen++;
+				that.TxTime++;
+
+				var res = that.findStakeAt();
+				if (res.length > 0) {
+					mintcallback(res);
+					that.Results.push(res);
+				}
+				if (progressWhen > 321 / that.arrStakeKernelTemplates.length) {
+					progressWhen = 0;
+
+					progresscallback(((that.TxTime - that.StartTime) / (1.0 * (that.MaxTime - that.StartTime))), ((that.MaxTime - that.TxTime) / 60.0).toFixed(1) + ' min remaining');
+
+					if (!that.Stop && that.TxTime < that.MaxTime)
+						setTimeout(loop, 50);
+					else
+						progresscallback(100, 'done');
+				} else {
+					if (!that.Stop && that.TxTime < that.MaxTime)
+						setZeroTimeout(loop);
+					else
+						progresscallback(100, 'done');
+				}
+			};
+
+			if (that.arrStakeKernelTemplates.length > 0)
+				setZeroTimeout(loop);
+
+		};
+		////////////////////////////////////////////
+		StakeKernelTemplate.prototype.setBitsWithDifficulty = function (diff) {
+			this.Bits = Mint.BigToCompact(Mint.DiffToTarget(diff));
+		};
+
+		StakeKernelTemplate.prototype.arraysEqual = function arraysEqual(a, b) {
+			if (a === b)
+				return true;
+			if (a == null || b == null)
+				return false;
+			if (a.length != b.length)
+				return false;
+
+			for (var i = 0; i < a.length; ++i) {
+				if (a[i] !== b[i])
+					return false;
+			}
+			return true;
+		};
+
+		StakeKernelTemplate.prototype.CheckStakeKernelHash = function () {
+			var retobj = {};
+			retobj.success = false;
+			retobj.minTarget = 0;
+			retobj.hash = [];
+
+			if (this.UnspentOutputs.TxTime < this.PrevTxTime) { // Transaction timestamp violation
+				console.log("CheckStakeKernelHash() : nTime violation");
+        
+				return retobj;
+			}
+			if (this.BlockFromTime + this.StakeMinAge > this.UnspentOutputs.TxTime) { // Min age requirement
+				console.log("CheckStakeKernelHash() : min age violation");
+      
+				return retobj;
+			}
+			var bnTargetPerCoinDay = Mint.CompactToBig(this.Bits);
+			var timeReduction = (this.IsProtocolV03) ? timeReduction = this.StakeMinAge : 0;
+			var nTimeWeight = this.UnspentOutputs.TxTime - this.PrevTxTime; // int64
+			if (nTimeWeight > stakeMaxAge) {
+				nTimeWeight = stakeMaxAge;
+			}
+			nTimeWeight -= timeReduction;
+
+			var bnCoinDayWeight; // *big.Int
+			var valueTime = this.PrevTxOutValue * nTimeWeight;
+			if (valueTime > 0) { // no overflow
+				bnCoinDayWeight = new BigInteger('' + (Math.floor(valueTime / coinDay)), 10);
+			} else {
+				// overflow, calc w/ big.Int or return error?
+				// err = errors.New("valueTime overflow")
+				// return
+				var t1 = new BigInteger('' + (24 * 60 * 60), 10);
+				var t2 = new BigInteger('' + (coin), 10);
+				var t3 = new BigInteger('' + (this.PrevTxOutValue), 10);
+				var t4 = new BigInteger('' + (nTimeWeight), 10);
+				bnCoinDayWeight = ((t3.multiply(t4)).divide(t2)).divide(t1);
+			}
+			var targetInt = bnCoinDayWeight.multiply(bnTargetPerCoinDay); // new(big.Int).Mul(bnCoinDayWeight, bnTargetPerCoinDay)
+			var buf = [0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0];
+			var o = 0;
+
+			if (this.IsProtocolV03) { // v0.3 protocol
+				var d = this.StakeModifier.toByteArrayUnsigned().reverse();
+				for (var i = 0; i < 8; i++) {
+					buf[o] = d[i];
+					o++;
+				}
+			} else { // v0.2 protocol
+				var d = t.Bits;
+				for (var i = 0; i < 4; i++) {
+					buf[o] = (d & 0xff);
+					d >>= 8;
+					o++;
+				}
+			}
+			var data = [this.BlockFromTime, this.PrevTxOffset, this.PrevTxTime, this.PrevTxOutIndex, this.UnspentOutputs.TxTime];
+			for (var k = 0, arrayLength = data.length; k < arrayLength; k++) {
+				var d = data[k];
+				for (var i = 0; i < 4; i++) {
+					buf[o] = (d & 0xff);
+					d >>= 8;
+					o++;
+				}
+			}
+			var hashProofOfStake = (Crypto.SHA256(Crypto.SHA256(buf, {
+						asBytes : true
+					}), {
+					asBytes : true
+				})).reverse();
+
+			var hashProofOfStakeInt = BigInteger.fromByteArrayUnsigned(hashProofOfStake);
+			if (hashProofOfStakeInt.compareTo(targetInt) > 0) {
+				return retobj;
+			}
+
+			retobj.minTarget = hashProofOfStakeInt.divide(bnCoinDayWeight).subtract(BigInteger.ONE);
+			retobj.success = true;
+			retobj.hash = hashProofOfStake;
+			return retobj;
+		}
+
+	}
+		(globals.Peercoin));
+	/////////////////////////////////////////
+
+})(typeof exports === 'undefined' ? self : exports);
+    
+    
+    
+    
+    
+    
+    </script>   
+     
+
+    </body>
+</html>
