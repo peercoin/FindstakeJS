@@ -561,13 +561,15 @@ App.LastKnownBlocktime=1;
 			AppLogger.logProgress(0.01, 'retrieving data...');
       
       var txkey='to'+inputAdrtx+'_'+inputAdrtxn;
-  	  if (txkey) {      
-      //jasonp call
+      
+      if (txkey) {      
+        //jasonp call
         $.ajax({
-          url: "http://peercoinfindstakedata.divshot.io/json/"+ txkey +".json",
-          dataType: "jsonp",
-          jsonpCallback: txkey, /* Unique function name */
-          success: function(dbdata){
+            url: "https://peercoinfindstakedata.divshot.io/json/"+ txkey +".json",
+            dataType: "jsonp",
+            jsonpCallback: txkey /* Unique function name */
+        })
+        .done(function(dbdata) {
             App.Staketemplates = new Peercoin.UnspentOutputsToStake();
             
                  var tpldata = {
@@ -588,11 +590,18 @@ App.LastKnownBlocktime=1;
                   btnFs.style.display = 'block';   
 
                   setTimeout(function(){ btnFs.click(); }, 500);
-                 
-          }
-        });      
+        })
+        .fail(function() {
+          console.log('failed to get tx data ');
+          AppLogger.log('Data not found!');
+          AppLogger.logDone();
+        })
+        .always(function() {
           
-      }  
+        });
+         
+      }      
+       
 		}
 		return cancelDefaultAction(e);
 	});

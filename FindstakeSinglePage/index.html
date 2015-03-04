@@ -568,7 +568,7 @@ App.LastKnownBlocktime=1;
           if (txkey) {      
             //jasonp call
             $.ajax({
-                url: "http://peercoinfindstakedata.divshot.io/json/"+ txkey +".json",
+                url: "https://peercoinfindstakedata.divshot.io/json/"+ txkey +".json",
                 dataType: "jsonp",
                 jsonpCallback: txkey /* Unique function name */
             })
@@ -602,7 +602,7 @@ App.LastKnownBlocktime=1;
   	  if (peercoinaddress) {      
       //jasonp call
             $.ajax({
-              url: "http://hook.io/jointhepartypooper/hookGetFindstakeData?PeercoinAddress="+ peercoinaddress+"&run=true",
+              url: "https://hook.io/jointhepartypooper/hookGetFindstakeData?PeercoinAddress="+ peercoinaddress+"&run=true",
               accepts: { text: "*/*" },
               dataType: "jsonp",
               jsonpCallback: peercoinaddress /* Unique function name */
