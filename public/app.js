@@ -37,10 +37,10 @@ window.AppLogger.logMint = function (arr) {
   var mpfoundstakes={};
 	var tmp = '<a href="javascript:void(0)" class="list-group-item active"><span class="glyphicon glyphicon-camera"></span> Found stakes</a>';
 	AppLogger.arrmints.forEach(function (result) {
-    var keydups='fs'+moment.unix(result.foundstake).format('MM_DD_hh_mm');
+    var keydups='fs'+moment.unix(result.foundstake).format('MM_DD_HH_mm');
     if (mpfoundstakes[keydups] == null){
       mpfoundstakes[keydups]= true;
-      var t = moment.unix(result.foundstake).format('MMM Do, hh:mm');
+      var t = moment.unix(result.foundstake).format('MMM Do, H:mm');
       
         console.log('Mint@' + t + ' min diff: ' + result.mindifficulty.toFixed(1));
       tmp += '<a href="javascript:void(0)" class="list-group-item"><span class="glyphicon glyphicon-leaf"></span> ' + t +
