@@ -23,8 +23,7 @@ Dependencies:
  * a modern browser [also a fast pc would not hurt, the browser is doing all the hard work, not the webserver]
  * nodejs (http://nodejs.org/)
     level 
-      level down, 
-        requires node-gyp to compile c++ stuff (please read https://www.npmjs.com/package/node-gyp)
+      level down(LevelDOWN uses node-pre-gyp to support prebuilt binaries. For a list of supported prebuilt platform binaries see https://github.com/Level/leveldown/releases)
     
     
 How to install
