@@ -568,7 +568,7 @@ App.LastKnownBlocktime=1;
           if (txkey) {      
             //jasonp call
             $.ajax({
-                url: "https://peercoinfindstakedata.divshot.io/json/"+ txkey +".json",
+                url: "http://peercoinfindstakedata.divshot.io/json/"+ txkey +".json",
                 dataType: "jsonp",
                 jsonpCallback: txkey /* Unique function name */
             })
