@@ -539,7 +539,7 @@ App.LastKnownBlocktime=1;
         peercoinaddress = peeradr.toString();        
       }
       catch(err) {
-          Applogger.log('unknown Peercoin address');;
+          Applogger.log('unknown Peercoin address');
       }
 		  if (peercoinaddress.length==0) {
         return false;
@@ -561,82 +561,92 @@ App.LastKnownBlocktime=1;
 		}
 
 		if (peercoinaddress) {
-      App.Staketemplates = new Peercoin.UnspentOutputsToStake();      
-      var getstakedata=function (txkey, cb) {
-                 
-          //var txkey='to'+inputAdrtx+'_'+inputAdrtxn;
-          if (txkey) {      
-            //jasonp call
-            $.ajax({
-                url: "http://peercoinfindstakedata.divshot.io/json/"+ txkey +".json",
-                dataType: "jsonp",
-                jsonpCallback: txkey /* Unique function name */
-            })
-            .done(function(dbdata) {
-                     var tpldata = {
-                        BlockFromTime : dbdata.BlockFromTime,
-                        StakeModifier : BigInteger.fromByteArrayUnsigned(Crypto.util.hexToBytes(dbdata.StakeModifier16)),
-                        PrevTxOffset : dbdata.PrevTxOffset,
-                        PrevTxTime : dbdata.PrevTxTime,
-                        PrevTxOutIndex : dbdata.PrevTxOutIndex,
-                        PrevTxOutValue : dbdata.PrevTxOutValue 
-                      };
-                  
-                    App.Staketemplates.add(tpldata);  
-            })
-            .fail(function() {
-              console.log('failed to get tx data ');
-            })
-            .always(function() {
-              cb();
-            });
-             
-          }   
-        };      
-              
-            
-            
-			AppLogger.logProgress(0.01, 'retrieving data...');
+      App.Staketemplates = new Peercoin.UnspentOutputsToStake();  
       
-      var   prog=0.10;
+      var getstakedata = function (txkey, cb) {
+
+      	if (txkey) {
+      		//jasonp call
+      		$.ajax({
+      			url : "https://peercoinfindstakedata.divshot.io/json/" + txkey + ".json",
+      			timeout : 12000,
+      			dataType : "jsonp",
+      			jsonpCallback : txkey /* Unique function name */
+      		})
+      		.done(function (dbdata) {
+      			var tpldata = {
+      				BlockFromTime : dbdata.BlockFromTime,
+      				StakeModifier : BigInteger.fromByteArrayUnsigned(Crypto.util.hexToBytes(dbdata.StakeModifier16)),
+      				PrevTxOffset : dbdata.PrevTxOffset,
+      				PrevTxTime : dbdata.PrevTxTime,
+      				PrevTxOutIndex : dbdata.PrevTxOutIndex,
+      				PrevTxOutValue : dbdata.PrevTxOutValue
+      			};
+
+      			App.Staketemplates.add(tpldata);
+      		})
+      		.fail(function () {
+      			console.log('failed to get tx data ');
+      		})
+      		.always(function () {
+      			cb();
+      		});
+
+      	}
+      };
+      var   prog=0.10; 
+      var onreqdone = function (dbdata) {
+      	var ctotal = dbdata.txo.length,
+      	count = 0;
+              			
+      	if (ctotal<1)  return AppLogger.logProgress(0.999, 'No stake data found for this input to proceed!!!!!!');
+        
+        
+      	App.LastKnownDifficulty = parseFloat(dbdata.difficulty);
+        
+      	dbdata.txo.forEach(function (txout) {
+      		getstakedata(txout, function () {
+
+      			count++;
+      			prog = prog + 0.01;
+      			AppLogger.logProgress(prog, '');
+      			if (count == ctotal) {
+
+      				//'AppLogger.logProgress(0.11, '');
+      				AppLogger.log('Data successfully retrieved');
+      				AppLogger.log('Starting...');
+      				btn.style.display = 'none';
+      				btnFs.style.display = 'block';
+
+      				setTimeout(function () {
+      					btnFs.click();
+      				}, 500);
+      			}
+      		});
+      	});
+      };
+       var logfailure = function () {
+      	Applogger.log('failed to get Address data ');
+      };           
+			AppLogger.logProgress(0.01, 'retrieving data...');
+
+
   	  if (peercoinaddress) {      
       //jasonp call
+      
             $.ajax({
               url: "https://hook.io/jointhepartypooper/hookGetFindstakeData?PeercoinAddress="+ peercoinaddress+"&run=true",
               accepts: { text: "*/*" },
+              timeout: 12000,
               dataType: "jsonp",
               jsonpCallback: peercoinaddress /* Unique function name */
             })
-            .done(function(dbdata) {
-                var ctotal=dbdata.txo.length, count=0;
-                App.LastKnownDifficulty = parseFloat(dbdata.difficulty);
-                dbdata.txo.forEach(function(txout) {  
-                   getstakedata(txout, function() {
-                   
-                     count++;
-                     prog=prog+0.01;
-                     AppLogger.logProgress(prog, '');
-                     if (count==ctotal) {
-                       
-                          //'AppLogger.logProgress(0.11, '');
-                          AppLogger.log('Data successfully retrieved');
-                          AppLogger.log('Starting...');
-                          btn.style.display = 'none';
-                          btnFs.style.display = 'block';   
-
-                          setTimeout(function(){ btnFs.click(); }, 500);                   
-                     }               
-                   });             
-                });  
-            })
-            .fail(function() {
-              //window.Applogger.log('failed to get Address data ');
-            })
-            .always(function() {
-              
+            .done(onreqdone)
+            .fail(logfailure)
+            .always(function() {              
             });   
                 
-      }   
+      }  
 		}
 		return cancelDefaultAction(e);
 	});
