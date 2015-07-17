@@ -2,7 +2,8 @@ FindstakeJS
 =====
 ### Getting to know in advance when your Peercoins stake
 
-FindstakeJS originates from Kac-'s Findstake project, a tool written in Go to predict stakes but ported to JavaScript. UI, webserver and database all in one language.
+FindstakeJS originates from Kac-'s Findstake project, a tool written in Go to predict stakes but ported to JavaScript (and rewritten in TypeScript). 
+UI, webserver and database all in one (preferably typed) language.
 
 Most cryptocoin mining requires specialized hardware, but Peercoin minting can be done on any computer. Minting is energy-efficient, because it is based on the Peercoins you hold, rather than on your processing power.
 
@@ -32,18 +33,29 @@ cd the folder:
 ``` bash
 $ npm install
 ```
-    
+
+How to (re)compile commonjs modules from the typescript source
+----------    
+cd lib
+tsc --module commonjs BigInteger.ts Base58.ts  
+tsc --module commonjs Peercoin.ts  
+
+How to (re)build app.js with browserify
+----------    
+npm run build-js	
+	
+	
 How to set up
 ----------
 this set up is initially needed to update the database:
 
 make sure to have the following in file ppcoin.conf:
-#Server mode allows Qt to accept JSON-RPC commands
+ 
 listen=1
 server=1
 txindex=1
 rpcssl=0
-# You must set rpcuser and rpcpassword to secure the JSON-RPC api
+ 
 rpcuser=change_this_to_a_long_random_user
 rpcpassword=change_this_to_a_long_random_password
 rpctimeout=30
