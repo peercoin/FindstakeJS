@@ -341,7 +341,7 @@ var updateBlocks = function (_metadata, cbWhenDone) {
 		}
 	};
 
-	if (maxbh<2 || ((startbh + 8) > (100 * (metaData.CurBH / 100))))
+	if (maxbh<2 || ((startbh + 8) > (10 * (metaData.CurBH / 10))))
 		return  cbWhenDone(null, metaData);
 
 	async.waterfall([
@@ -561,8 +561,8 @@ var repeatUpdateStakeModifier = function () {
     function (block, callback) {
         //if (err) return callback('block not found in db: '+ metaData.MaxBStakemodifier) // likely the key was not found
 
-      var smr = getBlockStakeModifier(block);
-      block.smr = smr;
+      //var smr = getBlockStakeModifier(block);
+      block.smr = '';//smr;
          
       db.put('bh'+block.h, block, callback);          
     },
@@ -618,12 +618,16 @@ var repeatBlockupdate = function () {
 				db.close();
 		} else {
 			      
-      if ((metaData.MaxBH + 8) < (100 * (metaData.CurBH / 100))){        
+      if ((metaData.MaxBH + 8) < (10 * (metaData.CurBH / 10))){        
          process.nextTick(repeatBlockupdate);
       }else{
         //start update stakemodifiers
- 			   console.log('start calc stake modifiers !!!!!');   
-          doUpdateStakeModifiers();         
+ 		console.log('skipping calc stake modifiers !!!!!');   
+        //  doUpdateStakeModifiers();         
+
+        console.log('~~~~~~~~~~Finished!~~~~~~~~~');   
+        if (db.isOpen())  db.close();
+
       }     
 		}
 	});

@@ -668,7 +668,7 @@ import Base58=require("../lib/Base58");
 		PrevTxOutIndex:number;
 		PrevTxOutValue:number;
 		UnspentOutputs:UnspentOutputsToStake;
-		IsProtocolV03:boolean;
+		IsProtocolV05:boolean;
 		StakeMinAge:number;
 		Bits:number;
 		Results:any[];
@@ -682,7 +682,7 @@ import Base58=require("../lib/Base58");
 			this.PrevTxOutIndex = tpl.PrevTxOutIndex; //uint32
 			this.PrevTxOutValue = tpl.PrevTxOutValue; //int64
 			this.UnspentOutputs = manager;
-			this.IsProtocolV03 = ('IsProtocolV03' in tpl) ? tpl.IsProtocolV03 : true; //bool
+			this.IsProtocolV05 = true; //bool
 			this.StakeMinAge = ('StakeMinAge' in tpl) ? tpl.StakeMinAge : Mint.minStakeMinAge; //int64
 			this.Bits = ('Bits' in tpl) ? tpl.Bits : this.setBitsWithDifficulty(parseFloat("10.33")); //uint32
 			this.Results = [];
@@ -694,8 +694,8 @@ import Base58=require("../lib/Base58");
 			return this.Bits;
 		}
 	
-		checkStakeKernelHash() :{success:boolean,minTarget:BigInteger, hash:number[]} {
-			var retobj = {success: false, minTarget: BigInteger.ZERO, hash: []};
+		checkStakeKernelHash() :{success:boolean,minTarget:BigInteger, hash:number[], stake:number} {
+			var retobj = {success: false, minTarget: BigInteger.ZERO, hash: [], stake: this.PrevTxOutValue};
 	
 			if (this.UnspentOutputs.TxTime < this.PrevTxTime) { // Transaction timestamp violation
 				console.log("CheckStakeKernelHash() : nTime violation");
@@ -709,7 +709,7 @@ import Base58=require("../lib/Base58");
 			}
 			
 			var bnTargetPerCoinDay = Mint.CompactToBig(this.Bits);
-			var timeReduction = (this.IsProtocolV03) ? timeReduction = this.StakeMinAge : 0;
+			var timeReduction = (this.IsProtocolV05) ? timeReduction = this.StakeMinAge : 0;
 			var nTimeWeight = this.UnspentOutputs.TxTime - this.PrevTxTime; // int64
 			if (nTimeWeight > Mint.stakeMaxAge) {
 				nTimeWeight = Mint.stakeMaxAge;
@@ -734,7 +734,8 @@ import Base58=require("../lib/Base58");
 			var buf = [0, 0, 0, 0, 0, 0, 0,	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 			var _o_ = 0;
 	
-			if (this.IsProtocolV03) { // v0.3 protocol
+			if (this.IsProtocolV05) { // v0.5 protocol
+				this.StakeModifier=this.UnspentOutputs.sMRLookUp(this.UnspentOutputs.TxTime);
 				var d:number[] = this.StakeModifier.toByteArrayUnsigned().reverse();
 				for (var i = 0; i < 8; i++) {
 					buf[_o_] = d[i];
@@ -782,6 +783,7 @@ import Base58=require("../lib/Base58");
 		Stop:boolean;
 		Results:any[];
 		private orgtpl:any[];
+		sMRLookUp: ((time)=>BigInteger);
 		
 		constructor() {
 			this.arrStakeKernelTemplates = []; //
@@ -869,7 +871,8 @@ import Base58=require("../lib/Base58");
 	             
 					var res = {
 						"foundstake" : this.TxTime,
-						"mindifficulty" : ((diff * 10) / 10)
+						"mindifficulty" : ((diff * 10) / 10),
+						"stake" : (resultobj.stake*0.000001)
 						};
 					element.Results.push(res);
 					stakesfound.push(res);             
@@ -881,7 +884,7 @@ import Base58=require("../lib/Base58");
 				return stakesfound;
 			}
 			
-			private recursiveFind(ob:{progressWhen:number, mintcallback:(arr: any[])=>any, progresscallback:(n:number, s:string)=>any, setZeroTimeout: (a,b?)=>any}){
+			private recursiveFind(ob:{progressWhen:number, mintcallback:(arr: any[])=>any, progresscallback:(n:number, s:number)=>any, setZeroTimeout: (a,b?)=>any}){
 					ob.progressWhen++;
 					this.TxTime++;
 	
@@ -895,7 +898,7 @@ import Base58=require("../lib/Base58");
 					if (ob.progressWhen > 555 / this.arrStakeKernelTemplates.length) {
 						ob.progressWhen = 0;
 	
-						ob.progresscallback(((this.TxTime - this.StartTime) / (1.0 * (this.MaxTime - this.StartTime))), ((this.MaxTime - this.TxTime) / 60.0).toFixed(1) + ' min remaining');
+						ob.progresscallback(((this.TxTime - this.StartTime) / (1.0 * (this.MaxTime - this.StartTime))), this.TxTime);
 							
 						loopfunc = setTimeout;						
 					}  			
@@ -903,10 +906,10 @@ import Base58=require("../lib/Base58");
 					if (!this.Stop && this.TxTime < this.MaxTime)
 						loopfunc(() => this.recursiveFind(ob), 40);
 					else
-						ob.progresscallback(100, 'done');				
+						ob.progresscallback(100, this.TxTime);				
 			}				
 					
-			findStake (mintcallback:(arr:any[])=>any, progresscallback:(n:number, s: string)=>any, setZeroTimeout:(a,b?)=>any) {
+			findStake (mintcallback:(arr:any[])=>any, progresscallback:(n:number, s: number)=>any, setZeroTimeout:(a,b?)=>any) {
 				if (this.arrStakeKernelTemplates.length > 0) {
 					var ob = {
 						progressWhen: 0,
@@ -917,6 +920,11 @@ import Base58=require("../lib/Base58");
 					setZeroTimeout(() => this.recursiveFind(ob));
 				}							
 			}
+			
+			setLookupCallback(funcLookup:(timestamp)=>BigInteger){
+				this.sMRLookUp=funcLookup;
+			}
+			
 	}
 
   	export function valueToBigInt (valueBuffer) :BigInteger {

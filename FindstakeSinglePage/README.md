@@ -2,6 +2,11 @@ FindStakeJS
 =====
 ### Getting to know in advance when your Peercoins stake, without installing nodejs.
  
+  
+------------
+Attention: All Divshot products and services will shut down on Monday, December 14, 2015.
+This single page solution using jsonp will most likely be discontinued. Use the nodejs version (by typing localhost:3000) instead.
+
 ##How to use:
 ------------
  * open index.html with a modern browser
