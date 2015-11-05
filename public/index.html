@@ -53,7 +53,10 @@ a.pure-button-primary{background:white;color:#1f8dd6;border-radius:5px;font-size
 .home-menu .pure-menu-selected a{color:white}
 .home-menu a{color:#36994B}
 .home-menu li a:hover,.home-menu li a:focus{background:none;border:none;color:#AECFE5}
-
+a.lastpost
+{
+	color: green; text-decoration: none;
+}
  
 .splash-container { background: #4CC579; z-index: 1; overflow: hidden; width: 100%; height: 88%; top: 0; left: 0; position: fixed !important; } .splash { width: 80%; height: 50%; margin: auto; position: absolute; top: 100px; left: 0; bottom: 0; right: 0; text-align: center; text-transform: uppercase; } .splash-head { font-size: 20px; font-weight: bold; color: white; border: 3px solid white; padding: 1em 1.6em; font-weight: 100; border-radius: 5px; line-height: 1em; } .splash-subhead { color: white; letter-spacing: 0.05em; opacity: 0.8; } .content-wrapper { position: absolute; top: 87%; width: 100%; min-height: 12%; z-index: 2; background: white; } .content-head { font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; margin: 2em 0 1em; } .content-head-ribbon { color: white; } .content-subhead { color: #1f8dd6; } .content-subhead i { margin-right: 7px; } .ribbon { background: #383838; color: #aaa; } .footer { background: #111; }
 /*
@@ -99,7 +102,7 @@ a.pure-button-primary{background:white;color:#1f8dd6;border-radius:5px;font-size
         <h1 class="splash-head"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAjCAQAAAAp3XJaAAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6AAAdTAAAOpgAAA6lwAAF2+XqZnUAAAEIUlEQVR4nGI8U87wk+EH049/3xneMr1lePP3jel3BiIBQACxMHACIcM/MAdEMv4/85rhEdMjpnsGXwhpBgggFgwRRgax/2J/TP7/O/7g/5Xf1+3xuAMggBjPNKAK/AfDf2DyL8P/v3+vMBxzeoldM0AAsaBq/AfVBtfM/E//v97Oawy73T9gagYIIBYk+/79e/9f8D/TP7Df/0I0g4xh/K/9T23TMZ7DTn9QNQMEEBPMvr8Mf5j+CPy59uf0nz9/GH4x/AHCv0AIlmH4w/rH/m3ySiFUzQABxASWgir9x/xH54/M72V/zv/594cBHf6T/Je2WA1ZM0AAMcHNZvgNsU/yb/jfW//n/X39F0P7H47/4fN1EJoBAojpD7LNYIf+Yf8T9keefebvo3/+o8kw/GH+FzRHG6YZIICYIHaiOI/hL+Nv188Owbv/L/3zFVUGSDL99Z8hBtEMEEBMyAEDcegvsGG/bJY5ht35M/vve4i3EJ74zfYrbBo4lgACiAnDX1BjgLbYLzSK+/Br/p+3f9Hk/oj8sAZpBgggJqToQHM+UMZ7rnzKp5+Lf31GN/63TRc/AwNAADEhHIoImH9Q3m/mP0HzObM+/Fvy9xfCCrAc628zBgaAAGKCOQbdbIj2P/xfvRgYcl7+3o7scLCcUQsrQAAxIRyJbOsvhEG6vYoMDMXn/9z4Aw82sCrOn3IAAcSECGWwQ6EeQHG+Ry4jA8PvHX9/IydYYJpXAgggJlBKhjnzD4bzwcrEJTQYGGo+/D31H9XpUgABxPTn11805ci2QrT/tQJHzIk/f2DuBJP8AAHE9OcjakD8gUcazH9Ag2RrgPmp5vOf68hG/+UBCCCmP29QbUV2/j84nwGcnv9eQoQO0Av/AQKI6e9jtBhEcziE/VcRpJnn/p/fCNX//gIEENPvexgxCDcKYjNYXCYRGOJ1f/49+osIl48AAcRU/ObPc7QYhNuHFP5s3Dwgu/88gxRPYLHXAAEELIb+nP7LgBqDyE6HkUy8YM2vEWr/PwMIICZwMHz4h8PpyOkcrPkjUjTeBgggJpBPfu9C5GfUoEJKbf/B+f8bPFhfL3wLEEBMIJHma6BIQIpBWBgjOZvxI0jlz79wkRMMDAABBCu3t/+R+i8CKuoZoOX1f2jZ/Q8i8vMPuOaClOlAdd//XGJgAAggJojm9u9/l/z7iOpQFC88nA929j8uaEjvX/ObgQEggJhgJWHfhz/z/rzE5fd/NyCq/vCBxZ/wngbxAAIIrpmBYdJHltl/jv75i5xMoXH648sViJp/fECZD79WQdwBEEDMyDXAiX9n7xlcZmD7K/KPGVIJQeD/Q2vuQVSoaf/j+bt0y3sIDyCAGBmwgHiOv8r/FRlE/rEBbf7//xPH2iXQKs7fivHchh8wdQABBgDRC38dpDUwpwAAAABJRU5ErkJggg=="/>
 
 FindStakejs</h1>
-        <p class="splash-subhead">
+        <p class="splash-subhead" id="spsubtitle">
             see if your coins will mint in the next few days...
         </p>
     </div>
@@ -116,7 +119,7 @@ FindStakejs</h1>
                 <form class="pure-form pure-form-stacked">
                     <fieldset>
 
-                        <label for="inputAdr">Peercoin Address</label>
+                        <label for="inputAdr" id="inputAdrlbl">Peercoin Address</label>
                         <input id="inputAdr" type="text" placeholder="Peercoin Address">
 
 
@@ -127,14 +130,12 @@ FindStakejs</h1>
 
             <div class="l-box-lrg pure-u-1 pure-u-md-3-5">
 
-                <h4>results</h4> 
+                <h4 id="spresults">results</h4> 
                 <div id="listmints"> 
-                   <table class="pure-table"><thead><tr><th>mint time</th><th>max difficulty</th><th>stake</th></tr></thead><tbody>
-	                <tr><td> </td><td> </td><td> </td></tr>
-					</tbody></table>
+                   
                 </div>
  
-                <h4>messages</h4>
+                <h4 id="spmessages">messages</h4>
                  <div id="divresults">
 
                 </div>
@@ -145,6 +146,9 @@ FindStakejs</h1>
     </div>
 
 
+    <div class="footer l-box is-center">
+        <a href="?locale=zh" class="lastpost">中文</a> | <a href="?locale=en" class="lastpost">English</a>
+    </div>
 </div>
 
 

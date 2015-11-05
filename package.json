@@ -1,11 +1,10 @@
 {
-  "name": "findstakejs",
-  "version": "0.0.3",
+  "name": "FindstakeJS",
+  "version": "0.5.1",
   "private": true,
   "description": "Find out in advance when your peercoins mint and turn on your Peerunity just in time for some juicy stakes",
   "scripts": {
-    "build-js": "browserify mainapp.js > public/app.js",
-    "build-jsSinglePage": "browserify mainappSinglePage.js > FindstakeSinglePage/app.js"
+    "build-js": "browserify mainapp.js > public/app.js"
   },
   "main": "./main.js",
   "engines": {
