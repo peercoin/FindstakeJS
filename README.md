@@ -1,6 +1,6 @@
 FindstakeJS
 =====
-### Getting to know in advance when to mint your Peercoins (protocol version v.05 as to be switched on Jan 2016)
+### Getting to know in advance when to mint your Peercoins (protocol version v.05 as to be switched on March 15 2016)
 
 FindstakeJS originates from Kac-'s Findstake project, a tool written in Go to predict stakes but ported to JavaScript (and rewritten in TypeScript). 
 UI, webserver and database all in one (preferably typed) language.
