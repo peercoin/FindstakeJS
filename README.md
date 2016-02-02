@@ -18,6 +18,9 @@ Find out in advance and turn on your wallet software just before it counts and h
  * Can be used without online data services, your Peerunity has already all the data it needs. 
  * A command line option to update its internal database via Peerunityd rpc-json interface.
 
+#### Screenshot:
+![Alt text](https://i.imgur.com/SZedX5k.png "FindstakeJS v0.5")
+
 Dependencies:
 ------------
  * installed Peerunity/PeercoinQT wallet with sync data
