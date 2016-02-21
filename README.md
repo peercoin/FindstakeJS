@@ -109,9 +109,20 @@ FindStakeJS is an **OPEN Open Source Project**. This means that:
 > Individuals making significant and valuable contributions are given commit-access to the project to contribute as they see fit. This project is more like an open wiki than a standard guarded open source project.
 
 
-### Contributors
- 
+### Coin age, the heart behind Proof of Stake
 
- 
+ Coin age is defined as the currency amount times the holding period [King and Nadal 2012].  For example, if
+Alice transfers two coins to Bob and Bob held the coins for 90 days,  the coin age is 180 coin-days.  When Bob spends
+the two coins, the coin age he accumulated is destroyed.
+
+The idea to use the coin age to define the reward is known as proof of stake [King and Nadal 2012] (PoS).  Mining a proof-of-stake block requires to construct a so-called coinstake block (named after Bitcoin's coinbase transaction).
+
+In a coinstake transaction, owners send coins in their possession  to  themselves  and  add  a  predefined  percentage  as
+their reward.  Analogue to proof of work, a hash value below or  equal  to  a  target  value  is  required  to  successfully  mint a  block.   In  contrast  to  proof  of  work  (and  Bitcoin),  the dificulty is individually determined:  it is inversely proportional  to  the  coin  age.   Because  the  hash  is (except  for  a timestamp) calculated  on  static  data,  there  is  no  way  for miners to use their computational power to solve the puzzle faster than others. In particular, there is no nonce which can be modified.  Instead, every second the timestamp changes and  miners  have  a  new  chance  of  finding  the  solution.   If they find a solution, they broadcast the block including the coinstake transaction.  The coinstake transaction assigns the reward to the miner, but also resets the coin age.  Of course, new coin age can subsequently be accumulated again, slowly increasing the chances of solving the puzzle next time.
+
+ ### The floating stakemodifier introduced in v05
 -------------------
- 
+ As mentioned above, the  hash  is calculated  on  static  data. In short it means that it is possible to calculate when a stake can be found at a future point of time. This includes years into the future. This have lead to discussions about a so-called long range attack. 
+ To counter this long range attack, peercoin will be using a floating stakemodifier, making the hash calculation  dependend on less static data..... that changes once in a while. The new protocol allows findstakejs to calculate up to 1,830,080 seconds (21 days) into the future.
+
+good luck
