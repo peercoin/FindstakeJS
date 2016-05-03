@@ -14,7 +14,7 @@ Find out in advance and turn on your wallet software just before it counts and h
 
 #### Features:
 
- * Easy to use interface. (But can be improved if you are a twitter bootstrap rockstar) 
+ * Easy to use interface. 
  * Can be used without online data services, your Peerunity has already all the data it needs. 
  * A command line option to update its internal database via Peerunityd rpc-json interface.
 
@@ -23,7 +23,7 @@ Find out in advance and turn on your wallet software just before it counts and h
 
 Dependencies:
 ------------
- * installed Peerunity/PeercoinQT wallet with sync data
+ * installed Peerunity wallet with sync data
  * a modern browser [also a fast pc would not hurt, the browser is doing all the hard work, not the webserver]
  * nodejs (http://nodejs.org/)
     level 
@@ -123,7 +123,7 @@ their reward.  Analogue to proof of work, a hash value below or  equal  to  a  t
 The floating stakemodifier (introduced in v.05)
 ----------
 
- As mentioned above, the  hash  is calculated  on  static  data. In short it means that it is possible to calculate when a stake can be found at a future point of time. This includes years into the future. This have lead to discussions about a so-called long range attack. 
+ As mentioned above, the  hash  is calculated  on  static  data. In short it means that it is possible to calculate when a stake can be found at a future point of time. This includes years into the future. This has led to discussions about a so-called long range attack. 
  To counter this long range attack, peercoin will be using a floating stakemodifier, making the hash calculation  dependend on less static data..... that changes once in a while. The new protocol with floating modifier allows findstakejs to calculate up to 1,830,080 seconds (21 days) ahead of last known block. 
 
 Have fun!
