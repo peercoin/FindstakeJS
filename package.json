@@ -19,7 +19,8 @@
     "bitcoin": "2.2.0",
     "express": "^4.11.1",
     "level": "latest",
-    "moment": "2.9.0"
+    "moment": "2.9.0",
+    "vue" : "2.4.2"
   },
   "devDependencies": {
     "browserify": "latest"
