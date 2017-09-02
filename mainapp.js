@@ -332,6 +332,16 @@ window.App.app = new Vue({
         setlastupdatedblocktime: function(d) {
             this.lastupdatedblocktime = d;
         },
+        setLang: function(Language){
+
+            this.title = Language.getString('title', 'Peercoin Findstakejs');
+            this.minttime = Language.getString('mint-time', 'mint time');
+            this.maxdifficulty = Language.getString('max-difficulty', 'max difficulty');
+            this.stake = Language.getString('stake', 'stake');
+            this.results = Language.getString('results', "results");
+            this.logmessages = Language.getString('messages', "messages");
+            this.go = Language.getString('go', "GO");
+        }
     },
     data: {
         difficulty: 0,
@@ -343,6 +353,13 @@ window.App.app = new Vue({
         searchperc: 0,
         progresssubtitle: '',
         pagesubtitle: '',
+        title: 'Peercoin Findstakejs',
+        minttime: 'mint time',
+        maxdifficulty: 'max difficulty',
+        stake:'stake',
+        results: 'results',
+        logmessages: 'messages',
+        go: 'Go',
         arrmints: [] //[{ foundstake: 1318781876, mindifficulty: 989.98198, stake: 324.35 }]
     },
     computed: {
@@ -544,18 +561,9 @@ ready(function() {
             }
         });
     }
-
+    window.App.app.setLang(Language);
 
     document.title = Language.getString('title', 'Peercoin Findstakejs');
-    document.getElementById("pagetitle").textContent = Language.getString('title', 'Peercoin Findstakejs');
-    document.getElementById("minttime").innerHTML = Language.getString('mint-time', 'mint time');
-    document.getElementById("mintdiff").innerHTML = Language.getString('max-difficulty', 'max difficulty');
-    document.getElementById("mintstake").innerHTML = Language.getString('stake', 'stake');
-    document.getElementById("spresults").innerHTML = Language.getString('results', "results");
-    document.getElementById("spmessages").innerHTML = Language.getString('messages', "messages");
-    document.getElementById("actiongo").innerHTML = Language.getString('go', "GO");
-
-
 });
 
 
