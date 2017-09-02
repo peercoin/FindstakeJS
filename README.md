@@ -19,7 +19,7 @@ Find out in advance and turn on your wallet software just before it counts and h
  * A command line option to update its internal database via Peerunityd rpc-json interface.
 
 #### Screenshot:
-![Alt text](https://i.imgur.com/SZedX5k.png "FindstakeJS v0.5")
+![Alt text](https://i.imgur.com/Mhw27M9.png "FindstakeJS v0.5")
 
 Dependencies:
 ------------
