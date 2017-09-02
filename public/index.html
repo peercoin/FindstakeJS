@@ -12,13 +12,7 @@
     body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     }
-
-    .logo {}
-
-    .logo img {
-        width: 120px;
-    }
-
+ 
     .container {
         padding-top: 50px;
         max-width: 968px;
@@ -94,44 +88,7 @@
         font-weight: bold;
         color: #bbb;
     }
-
-    .status-tweets {}
-
-    .status-tweets .twitter {
-        padding: 0 15px 15px 15px;
-        margin: -20px -20px 50px -20px;
-        border-bottom: 1px solid #efefef;
-    }
-
-    .status-tweets .icon {
-        display: inline-block;
-        padding-left: 20px;
-        color: #11bff2;
-    }
-
-    .status-tweets .username {
-        display: inline-block;
-        padding-left: 30px;
-    }
-
-    .status-tweets .updates {
-        padding: 0 40px 40px 40px;
-    }
-
-    .status-tweets .update {
-        padding-top: 40px;
-    }
-
-    .status-tweets .update .timestamp {
-        font-weight: bold;
-        color: #bbb;
-    }
-
-    .status-tweets .updates .event {
-        font-size: 16px;
-        line-height: 1.6;
-    }
-
+ 
     .status-footer {
         padding-left: 20px;
     }
@@ -177,7 +134,7 @@
                     <p v-if="!isvalidaddr" class="help is-danger">This is not a peercoin address</p>
                 </div>
                 <div class="column">
-                    <p class="level-item" v-bind:class="{'is-hidden': !(!isRunning&&hasvalidaddress)}"><a class="button is-success is-large" v-on:click.prevent="start" id="actiongo">Go</a></p>
+                    <p class="level-item" v-bind:class="{'is-hidden': !(!isRunning&&hasvalidaddress)}"><a class="button is-success is-large" v-on:click.prevent="start" id="actiongo">{{go}}</a></p>
                     <p class="level-item" v-if="isRunning"><a class="button is-danger is-large" v-on:click.prevent="stop">Stop</a></p>
                 </div>
             </div>
@@ -198,19 +155,19 @@
                 <div class="hero-body">
                     <div class="container">
                         <h1 id="spresults" class="title">
-				        results
+				        {{results}}
 				       </h1>
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th>
-                                        <abbr title="mint time" id="minttime">mint time</abbr>
+                                        <abbr title="mint time" id="minttime">{{minttime}}</abbr>
                                     </th>
                                     <th>
-                                        <abbr title="max difficulty" id="mintdiff">max difficulty</abbr>
+                                        <abbr title="max difficulty" id="mintdiff">{{maxdifficulty}}</abbr>
                                     </th>
                                     <th>
-                                        <abbr title="stake" id="mintstake">stake</abbr>
+                                        <abbr title="stake" id="mintstake">{{stake}}</abbr>
                                     </th>
                                 </tr>
                             </thead>
@@ -227,7 +184,7 @@
             </section>
         </div>
         <div class="section" v-bind:class="{'is-hidden': messages.length<1}">
-            <h4 id="spmessages" >messages</h4>
+            <h4 id="spmessages">{{logmessages}}</h4>
             <div class="notification" v-for="msg in messages">{{ msg }}</div>
         </div>
         <div class="section">
