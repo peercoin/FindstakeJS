@@ -1,4 +1,4 @@
 FindStakeJS
 =====
-### Attention: This single page solution using jsonp will most likely be discontinued. Use the nodejs version (by typing localhost:3000) instead.
+### run a single html page without running nodejs. Needs a txn id and a txn index 
  
