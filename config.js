@@ -10,13 +10,15 @@ exports.config = (function () {
 		user : 'change_this_to_a_long_random_user',
 		pass : 'change_this_to_a_long_random_password'
 	}; 
-  var db = {
-  	dbmetakey : 'MetaDataPpcFindstakeDb'
-  };
+	var db = {
+		dbmetakey : 'MetaDataPpcFindstakeDb',
+		url : 'http://changethisUsername:changethisPassword@192.168.x.y:5984',
+		name:'findstakedb'
+	};
 	return {
 		express : express,
 		rpc : rpc,
-    db: db
+    		db: db
 	};
 
 })();
