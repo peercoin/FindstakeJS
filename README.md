@@ -1,6 +1,6 @@
 FindstakeJS
 =====
-### Getting to know in advance when to mint your Peercoins (protocol version v.05 as to be switched on March 15 2016)
+### Getting to know in advance when to mint your Peercoins (protocol version v.05)
 
 FindstakeJS originates from Kac-'s Findstake project, a tool written in Go to predict stakes but ported to JavaScript (and rewritten in TypeScript). 
 UI, webserver and database all in one (preferably typed) language.
@@ -36,26 +36,26 @@ cd the folder:
 $ npm install
 ```
 
-How to (re)compile commonjs modules from the typescript source
+[optional] How to (re)compile commonjs modules from the typescript source
 ----------    
 cd lib
 tsc --module commonjs BigInteger.ts Base58.ts  
 tsc --module commonjs Peercoin.ts  
 
-How to (re)build app.js with browserify
+[optional] How to (re)build app.js with browserify
 ----------    
 npm run build-js	
 	
 	
 How to set up
 ----------
-set up a new instance of couchdb
-configure the same couch username and password in \app\config.js
+* set up a new instance of couchdb
+* configure the same couch username and password in \app\config.js
 
-this set up is initially needed to update the database:
+* this set up is initially needed to update the database:
 
-make sure to have the following in file ppcoin.conf:
- 
+* make sure to have the following in file ppcoin.conf:
+``` bash
 listen=1
 server=1
 txindex=1
@@ -65,14 +65,15 @@ rpcuser=change_this_to_a_long_random_user
 rpcpassword=change_this_to_a_long_random_password
 rpctimeout=30
 rpcport=8332
+```
 
-start peerunityd.exe:
+* start peerunityd.exe:
 
 ``` bash
 $ PATHTO\deamon peerunityd.exe -printtoconsole
 ```
 
-configure the same rpc username and password in \app\config.js
+* configure the same rpc username and password in \app\config.js
 test:
 ``` bash
 $ node testrpc.js
