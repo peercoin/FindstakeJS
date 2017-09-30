@@ -26,7 +26,7 @@ Dependencies:
  * installed Peerunity wallet with sync data
  * a modern browser [also a fast pc would not hurt, the browser is doing all the hard work, not the webserver]
  * nodejs (http://nodejs.org/)
- * a couchdb instance
+ * a couchdb instance with lots of space on hard disk
     
     
 How to install
@@ -88,7 +88,7 @@ Optional: unplug internet to unhook peerunity from network.
 ``` bash
 $ node updatedb.js
 ```
-ps: first update takes about 2 hours to fill up 74Mb of data
+ps: first update may take about a few days
 
 
 stop peerunityd:
