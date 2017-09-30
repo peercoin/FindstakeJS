@@ -26,8 +26,7 @@ Dependencies:
  * installed Peerunity wallet with sync data
  * a modern browser [also a fast pc would not hurt, the browser is doing all the hard work, not the webserver]
  * nodejs (http://nodejs.org/)
-    level 
-      level down(LevelDOWN uses node-pre-gyp to support prebuilt binaries. For a list of supported prebuilt platform binaries see https://github.com/Level/leveldown/releases)
+ * a couchdb instance
     
     
 How to install
@@ -50,6 +49,9 @@ npm run build-js
 	
 How to set up
 ----------
+set up a new instance of couchdb
+configure the same couch username and password in \app\config.js
+
 this set up is initially needed to update the database:
 
 make sure to have the following in file ppcoin.conf:
