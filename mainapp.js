@@ -199,7 +199,7 @@ App.onGetStarted = function() {
     AppLogger.log(Language.getString('progressstart', 'Findstake started'), false);
 
     var startx1 = Math.round((new Date()).getTime() / 1000);
-    var endx = (window.App.LastKnownBlocktime + window.App.Findstakelimit); //moment(document.getElementById("endd").value, "DD-MM-YYYY HH:mm:ss").format("X");
+    var endx = (window.App.LastKnownBlocktime + window.App.Findstakelimit-3600); //moment(document.getElementById("endd").value, "DD-MM-YYYY HH:mm:ss").format("X");
 
     App.Staketemplates.setStartStop(startx1, endx);
     App.Staketemplates.findStake(window.AppLogger.logMint, window.AppLogger.logProgress, window.setZeroTimeout);
