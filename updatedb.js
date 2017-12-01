@@ -496,7 +496,7 @@ var updateBlocks = function (_metadata, cbWhenDone) {
             if (err)
                 return callback(err);
             mpBH['bh' + r].h = block.height;
-            mpBH['bh' + r].bt = moment(block.time, "YYYY-MM-DD HH:mm:ss Z").unix();
+            mpBH['bh' + r].bt = Number.isInteger(block.time) ? block.time : moment(block.time, "YYYY-MM-DD HH:mm:ss Z").unix();
             mpBH['bh' + r].f = block.flags == "proof-of-stake" ? 'pos' : 'pow';
             mpBH['bh' + r].mr = block.modifier;
             mpBH['bh' + r].tx = block.tx;
