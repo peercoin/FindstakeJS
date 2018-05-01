@@ -9,21 +9,21 @@ Most cryptocoin mining requires specialized hardware, but Peercoin minting can b
 
 **But Peercoin can even be more energy-efficient! **
 
-With FindstakeJS, there is no need to leave Peerunity on 24-7 anymore. 
-Find out in advance and turn on your wallet software just before it counts and help secure the network.
+With FindstakeJS, there is no need to leave Peercoin-QT on 24-7 anymore. 
+Find out in advance and startup your wallet just before it finds a block and help secure the network.
 
 #### Features:
 
  * Easy to use interface. 
- * Can be used without online data services, your Peerunity has already all the data it needs. 
- * A command line option to update its internal database via Peerunityd rpc-json interface.
+ * Can be used without online data services, your Peercoin-QT has already all the data it needs. 
+ * A command line option to update its internal database via Peercoin-QT rpc-json interface.
 
 #### Screenshot:
 ![Alt text](https://i.imgur.com/Mhw27M9.png "FindstakeJS v0.5")
 
 Dependencies:
 ------------
- * installed Peerunity wallet with sync data
+ * installed Peercoin-QT wallet with sync data
  * a modern browser [also a fast pc would not hurt, the browser is doing all the hard work, not the webserver]
  * nodejs (http://nodejs.org/)
  * a couchdb instance with lots of space on hard disk
@@ -67,10 +67,10 @@ rpctimeout=30
 rpcport=8332
 ```
 
-* start peerunityd.exe:
+* start Peercoin-QT.exe:
 
 ``` bash
-$ PATHTO\deamon peerunityd.exe -printtoconsole
+
 ```
 
 * configure the same rpc username and password in \app\config.js
@@ -82,19 +82,19 @@ $ node testrpc.js
 
 How to use
 ----------
-to update database, start up peerunityd with a configured ppcoin.conf
-Optional: unplug internet to unhook peerunity from network.
+to update database, start up Peercoin-QT with a configured ppcoin.conf
+Optional: unplug internet to unhook Peercoin-QT from network.
 
 
 ``` bash
 $ node updatedb.js
 ```
-ps: first update may take about a few days
+ps: first update may take about a few days!
 
 
-stop peerunityd:
+quit Peercoin-QT:
 ``` bash
-$ PATHTO\deamon peerunityd.exe stop
+
 ```
 
 
