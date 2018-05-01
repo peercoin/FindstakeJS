@@ -488,7 +488,7 @@ var updateBlocks = function (_metadata, cbWhenDone) {
         for (var i = startbh; i < startbh + maxbh; i++) {
             batch.push({
                 method: 'getblock',
-                params: [mpBH['bh' + i].hs, false]
+                params: [mpBH['bh' + i].hs, true]
             });
         }
 
