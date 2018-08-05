@@ -12,8 +12,12 @@ exports.config = (function () {
 	}; 
 	var db = {
 		dbmetakey : 'MetaDataPpcFindstakeDb',
-		url : 'http://changethisUsername:changethisPassword@192.168.x.y:5984',
-		name:'findstakedb'
+		//url : 'http://changethisUsername:changethisPassword@192.168.x.y:5984',
+		//name:'findstakedb'
+		host: "localhost",
+        user: "changethisUsername",
+        password: "changethisPassword",
+        database: "findstake"
 	};
 	return {
 		express : express,

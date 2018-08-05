@@ -1,28 +1,22 @@
 {
   "name": "FindstakeJS",
-  "version": "0.5.3",
-  "private": true,
-  "description": "Find out in advance when your peercoins mint and turn on your Peerunity just in time for some juicy stakes",
+  "version": "0.5.10",
+  "description": "Find out in advance when your peercoins mint and turn on your wallet just in time for some juicy stakes",
   "scripts": {
     "build-js": "browserify mainapp.js > public/app.js"
   },
-  "main": "./main.js",
-  "engines": {
-    "node": "*"
-  },
-  "keywords": [
-    "rpc",
-    "peercoin"
-  ],
   "dependencies": {
-    "async": "^0.9.0",
-    "bitcoin": "2.2.0",
+    "async": "^2.6.1",    
+    "moment": "^2.22.2",
+    "mysql": "^2.16.0",
+     
     "express": "^4.11.1",
-    "nano": "^6.2.0",
-    "moment": "~2.19.3",
+     
     "vue" : "2.4.2"
   },
   "devDependencies": {
-    "browserify": "latest"
+    "browserify": "latest",
+    "bitcoin": "^3.0.1",
+    "firebase": "^5.3.1"
   }  
 }
