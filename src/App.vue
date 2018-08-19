@@ -107,7 +107,7 @@ export default {
       Findstakelimit: 2592000 - 761920,
       MRdataMap: {},
       Staketemplates: null,
-      StakeMinAge : 2592000,
+      StakeMinAge: 2592000,
       curlang: "en",
       difficulty: 0,
       lastupdatedblock: 0,
@@ -140,10 +140,46 @@ export default {
       //////change//////
       const onxstatus = user => {
         this.getData("ppc/status", this.onGetStatusHandler, () => {
-          this.log("unable to retrieve modifier data.");
+          this.log(
+            "unable to retrieve modifier data. Refreshing page in 3 seconds"
+          );
+          setTimeout(()=>{
+            location.reload();
+          }, 3000)
         });
       };
       //ini fb
+/*     firebase
+        .auth()
+        .signInWithEmailAndPassword(
+          config2,
+          config3
+        )
+        .catch(function(error) {
+          // Handle Errors here.
+
+          //debugger;
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // ...
+        });
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          //var isAnonymous = user.isAnonymous;
+          var uid = user.uid;
+          //console.log(isAnonymous);
+          setTimeout(() => {
+            onxstatus(uid);
+          }, 267);
+        } else {
+          // User is signed out.
+          // ...
+        }
+        // ...
+      });
+*/
       ////////////
     }
   },
@@ -181,7 +217,23 @@ export default {
 
     getData: function(path, callback, errcallback) {
       if (this.showtxid) {
-       /* get from fb*/
+        /* get from fb
+
+        firebase
+          .database()
+          .ref(path)
+          .once(
+            "value",
+            function(snapshot) {
+              var data = snapshot.val();
+              if (data) {
+                callback(data);
+              } else errcallback();
+            },
+            function() {
+              errcallback();
+            }
+          );*/
       } else {
         var request = new XMLHttpRequest();
         if (process.env.NODE_ENV !== "production")

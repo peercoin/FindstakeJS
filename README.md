@@ -13,7 +13,7 @@ With FindstakeJS, there is no need to leave Peercoin wallet on 24-7 anymore.
 Find out in advance and startup your wallet just before it finds a block and help secure the network. 
 
 #### Screenshot:
-![Alt text](https://imgur.com/a/ktztjdi "FindstakeJS v0.5.11")
+![Alt text](https://imgur.com/Gm4n6Ge.png "FindstakeJS v0.5.11")
 
 Dependencies:
 ------------
