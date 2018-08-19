@@ -1,6 +1,6 @@
 
 var bitcoin = require('bitcoin');
-var config = require('./config');
+var config = require('./findstakeconfig');
 
 var client = new bitcoin.Client({
 		host : config.config.rpc.host,

@@ -13,7 +13,7 @@ With FindstakeJS, there is no need to leave Peercoin wallet on 24-7 anymore.
 Find out in advance and startup your wallet just before it finds a block and help secure the network. 
 
 #### Screenshot:
-![Alt text](https://i.imgur.com/Mhw27M9.png "FindstakeJS v0.5")
+![Alt text](https://imgur.com/a/ktztjdi "FindstakeJS v0.5.11")
 
 Dependencies:
 ------------
@@ -36,9 +36,9 @@ cd lib
 tsc --module commonjs BigInteger.ts Base58.ts  
 tsc --module commonjs Peercoin.ts  
 
-[optional] How to (re)build app.js with browserify
+[optional] How to (re)build  
 ----------    
-npm run build-js	
+npm run build	
 	
 	
 How to set up

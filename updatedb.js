@@ -1,5 +1,5 @@
 var bitcoin = require("bitcoin");
-var config = require("./config");
+var config = require("./findstakeconfig");
 var mysql = require("mysql");
 var async = require("async");
 var moment = require("moment");
