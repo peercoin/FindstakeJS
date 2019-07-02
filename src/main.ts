@@ -1,9 +1,8 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
- 
-import App from "./App";
+//     import firebase from 'firebase';//////////////
+import App from "./App.vue";
+import router from "./router";
 import VueI18n from "vue-i18n";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
@@ -13,19 +12,20 @@ Vue.prototype.$moment = Moment;
 
 Vue.config.productionTip = false;
 
-const initWindow = function(window) {
-  var timeouts = [];
+
+const initWindow = function(window:any) {
+  var timeouts = [] as any[];
   var messageName = "zero-timeout-message";
 
   // Like setTimeout, but only takes a function argument.  There's
   // no time argument (always zero) and no arguments (you have to
   // use a closure).
-  function setZeroTimeout(fn, _t) {
+  function setZeroTimeout(fn: Function, _t:any) {
     timeouts.push(fn);
     window.postMessage(messageName, "*");
   }
 
-  function handleMessage(event) {
+  function handleMessage(event:any) {
     if (event.source == window && event.data == messageName) {
       event.stopPropagation();
       if (timeouts.length > 0) {
@@ -42,6 +42,7 @@ const initWindow = function(window) {
 };
 initWindow(window);
 
+
 Vue.use(BootstrapVue);
 Vue.use(VueI18n);
 
@@ -51,7 +52,7 @@ const messages = {
       title: "Peercoin Findstakejs",
       subtitle: "see if your coins will mint in the next few days...",
       "Last-known-difficulty": "Last known difficulty:",
-      "Findstake-available": "Findstake is available untill ",
+      "Findstake-available": "Finding your stakes untill ",
       progressstart: "Findstake started",
       progressnok: "unable to retrieve modifier data.",
       progressStarting: "Starting...",
@@ -97,9 +98,41 @@ const i18n = new VueI18n({
   messages // set locale messages
 });
 
-new Vue({
-  el: "#app",
-  i18n,
-  components: { App },
-  template: "<App/>"
-});
+
+let fbtest=null as any;
+ 
+/*
+    // Initialize Firebase
+    const arr1=["hello","world"];
+    let config = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SEND_ID"
+    };
+    firebase.initializeApp(config);
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(arr1[0], arr1[1])
+      .catch(function(error) {
+      });
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!fbtest && !!user) {
+*/
+
+    ///////////////////////////////////////////////////////////////////////////////
+    fbtest = new Vue({
+      router,
+      i18n,
+      render: h => h(App)
+    }).$mount("#app");
+    ///////////////////////////////////////////////////////////////////////////////
+
+/*
+        }
+      });
+*/
+
+ 

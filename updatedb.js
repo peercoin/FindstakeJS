@@ -3,9 +3,7 @@ var config = require("./findstakeconfig");
 var mysql = require("mysql");
 var async = require("async");
 var moment = require("moment");
-//var nano = require('nano')(config.config.db.url);
-//var db = nano.use(config.config.db.name);
-//var dbName = config.config.db.name;
+
 const pool = mysql.createPool({
   connectionLimit: 1,
   host: config.config.db.host,
@@ -90,29 +88,33 @@ const upsertT = function(value, retried, callback) {
       value +
       "'," +
       hasoptreturn +
-      ") ON DUPLICATE KEY UPDATE hasoptreturn="+hasoptreturn+", data='" +
+      ") ON DUPLICATE KEY UPDATE hasoptreturn=" +
+      hasoptreturn +
+      ", data='" +
       value +
       "'";
   } else {
     //console.log(value);
-    var height=0;
+    var height = 0;
     if (typeof value === "object") {
       value = Object.assign({}, value);
       satoshi = value["v"] || 0;
 
       delete value["_id"];
       //delete value["v"];
-      height= value["bh"] || 0;
+      height = value["bh"] || 0;
       value = JSON.stringify(value);
     }
     sqlquery =
       "INSERT INTO RawTx (hash, data, height) VALUES('" +
       key +
       "','" +
-      value +     
-       "'," +
+      value +
+      "'," +
       height +
-      ") ON DUPLICATE KEY UPDATE height="+height+", data='" +
+      ") ON DUPLICATE KEY UPDATE height=" +
+      height +
+      ", data='" +
       value +
       "'";
   }
