@@ -10,7 +10,7 @@ exports.config = (function() {
   };
   var db = {
     dbmetakey: "MetaDataPpcFindstakeDb",
-    host: "1localhost", //mysql ip
+    host: "localhost", //mysql ip
     user: "mysqlusr",
     password: "mysqlpw",
     database: "findstake"
