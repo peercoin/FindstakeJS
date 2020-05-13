@@ -1,6 +1,8 @@
 <template>
   <div class="home">
     <b-container fluid class="top-row">
+       <loading :loading="isLoading" >
+        </loading>
       <div class="mx-auto" style="width: 200px; height: 450px;">
         <div class="p-5"></div>
         <a href="https://peercoin.net/">
@@ -152,25 +154,27 @@
 <script lang="ts">
 import Vue from "vue";
 import NumberControl from "../components/NumberControl.vue";
+import Loading from "../components/Loading.vue";
 import { BNUtil } from "../../lib/BNUtil";
 import BN from "bn.js";
 import { PeercoinAddress } from "../../lib/PeercoinAddress";
 import { UnspentOutputsToStake } from "../../lib/UnspentOutputsToStake";
 import { CryptoUtils } from "../../lib/CryptoUtils";
 
-//import firebase from 'firebase';
+//for singlepage: import firebase from 'firebase';
  
 export default Vue.extend({
   name: "home",
   components: {
-    NumberControl
+    NumberControl,
+    Loading
   },
   data() {
     return {
       LastKnownBlocktime: 1,
       LastKnownHeight: 0,
       LastKnownDifficulty: 0,
-      MRdata: [] as any[], //e.g.[[1425105787,'b6448eaeacd5727a']];
+      MRdata: [] as any[], 
       Findstakelimit: 2592000 - 761920,
       MRdataMap: {} as any,
       Staketemplates: null as any,
@@ -184,13 +188,14 @@ export default Vue.extend({
       address: "",
       txid: "",
       txindex: 1,
-      showtxid: false,
+                            showtxid: false,
       searchperc: 0,
       progresssubtitle: "",
       pagesubtitle: "",
       stake: "",
       results: "",
       logmessages: "",
+      isLoading: true,
       //go: "",
       max: 100,
       arrmints: [] as any[] // [{ foundstake: 1318781876, mindifficulty: 989.98198, stake: 324.35 }]
@@ -219,6 +224,7 @@ export default Vue.extend({
   methods: {
     onGetStatusHandler(data: any): void {
       if (!!data) {
+        window.setTimeout(()=>{     this.isLoading=false;},31)
         if (!!data.result && data.data != null) {
           if (data.data.difficulty) {
             this.LastKnownDifficulty = data.data.difficulty;
@@ -250,23 +256,23 @@ export default Vue.extend({
 
     getData(path: any, callback: Function, errcallback: Function): void {
       if (this.showtxid) {
-      /*
-            firebase
-              .database()
-              .ref(path)
-              .once(
-                "value",
-                function(snapshot) {
-                  var data = snapshot.val();
-                  if (data) {
-                    callback(data);
-                  } else errcallback();
-                },
-                function() {
-                  errcallback();
-                }
-              ); 
-      */
+      
+            // firebase
+            //   .database()
+            //   .ref(path)
+            //   .once(
+            //     "value",
+            //     function(snapshot) {
+            //       var data = snapshot.val();
+            //       if (data) {
+            //         callback(data);
+            //       } else errcallback();
+            //     },
+            //     function() {
+            //       errcallback();
+            //     }
+            //   ); 
+      
       } else {
         let request = new XMLHttpRequest();
         if (process.env.NODE_ENV !== "production")
