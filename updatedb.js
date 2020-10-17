@@ -1,8 +1,8 @@
-var bitcoin = require("bitcoin");
 var config = require("./findstakeconfig");
 var mysql = require("mysql");
 var async = require("async");
 var moment = require("moment");
+var RpcClient = require("bitcoind-rpc");
 
 const pool = mysql.createPool({
   connectionLimit: 1,
@@ -18,12 +18,15 @@ let metaData = null,
   metaKey = config.config.db.dbmetakey,
   blksteps = 24;
 
-const client = new bitcoin.Client({
+var configrpc = {
+  protocol: "http",
   host: config.config.rpc.host,
   port: config.config.rpc.port,
   user: config.config.rpc.user,
   pass: config.config.rpc.pass
-});
+};
+
+var client = new RpcClient(configrpc);
 
 var getSizeVarInt = function(n) {
   if (n < 253) return 1;
@@ -58,8 +61,7 @@ const upsertT = function(value, retried, callback) {
   const key = value["_id"].substring(2).split("_")[0];
   value = Object.assign({}, value);
   let sqlquery = "";
-  let satoshi = 0,
-    units = 0,
+  let units = 0,
     hasoptreturn = 0;
   if (prefix === "to") {
     let indx = value["_id"].substring(2).split("_")[1];
@@ -241,8 +243,7 @@ var updateMeta = function(callback) {
 
 var updateAddresses = function(mapAdr, cbWhenDone) {
   //
-  var arrAddress = [],
-    ops = [];
+  var arrAddress = [];
   for (var address in mapAdr) {
     if (mapAdr.hasOwnProperty(address)) {
       //console.log(address);
@@ -304,14 +305,14 @@ var getLatestMeta = function(cbWhenDone) {
         client.getDifficulty(function(err, difficulty) {
           if (err) return callback(err);
 
-          metaData.Diff = parseFloat(difficulty["proof-of-stake"]);
+          metaData.Diff = parseFloat(difficulty.result["proof-of-stake"]);
           callback();
         });
       },
       function(callback) {
         client.getBlockCount(function(err, ht) {
           if (err) return callback(err);
-          metaData.CurBH = ht;
+          metaData.CurBH = ht.result;
           callback();
         });
       },
@@ -348,87 +349,97 @@ var updateTxsOfBlock = function(blk, cbWhenDone) {
 
   var getrawtransactions = function(callback) {
     var r = 0,
-      batch = [],
+      batchtxids = [],
       arrtxraw = [];
+
     blk.tx.forEach(function(hash, index, array) {
       mpTx["tx" + hash] = genTx(index, blk.h);
-      batch.push({
-        method: "getrawtransaction",
-        params: [hash]
+      batchtxids.push(hash);
+    });
+
+    let batchCallgetrawtransaction = () => {
+      batchtxids.forEach(function(txid) {
+        client.getRawTransaction(txid);
       });
-    });
+    };
 
-    client.cmd(batch, function(err, txraw, resHeaders) {
-      if (err) return callback(err);
-
-      if (!isEven(txraw.length)) {
-        return callback("length rawtx not even");
+    const handelRaw = function(err, rawtxs) {
+      if (err) {
+        console.error(err);
       }
-      mpTx["tx" + blk.tx[r]].sz = txraw.length / 2; //1 byte is 2 char
-      arrtxraw.push(txraw);
-      r++;
 
-      if (r == batch.length) {
-        var offset = BlockHeaderSize + sizeVarintTx;
-        blk.tx.forEach(function(hash, index, array) {
-          mpTx["tx" + hash].offst = offset;
-          offset += mpTx["tx" + hash].sz;
-        });
+      rawtxs.map(function(rawtx) {
+        let txraw = rawtx.result;
+        if (!isEven(txraw.length)) {
+          throw "length rawtx not even";
+        }
+        mpTx["tx" + blk.tx[r]].sz = txraw.length / 2; //1 byte is 2 char
+        arrtxraw.push(txraw);
+      }); //loop
 
-        callback(null, blk, mpTx, arrtxraw);
-      }
-    });
+      let offset = BlockHeaderSize + sizeVarintTx;
+      blk.tx.forEach(function(hash) {
+        mpTx["tx" + hash].offst = offset;
+        offset += mpTx["tx" + hash].sz;
+      }); //loop
+
+      callback(null, blk, mpTx, arrtxraw);
+    };
+
+    client.batch(batchCallgetrawtransaction, handelRaw);
   };
 
-  var decoderawtransactions = function(blk, mpTx, arrtxraw, callback) {
-    var r = 0,
-      batch = [],
+  const decoderawtransactions = function(blk, mpTx, arrtxraw, callback) {
+    let r = 0,
+      batchrawhex = [...arrtxraw],
       arrvinkeys = [],
       mapvout = {},
       mapAdr = {};
 
-    arrtxraw.forEach(function(raw, index, array) {
-      batch.push({
-        method: "decoderawtransaction",
-        params: [raw]
+    let batchCallDecode = () => {
+      batchrawhex.forEach(function(raw) {
+        client.decodeRawTransaction(raw);
       });
-    });
+    };
 
-    client.cmd(batch, function(err, tx, resHeaders) {
-      if (err) return callback(err);
-
-      mpTx["tx" + tx.txid].t = tx.time;
-
-      tx.vin.forEach(function(txin, index, array) {
-        if (txin.txid) arrvinkeys.push("to" + txin.txid + "_" + txin.vout);
-      });
-
-      tx.vout.forEach(function(txout, index, array) {
-        if (txout.value * Coin >= 0) {
-          mapvout["to" + tx.txid + "_" + txout.n] = {
-            v: Math.floor(txout.value * Coin),
-            scriptPubKey: txout.scriptPubKey
-          };
-        }
-        if (
-          txout.scriptPubKey &&
-          txout.scriptPubKey.addresses &&
-          Array.isArray(txout.scriptPubKey.addresses)
-        ) {
-          txout.scriptPubKey.addresses.forEach(function(adr, index, array) {
-            if (mapAdr[adr] == null) mapAdr[adr] = [];
-
-            mapAdr[adr].push("to" + tx.txid + "_" + txout.n);
-          });
-        }
-      });
-
-      r++;
-
-      if (r == batch.length) {
-        callback(null, blk, mpTx, arrvinkeys, mapvout, mapAdr);
+    const handleDecoded = function(err, decoded) {
+      if (err) {
+        console.error(err);
       }
-    });
+
+      decoded.forEach(function(txresult) {
+        let tx = txresult.result;
+
+        mpTx["tx" + tx.txid].t = tx.time;
+
+        tx.vin.forEach(function(txin) {
+          if (txin.txid) arrvinkeys.push("to" + txin.txid + "_" + txin.vout);
+        });
+
+        tx.vout.forEach(function(txout) {
+          if (txout.value * Coin >= 0) {
+            mapvout["to" + tx.txid + "_" + txout.n] = {
+              v: Math.floor(txout.value * Coin),
+              scriptPubKey: txout.scriptPubKey
+            };
+          }
+          if (
+            txout.scriptPubKey &&
+            txout.scriptPubKey.addresses &&
+            Array.isArray(txout.scriptPubKey.addresses)
+          ) {
+            txout.scriptPubKey.addresses.forEach(function(adr) {
+              if (mapAdr[adr] == null) mapAdr[adr] = [];
+
+              mapAdr[adr].push("to" + tx.txid + "_" + txout.n);
+            });
+          }
+        });
+      }); //loop
+      callback(null, blk, mpTx, arrvinkeys, mapvout, mapAdr);
+    };
+
+    client.batch(batchCallDecode, handleDecoded);
   };
 
   var updatetxs = function(blk, mpTx, arrvinkeys, mapvout, mapAdr, callback) {
@@ -537,50 +548,63 @@ var updateBlocks = function(_metadata, cbWhenDone) {
 
   var getblockhashes = function(callback) {
     var r = startbh,
-      batch = [];
+      blockheights = [];
     for (var i = startbh; i < startbh + maxbh; i++) {
       mpBH["bh" + i] = genBH(i);
-      batch.push({
-        method: "getblockhash",
-        params: [i]
-      });
+      blockheights.push(i);
     }
 
-    client.cmd(batch, function(err, hash, resHeaders) {
-      if (err) return callback(err);
-      mpBH["bh" + r].hs = hash;
-      r++;
+    let batchCallGetBlockHash = () => {
+      blockheights.forEach(function(h) {
+        client.getBlockHash(h);
+      });
+    };
 
-      if (r == i) {
-        callback(null, mpBH);
+    client.batch(batchCallGetBlockHash, function(err, blocks) {
+      if (err) {
+        console.error(err);
       }
+
+      blocks.forEach(function(block) {
+        let hash = block.result;
+        mpBH["bh" + r].hs = hash;
+        r++;
+      });
+
+      callback(null, mpBH);
     });
   };
 
   var getblocks = function(mpBH, callback) {
     var r = startbh,
-      batch = [];
+      blockhashes = [];
     for (var i = startbh; i < startbh + maxbh; i++) {
-      batch.push({
-        method: "getblock",
-        params: [mpBH["bh" + i].hs, true]
-      });
+      blockhashes.push(mpBH["bh" + i].hs);
     }
 
-    client.cmd(batch, function(err, block, resHeaders) {
-      if (err) return callback(err);
-      mpBH["bh" + r].h = block.height;
-      mpBH["bh" + r].bt = Number.isInteger(block.time)
-        ? block.time
-        : moment(block.time, "YYYY-MM-DD HH:mm:ss Z").unix();
-      mpBH["bh" + r].f = block.flags == "proof-of-stake" ? "pos" : "pow";
-      mpBH["bh" + r].mr = block.modifier;
-      mpBH["bh" + r].tx = block.tx;
-      r++;
+    let batchCallGetBlock = () => {
+      blockhashes.forEach(function(h) {
+        client.getBlock(h, 1);
+      });
+    };
 
-      if (r == i) {
-        callback(null, mpBH);
+    client.batch(batchCallGetBlock, function(err, blocks) {
+      if (err) {
+        console.error(err);
       }
+
+      blocks.forEach(function(blockresult) {
+        let block = blockresult.result;
+        mpBH["bh" + r].h = block.height;
+        mpBH["bh" + r].bt = Number.isInteger(block.time)
+          ? block.time
+          : moment(block.time, "YYYY-MM-DD HH:mm:ss Z").unix();
+        mpBH["bh" + r].f = block.flags == "proof-of-stake" ? "pos" : "pow";
+        mpBH["bh" + r].mr = block.modifier;
+        mpBH["bh" + r].tx = block.tx;
+        r++;
+      }); //loop
+      callback(null, mpBH);
     });
   };
 
