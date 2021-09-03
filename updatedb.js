@@ -1,16 +1,16 @@
 var config = require("./findstakeconfig");
-var mysql = require("mysql");
 var async = require("async");
 var moment = require("moment");
 var RpcClient = require("bitcoind-rpc");
+const sqlite3 = require("sqlite3").verbose();
+//const dbfile = "findstakejs.dat";
 
-const pool = mysql.createPool({
-  connectionLimit: 1,
-  host: config.config.db.host,
-  user: config.config.db.user,
-  password: config.config.db.password,
-  database: config.config.db.database
-});
+const dbfile = config.config.db.database;
+
+let db = new sqlite3.Database(dbfile);
+
+const pool = {};
+
 //other globals:
 let metaData = null,
   Coin = 1000000,
@@ -39,21 +39,18 @@ const upsertAddressTxo = function(key, value, callback) {
   const to = value.substring(2).split("_")[0];
   const indx = value.substring(2).split("_")[1];
   let sqlquery =
-    "INSERT INTO AddressTxo (address, txo, idx) VALUES ('" +
-    key +
-    "', '" +
-    to +
-    "', " +
-    indx +
-    ") ON DUPLICATE KEY UPDATE idx=" +
-    indx;
-  //console.log(sqlquery);
+    "INSERT OR REPLACE INTO AddressTxo (address, txo, idx) VALUES (?,?,?)";
 
-  pool.query(sqlquery, function(error, results, fields) {
-    if (error) throw error;
-    //console.log(results);
-    callback(error, results);
-  });
+  try {
+    db.run(sqlquery, [key, to, indx], function(error) {
+      if (error) throw error;
+      //console.log(results);
+      callback(error);
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+  }
 };
 
 const upsertT = function(value, retried, callback) {
@@ -61,8 +58,10 @@ const upsertT = function(value, retried, callback) {
   const key = value["_id"].substring(2).split("_")[0];
   value = Object.assign({}, value);
   let sqlquery = "";
+  let valarr = [];
   let units = 0,
     hasoptreturn = 0;
+
   if (prefix === "to") {
     let indx = value["_id"].substring(2).split("_")[1];
     units = value["v"] || 0;
@@ -80,21 +79,8 @@ const upsertT = function(value, retried, callback) {
       value = JSON.stringify(value);
     }
     sqlquery =
-      "INSERT INTO RawTo (hash, idx, units, data, hasoptreturn) VALUES('" +
-      key +
-      "', " +
-      indx +
-      "," +
-      units +
-      ",'" +
-      value +
-      "'," +
-      hasoptreturn +
-      ") ON DUPLICATE KEY UPDATE hasoptreturn=" +
-      hasoptreturn +
-      ", data='" +
-      value +
-      "'";
+      "INSERT OR REPLACE INTO RawTo (hash, idx, units, data, hasoptreturn) VALUES(?,?,?,?,?)";
+    valarr = [key, indx, units, value, hasoptreturn];
   } else {
     //console.log(value);
     var height = 0;
@@ -108,40 +94,61 @@ const upsertT = function(value, retried, callback) {
       value = JSON.stringify(value);
     }
     sqlquery =
-      "INSERT INTO RawTx (hash, data, height) VALUES('" +
-      key +
-      "','" +
-      value +
-      "'," +
-      height +
-      ") ON DUPLICATE KEY UPDATE height=" +
-      height +
-      ", data='" +
-      value +
-      "'";
+      "INSERT OR REPLACE INTO RawTx (hash, data, height) VALUES(?,?,?)";
+    valarr = [key, value, height];
   }
 
-  // console.log(sqlquery);
-
-  pool.query(sqlquery, function(error, results, fields) {
-    if (error) throw error;
-    //console.log(results);
-    callback(error, results);
-  });
+  try {
+    db.run(sqlquery, valarr, function(error) {
+      if (error) throw error;
+      //console.log(results);
+      callback(error);
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+  }
 };
 
-const deleteTo = function(key, retried, cb) {
+const deleteTo = function(key, retried, callback) {
   const hash = key.substring(2).split("_")[0];
   const idx = parseInt(key.substring(2).split("_")[1], 10);
-  const sql =
-    'UPDATE RawTo SET spent = 1 WHERE hash="' + hash + '" AND idx=' + idx;
-  //console.log(sql);
-  pool.query(sql, function(error, results, fields) {
-    if (error) throw error;
-    //console.log(results);
-    cb();
-    //callback(JSON.parse(results[0].data))
-  });
+
+  let data = [hash, idx];
+  let sql = `UPDATE RawTo
+              SET spent = 1 
+              WHERE hash = ? and idx = ? `;
+
+  try {
+    db.run(sql, data, function(error) {
+      if (error) throw error;
+      //console.log(results);
+      callback(error);
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+  }
+};
+
+const getMeta = function(pool, key, callback) {
+  let sql = `SELECT name, data
+FROM Meta
+WHERE name  = ?`;
+
+  try {
+    db.get(sql, [key], (error, row) => {
+      //if (error) throw error;
+
+      let dat = !row ? null : JSON.parse(row.data);
+      console.log(row);
+
+      callback(error, dat);
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+  }
 };
 
 function getMetaDoc(key, cb) {
@@ -154,34 +161,23 @@ function getMetaDoc(key, cb) {
   });
 }
 
-const getMeta = function(pool, key, callback) {
-  pool.query('SELECT * from Meta WHERE name="' + key + '"', function(
-    error,
-    results,
-    fields
-  ) {
-    if (error) throw error;
-
-    let data = results.length == 0 ? null : results[0].data;
-    callback(error, JSON.parse(data));
-  });
-};
-
 const upsertMeta = function(pool, key, value, callback) {
   if (typeof value === "object") {
     value = JSON.stringify(value);
   }
-  let sqlquery =
-    "INSERT INTO Meta (name, data) VALUES('" +
-    key +
-    "', '" +
-    value +
-    "') ON DUPLICATE KEY UPDATE data='" +
-    value +
-    "'";
-  //console.log(sqlquery);
+  let sql = "INSERT OR REPLACE INTO Meta (name, data) VALUES(?,?)";
+  let data = [key, value];
 
-  pool.query(sqlquery, callback);
+  try {
+    db.run(sql, data, function(error) {
+      if (error) throw error;
+      //console.log(results);
+      callback(error);
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+  }
 };
 
 const updateMetaDb = function(callback) {
@@ -204,31 +200,27 @@ const upsertBlock = function(pool, key, hash, value, callback) {
     delete value["_id"];
     value = JSON.stringify(value);
   }
-  let sqlquery =
-    "INSERT INTO RawBlock (height, hash, data) VALUES(" +
-    key +
-    ", '" +
-    hash +
-    "', '" +
-    value +
-    "') ON DUPLICATE KEY UPDATE hash='" +
-    hash +
-    "', data='" +
-    value +
-    "'";
-  //console.log(sqlquery);
+  let sql =
+    "INSERT OR REPLACE INTO RawBlock (height, hash, data) VALUES(?,?,?)";
+  let data = [key, hash, value];
 
-  pool.query(sqlquery, callback);
+  try {
+    db.run(sql, data, function(error) {
+      if (error) throw error;
+      //console.log(results);
+      callback(error);
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+  }
 };
+
 const updateBlockDb = function(mydoc, retried, callback) {
   //console.log('updateMeta');
   let height = mydoc["h"] || parseInt(mydoc["_id"].substring(2), 10);
   let hash = mydoc["hs"] || "";
-  /*     upsertDoc(metaData, 0, function (err) {
-          if (err)
-              console.log(err);
-          callback();
-      }); */
+
   upsertBlock(pool, height, hash, mydoc, function(error, results, fields) {
     if (error) throw error;
     //console.log(results);
@@ -714,9 +706,8 @@ var repeatBlockupdate = function() {
         process.nextTick(repeatBlockupdate);
       } else {
         console.log("~~~~~~~~~~Finished!~~~~~~~~~");
-        pool.end(function(err) {
-          // all connections in the pool have ended
-        });
+
+        db.close();
       }
     }
   });

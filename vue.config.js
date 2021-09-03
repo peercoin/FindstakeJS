@@ -1,6 +1,7 @@
 var webpack = require("webpack");
 
 module.exports = {
+  publicPath: '',
   chainWebpack: config => {
 
     
