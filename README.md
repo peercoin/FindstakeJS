@@ -20,7 +20,7 @@ Dependencies:
  * installed Peercoin wallet with sync data
  * a modern browser [also a fast pc would not hurt, the browser is doing all the hard work, not the webserver]
  * nodejs (http://nodejs.org/)
- * a mysql instance 
+
     
     
 How to install

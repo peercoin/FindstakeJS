@@ -1,5 +1,5 @@
  
-
+--for reference purpose only as project moves to sqlite...
 --
 -- Table structure for table `AddressTxo`
 --

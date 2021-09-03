@@ -1,31 +1,38 @@
-var mysql = require("mysql");
+const sqlite3 = require("sqlite3").verbose();
 var config = require("./findstakeconfig");
 
-const pool = mysql.createPool({
-  connectionLimit: 1,
-  host: config.config.db.host,
-  user: config.config.db.user,
-  password: config.config.db.password,
-  database: config.config.db.database
-});
 
- 
+const dbfile = config.config.db.database
+
+const pool = {};
+
 const getMeta = function(pool, key, callback) {
-  pool.query('SELECT * from Meta WHERE name="' + key + '"', function(
-    error,
-    results,
-    fields
-  ) {
-    if (error) throw error;
+  let sql = `SELECT name, data
+FROM Meta
+WHERE name  = ?`;
 
-    let data = results.length == 0 ? null : results[0].data;
-    callback(error, JSON.parse(data));
-  });
+  let db = new sqlite3.Database(dbfile);
+
+  try {
+    db.get(sql, [key], (error, row) => {
+      
+      if (error) throw error;
+      console.log(row);
+       let dat = !row ? null : JSON.parse(row.data);
+      // console.log(row);
+
+       callback(error, dat);
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    db.close();
+  }
 };
-getMeta(pool, config.config.db.dbmetakey,(err, xxx)=>{
+ 
+ 
+getMeta(pool, '1',(err, xxx)=>{
   console.log(xxx);
-  pool.end(function(err) {
-    // all connections in the pool have ended
-  });
+
 })
  
