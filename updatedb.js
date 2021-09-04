@@ -9,6 +9,17 @@ const dbfile = config.config.db.database;
 
 let db = new sqlite3.Database(dbfile);
 
+    db.run('PRAGMA synchronous=OFF', [], function(error) {
+      if (error) throw error;
+   
+    });
+
+    db.run('PRAGMA journal_mode=OFF', [], function(error) {
+      if (error) throw error;
+   
+    });
+
+
 const pool = {};
 
 //other globals:
