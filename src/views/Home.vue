@@ -161,7 +161,7 @@ import { PeercoinAddress } from "../../lib/PeercoinAddress";
 import { UnspentOutputsToStake } from "../../lib/UnspentOutputsToStake";
 import { CryptoUtils } from "../../lib/CryptoUtils";
 
-//for singlepage: import firebase from 'firebase';
+//for singlepage: import { getDatabase, ref, onValue} from "firebase/database";
  
 export default Vue.extend({
   name: "home",
@@ -256,22 +256,18 @@ export default Vue.extend({
 
     getData(path: any, callback: Function, errcallback: Function): void {
       if (this.showtxid) {
-      
-            // firebase
-            //   .database()
-            //   .ref(path)
-            //   .once(
-            //     "value",
-            //     function(snapshot) {
-            //       var data = snapshot.val();
-            //       if (data) {
-            //         callback(data);
-            //       } else errcallback();
-            //     },
-            //     function() {
-            //       errcallback();
-            //     }
-            //   ); 
+      /*
+        const db = getDatabase();
+        const starCountRef = ref(db, path);
+
+        onValue(starCountRef, (snapshot) => {
+          const data = snapshot.val();
+         
+                  if (data) {
+                    callback(data);
+                  } else errcallback();
+
+        });  */
       
       } else {
         let request = new XMLHttpRequest();
