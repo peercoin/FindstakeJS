@@ -1,6 +1,6 @@
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
-//     import firebase from 'firebase';//////////////
+//    import { getAuth, signInWithEmailAndPassword } from "firebase/auth"; /////////
 import App from "./App.vue";
 import router from "./router";
 import VueI18n from "vue-i18n";
@@ -98,41 +98,52 @@ const i18n = new VueI18n({
   messages // set locale messages
 });
 
-
-let fbtest=null as any;
  
+
 /*
+//firebase
+import { initializeApp } from "firebase/app";
     // Initialize Firebase
-    const arr1=["hello","world"];
-    let config = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_MESSAGING_SEND_ID"
-    };
-    firebase.initializeApp(config);
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(arr1[0], arr1[1])
-      .catch(function(error) {
-      });
-    firebase.auth().onAuthStateChanged((user) => {
-      if (!fbtest && !!user) {
-*/
-
-    ///////////////////////////////////////////////////////////////////////////////
-    fbtest = new Vue({
-      router,
-      i18n,
-      render: h => h(App)
-    }).$mount("#app");
-    ///////////////////////////////////////////////////////////////////////////////
-
-/*
-        }
-      });
-*/
-
  
+    // let config = {
+    //   apiKey: "YOUR_API_KEY",
+    //   authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    //   databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+    //   projectId: "YOUR_PROJECT_ID",
+    //   storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    //   messagingSenderId: "YOUR_MESSAGING_SEND_ID"
+    // };
+ 
+const app = initializeApp(firebaseConfig);
+ 
+const auth = getAuth();
+signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+ 
+  startit();
+
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
+*/
+
+
+
+
+const startit = function(){
+  ///////////////////////////////////////////////////////////////////////////////
+  new Vue({
+    router,
+    i18n,
+    render: h => h(App)
+  }).$mount("#app");
+  ///////////////////////////////////////////////////////////////////////////////
+}
+
+
+
+startit(); 
