@@ -27,7 +27,8 @@ let metaData = null,
   Coin = 1000000,
   BlockHeaderSize = 80,
   metaKey = config.config.db.dbmetakey,
-  blksteps = 24;
+  blksteps = 24,
+  nProtocolV10SwitchTime = 1635768000; // Mon  1 Nov 12:00:00 UTC 2021
 
 var configrpc = {
   protocol: "http",
@@ -335,15 +336,18 @@ var getLatestMeta = function(cbWhenDone) {
 };
 
 var updateTxsOfBlock = function(blk, cbWhenDone) {
+  let blockheight = blk.h;
+  let blocktime = blk.bt;
   var mpTx = {},
     sizeVarintTx = getSizeVarInt(blk.tx.length),
-    genTx = function(i, bh) {
+    genTx = function(i, bh, bt) {
       return {
         pos: i, //position in block
         t: -1, //timestamp
-        bh: bh, //in blocknr
+        bh: bh, //in block height
         sz: -1, //size
-        offst: -1 //offset
+        offst: -1, //offset,
+        bt: bt //block time
       };
     },
     isEven = function(n) {
@@ -356,7 +360,7 @@ var updateTxsOfBlock = function(blk, cbWhenDone) {
       arrtxraw = [];
 
     blk.tx.forEach(function(hash, index, array) {
-      mpTx["tx" + hash] = genTx(index, blk.h);
+      mpTx["tx" + hash] = genTx(index, blockheight, blocktime);
       batchtxids.push(hash);
     });
 
@@ -413,8 +417,12 @@ var updateTxsOfBlock = function(blk, cbWhenDone) {
       decoded.forEach(function(txresult) {
         let tx = txresult.result;
 
-        mpTx["tx" + tx.txid].t = tx.time;
-
+        if (mpTx["tx" + tx.txid].bt < nProtocolV10SwitchTime && !!tx.time){
+          mpTx["tx" + tx.txid].t = tx.time;
+        }else{
+          mpTx["tx" + tx.txid].t = mpTx["tx" + tx.txid].bt
+        }
+        
         tx.vin.forEach(function(txin) {
           if (txin.txid) arrvinkeys.push("to" + txin.txid + "_" + txin.vout);
         });
