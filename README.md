@@ -112,4 +112,21 @@ The floating stakemodifier (introduced in v.05)
  As mentioned above, the  hash  is calculated  on  static  data. In short it means that it is possible to calculate when a stake can be found at a future point of time. This includes years into the future. This has led to discussions about a so-called long range attack. 
  To counter this long range attack, peercoin will be using a floating stakemodifier, making the hash calculation  dependend on less static data..... that changes once in a while. The new protocol with floating modifier allows findstakejs to calculate up to 1,830,080 seconds (21 days) ahead of last known block. 
 
+Remove Transaction Timestamp (introduced in v.11)
+----------
+
+https://github.com/peercoin/rfcs/blob/master/text/0014-transaction-timestamp/0014-transaction-timestamp.md
+ Transaction timestamp has long posed compatibility issues with many of the major Bitcoin infrastructures.
+
+It has been generally agreed upon that transaction timestamp inside coinstake transactions carries some security purposes, especially in the light of cold minting and minting pools.
+
+
+For the removal of the regular transaction timestamp, the following changes should be considered:
+
+- Transaction signing and validation to be updated to not include the timestamp.
+- Update CheckStakeKernelHash to validate against block timestamps of UTXO and coinstake.
+- A hard fork incrementing the transaction version.
+- ppcoin flag for rawtransaction RPC interface compatibility (whether to include transaction timestamp field)
+- JSON RPC methods to determine transaction timestamps based on the block timestamp. (backwards compatibility) 
+
 Have fun!
