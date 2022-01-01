@@ -76,7 +76,7 @@ to update database, start up Peercoin with a configured ppcoin.conf
 
 
 ``` bash
-$ node updatedb.js
+$./DbUpdater/bin/Release/net5.0/linux-x64/publish/SQLiteUpdater after setting the appsettings.json or good old node updatedb.js
 ```
 ps: first update may take about a few days!
 
