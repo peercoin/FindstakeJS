@@ -2,15 +2,14 @@ FindstakeJS
 =====
 ### Getting to know in advance when to mint your Peercoins (protocol version v.05)
 
-FindstakeJS originates from Kac-'s Findstake project, a tool written in Go to predict stakes but ported to JavaScript (and rewritten in TypeScript). 
-UI, webserver and database all in one (preferably typed) language.
+FindstakeJS originates from Kac-'s Findstake project, a tool written in Go to predict stakes but ported to JavaScript (and rewritten in TypeScript, vuejs and c#).  
 
 Most cryptocoin mining requires specialized hardware, but Peercoin minting can be done on any computer. Minting is energy-efficient, because it is based on the Peercoins you hold, rather than on your processing power.
 
 **But Peercoin can even be more energy-efficient! **
 
 With FindstakeJS, there is no need to leave Peercoin wallet on 24-7 anymore. 
-Find out in advance and startup your wallet just before it finds a block and help secure the network. 
+Find out in advance when to mint and startup your wallet just before it finds a block and help secure the network. 
 
 #### Screenshot:
 ![Alt text](https://imgur.com/Gm4n6Ge.png "FindstakeJS v0.5.11")
@@ -29,25 +28,20 @@ cd the folder:
 ``` bash
 $ npm install
 ```
-
-[optional] How to (re)compile commonjs modules from the typescript source
-----------    
-cd lib
-tsc --module commonjs BigInteger.ts Base58.ts  
-tsc --module commonjs Peercoin.ts  
+ 
 
 [optional] How to (re)build  
 ----------    
-npm run build	
+``` bash
+$ npm build
+```	
 	
 	
 How to set up
 ----------
-* set up a new instance of couchdb
-* configure the same couch username and password in \app\config.js
-
 * this set up is initially needed to update the database:
-
+* install https://sqlitebrowser.org/ and open findstakejs.dat file to see the empty tables
+* configure /DbUpdater/bin/Release/net5.0/linux-x64/publish/appsettings.json
 * make sure to have the following in file ppcoin.conf:
 ``` bash
 listen=1
@@ -76,7 +70,8 @@ to update database, start up Peercoin with a configured ppcoin.conf
 
 
 ``` bash
-$./DbUpdater/bin/Release/net5.0/linux-x64/publish/SQLiteUpdater after setting the appsettings.json or good old node updatedb.js
+just once: chmod 777 /DbUpdater/bin/Release/net5.0/linux-x64/publish/SQLiteUpdater 
+$./DbUpdater/bin/Release/net5.0/linux-x64/publish/SQLiteUpdater  
 ```
 ps: first update may take about a few days!
 
@@ -86,9 +81,10 @@ Start the website:
 $ node webserver.js
 ```
  
-Open http://localhost:3000/ with a modern browser.
+Open http://localhost:3000/  
 
-------------
+About
+----------
 
 FindStakeJS is an **OPEN Open Source Project**. This means that:
 
