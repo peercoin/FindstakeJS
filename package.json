@@ -30,7 +30,7 @@
     "bitcoind-rpc": "^0.8.1",
     "express": "^4.17.1",
     "firebase": "^9.0.1",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "sass-loader": "^8.0.2",
     "sqlite3": "^5.0.2",
     "typescript": "^3.9.2",
