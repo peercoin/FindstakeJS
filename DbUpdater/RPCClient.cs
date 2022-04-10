@@ -1,32 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
+﻿using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+// ReSharper disable InconsistentNaming
 
 namespace SQLiteUpdater
 {
-    public class RpcClient
+	public class RPCClient
 	{
 		protected Uri uri;
 
 		protected string user;
 		protected string password;
 
-		public RpcClient(string uri, string user, string password)
+		private readonly HttpClient Client;//or make static if multple instances
+		
+		public RPCClient(string uri, string user, string password)
 		{
 			this.uri = new Uri(uri);
 			this.user = user;
 			this.password = password;
+			this.Client = new HttpClient
+            {
+                BaseAddress = this.uri
+			};
+            var auth = this.user + ":" + this.password;
+            auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(auth), Base64FormattingOptions.None);
+            this.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", auth);
 		}
-
-
-		public bool CheckConnection()
+		
+		public async Task<bool> CheckConnection()
 		{
 			try
 			{
-				var height = RpcCall<int>(new RpcRequest("getblockcount"));
+				var height = await RpcCall<int>(new RPCRequest("getblockcount"));
 				return height > 0;
 			}
 			catch (Exception)
@@ -35,126 +42,108 @@ namespace SQLiteUpdater
 			}
 		}
 
-		public RawTransactionResponse GetRawTransaction(string txId, int verbose = 0)
+		public async Task<RawTransactionResponse> GetRawTransaction(string txId, int verbose = 0)
 		{
-			return RpcCall<RawTransactionResponse>(new RpcRequest("getrawtransaction", new Object[] { txId, verbose }));
+			return await RpcCall<RawTransactionResponse>(new RPCRequest("getrawtransaction", new Object[] { txId, verbose }));
 		}
 
-		public TransactionResponse GetTransaction(string txId)
+		public async Task<TransactionResponse> GetTransaction(string txId)
 		{
-			return RpcCall<TransactionResponse>(new RpcRequest("gettransaction", new Object[] { txId }));
+			return await RpcCall<TransactionResponse>(new RPCRequest("gettransaction", new Object[] { txId }));
 		}
 
-		public DecodeRawTransactionResponse DecodeRawTransaction(string transaction)
+		public async Task<DecodeRawTransactionResponse> DecodeRawTransaction(string transaction)
 		{
-			return RpcCall<DecodeRawTransactionResponse>(new RpcRequest("decoderawtransaction", new Object[] { transaction }));
+			return await RpcCall<DecodeRawTransactionResponse>(new RPCRequest("decoderawtransaction", new Object[] { transaction }));
+		}
+		
+		public async Task<BlockResponse> GetBlock(string hash)
+		{
+			return await RpcCall<BlockResponse>(new RPCRequest("getblock", new Object[] { hash }));
 		}
 
-
-		public BlockResponse GetBlock(string hash)
+		public async Task<uint> GetBlockCount()
 		{
-			return RpcCall<BlockResponse>(new RpcRequest("getblock", new Object[] { hash }));
+			return await RpcCall<uint>(new RPCRequest("getblockcount"));
 		}
 
-		public uint GetBlockCount()
+		public async Task<List<Unspent>> GetUnspents()
 		{
-			return RpcCall<uint>(new RpcRequest("getblockcount"));
+			return await RpcCall<List<Unspent>>(new RPCRequest("listunspent"));
 		}
 
-		public List<Unspent> GetUnspents()
+		public async Task<DifficultyResponse> GetDifficulty()
 		{
-			return RpcCall<List<Unspent>>(new RpcRequest("listunspent"));
+			return await RpcCall<DifficultyResponse>(new RPCRequest("getdifficulty"));
 		}
-
-		public DifficultyResponse GetDifficulty()
+		
+		public async Task<string> GetBlockHash(long index)
 		{
-			return RpcCall<DifficultyResponse>(new RpcRequest("getdifficulty"));
+			return await RpcCall<string>(new RPCRequest("getblockhash", new Object[] { index }));
 		}
-
-
-		public string GetBlockHash(long index)
+		 
+		public async Task<string> CreateRawCoinStakeTransaction(IReadOnlyList<RawTxStakeInputs> inputs, IReadOnlyList<RawTxStakeOutput> outputs, long timestamp)
 		{
-			return RpcCall<string>(new RpcRequest("getblockhash", new Object[] { index }));
-		}
+			var param1 = inputs;
+			var param2 = new JArray(); 
+            param2.Add(JObject.FromObject( new { coinstake = 0 }));
 
-
-		protected string HttpCall(string jsonRequest)
-		{
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-
-			request.Method = "POST";
-			request.ContentType = "application/json-rpc";
-
-			// always send auth to avoid 401 response
-			var auth = this.user + ":" + this.password;
-			auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(auth), Base64FormattingOptions.None);
-			request.Headers.Add("Authorization", "Basic " + auth);
-
-			request.ContentLength = jsonRequest.Length;
-
-			using (StreamWriter sw = new StreamWriter(request.GetRequestStream()))
+			foreach (var output in outputs)
 			{
-				sw.Write(jsonRequest);
+				var jobj = new JObject();
+				jobj.Add(output.Address, new JValue(output.Vout));
+				param2.Add(jobj);
 			}
 
-			try
-            {
-                using var response = (HttpWebResponse)request.GetResponse();
-                using var sr = new StreamReader(response.GetResponseStream());
-                return sr.ReadToEnd();
-            }
-			catch (WebException wex)
-            {
-                using var response = (HttpWebResponse)wex.Response;
-                using var sr = new StreamReader(response!.GetResponseStream());
-                if (response.StatusCode != HttpStatusCode.InternalServerError)
-                {
-                    throw;
-                }
-                return sr.ReadToEnd();
-            }
+			return await RpcCall<string>(new RPCRequest("createrawtransaction", new Object[] { param1, param2, 0, timestamp }));
 		}
 
+        public async Task<T> RpcCall<T>(RPCRequest rpcRequest)
+        {
+			//var test = JsonConvert.SerializeObject(rpcRequest);
 
-		private T RpcCall<T>(RpcRequest rpcRequest)
-		{
-			/*this.uri = new Uri(settings.GetRpcUri());
-			this.user = settings.GetRpcUser();
-			this.password = settings.GetRpcPassword();*/
+			using var content = new StringContent(JsonConvert.SerializeObject(rpcRequest), Encoding.UTF8, "text/plain");
+            var result = await this.Client.PostAsync(uri, content);
 
-			var jsonRequest = JsonConvert.SerializeObject(rpcRequest);
+            if (!result.IsSuccessStatusCode)
+            {
+                throw new RPCException(new RPCError() {code = 1042, message = "no dice"});
+            }
 
-			var result = HttpCall(jsonRequest);
-
-			var rpcResponse = JsonConvert.DeserializeObject<RPCResponse<T>>(result);
-
-			if (rpcResponse is { error: { } })
-			{
-				throw new RPCException(rpcResponse.error);
+            var returnValue = await result.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(returnValue))
+            {
+                throw new RPCException(new RPCError() { code = 1043, message = "no result" });
 			}
-			return rpcResponse!.result;
+
+            var rpcResponse = JsonConvert.DeserializeObject<RPCResponse<T>>(returnValue);
+
+            if (rpcResponse == null)
+            {
+                throw new RPCException(new RPCError() { code = 1044, message = "rpcResponse is null" });
+            }
+
+			if (rpcResponse.error != null)
+            {
+                throw new RPCException(rpcResponse.error);
+            }
+            return rpcResponse.result;
 		}
 	}
 
-
-
-
-
 	[JsonObject(MemberSerialization = MemberSerialization.Fields)]
-	public class RpcRequest
-	{	
+	public class RPCRequest
+	{
+#pragma warning disable CS0414
 		string jsonrpc = "2.0";
- 
-        // ReSharper disable once ArrangeTypeMemberModifiers
-        uint id = 1;
-
-        // ReSharper disable once ArrangeTypeMemberModifiers
-        string method;
+		uint id;
+		string method;
+#pragma warning restore CS0414
 
 		[JsonProperty(PropertyName = "params", NullValueHandling = NullValueHandling.Ignore)]
-		IList<Object> requestParams = null;
+		IList<object>? requestParams;
 
-		public RpcRequest(string method, IList<Object> requestParams = null, uint id = 1)
+		public RPCRequest(string method, IList<object>? requestParams = null, uint id = 1)
 		{
 			this.method = method;
 			this.requestParams = requestParams;
@@ -165,16 +154,20 @@ namespace SQLiteUpdater
 
 	public class RPCResponse<T>
 	{
-		public T result;
-		public RPCError error;
+#pragma warning disable CS8618
+        public T result;
+        public RPCError error;
 		public uint id;
+#pragma warning restore CS8618
 	}
 
 
 	public class RPCError
 	{
+#pragma warning disable CS8618
 		public int code;
 		public string message;
+#pragma warning restore CS8618
 	}
 
 
@@ -199,42 +192,48 @@ namespace SQLiteUpdater
 		}
 	}
 
-
+#pragma warning disable CS8618
 	public class RawTransactionResponse
 	{
+
 		public string hex;
 		public string blockhash;
 		public long blocktime;
 
-		public static implicit operator RawTransactionResponse(String s)
+		public static implicit operator RawTransactionResponse(string s)
 		{
 			return new RawTransactionResponse() { hex = s };
 		}
 	}
 
-	public class BlockResponse
-	{
-		public string hash;
-		public long confirmations;
-		public int size;
-		public long height;
-		public int version;
-		public string merkleroot;
-		public IEnumerable<string> tx;
-		public long time;
-		public long nonce;
-		public string bits;
-		public decimal difficulty;
-		public string previousblockhash;
-		public string nextblockhash;
-		public string flags;
-		public string modifier;
-		public int nTx;
-	}
+
+    public class BlockResponse
+    {
+        // ReSharper disable UnusedMember.Global
+        public string hash;
+        public long confirmations;
+
+        public int size;
+
+        public long height;
+        public int version;
+        public string merkleroot;
+        public IEnumerable<string> tx;
+        public long time;
+        public long nonce;
+        public string bits;
+        public decimal difficulty;
+        public string previousblockhash;
+        public string nextblockhash;
+        public string flags;
+        public string modifier;
+
+        public int nTx;
+        // ReSharper restore UnusedMember.Global
+    }
 
 
-
-	public class ScriptSig
+    public class ScriptSig
 	{
 		public string asm;
 		public string hex;
@@ -246,7 +245,7 @@ namespace SQLiteUpdater
 		public string hex;
 		public int reqSigs;
 		public string type;
-		public string[] addresses;
+		public string[]? addresses;
 	}
 
 	public class Input
@@ -261,7 +260,7 @@ namespace SQLiteUpdater
 	{
 		public decimal value;
 		public int n;
-		public ScriptPubKey scriptPubKey;
+		public ScriptPubKey? scriptPubKey;
 
 	}
 
@@ -269,8 +268,8 @@ namespace SQLiteUpdater
 	{
 		public string txid;
 		public int version;
-		public int? time; // breaks at Tue Jan 19 2038 todo: make it a long?
-		public int locktime;
+		public long? time;
+		public long locktime;
 		public int size;
 		public int vsize;
 
@@ -301,5 +300,26 @@ namespace SQLiteUpdater
 		[JsonProperty("proof-of-work")]
 		public decimal pow { get; set; }
 
+	}
+#pragma warning restore CS8618
+}
+
+public class RawTxStakeInputs
+{
+	public string txid { get; set; } = null!;
+	public int vout { get; set; }
+
+	public string redeemScript { get; set; } = "532102633a97eab667d165b28b19ad0848cc4f3f3e06e6b19b15cdc910d4b13f4e611f21027260ccc4dba64b04c2c07bd02da5257058ad464857919789ad9c983025fd2cba2102b813e6335216f3ae8547d283f3ab600d08c1c444f5d34fa38cfd941d939001422103131f4fb6fdc603ad3859c2c5b3f246f1ee3ba5391600e960b9be4c59f609b3dd2103b12c1b22ebbdf8e7b1c19db701484fd6fdfb63e4b117800a6838c6eb0f0e881b55ae";
+}
+
+public class RawTxStakeOutput
+{
+	public string Address { get; set; }
+	public double Vout { get; set; } = 0;
+
+	public RawTxStakeOutput(string address, double vout)
+	{
+		Address = address;
+		Vout = Math.Round(vout, 6, MidpointRounding.ToZero);
 	}
 }

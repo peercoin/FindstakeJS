@@ -7,14 +7,14 @@ namespace SQLiteUpdater
 {
     public class VOutData
     {
-        public VOutData(decimal outputvalue, ScriptPubKey scriptPubKey)
+        public VOutData(decimal outputvalue, ScriptPubKey? scriptPubKey)
         {
             v = Convert.ToInt64(Math.Floor(PeercoinConstants.Coin * outputvalue));
             this.scriptPubKey = scriptPubKey;
 
         }
         public long v { get; set; }
-		public ScriptPubKey scriptPubKey { get; set; }
+		public ScriptPubKey? scriptPubKey { get; set; }
     }
 
     public class DbRepostory
@@ -59,7 +59,7 @@ namespace SQLiteUpdater
         }
 
 
-        public async Task<MetaItem> GetMeta()
+        public async Task<MetaItem?> GetMeta()
         {
             await using var connection = await SetPragmas();
 
@@ -135,10 +135,10 @@ namespace SQLiteUpdater
 	//{"f":"pow","bt":1345448181,"mr":"1eb8484c8bbe78e9","smr":""}
 	public class Blockdata
     {
-        public string f { get; set; } //pow,pos
+        public string f { get; set; } = null!; //pow,pos
         public uint bt { get; set; }
-        public string mr { get; set; }
-        public string smr { get; set; }
+        public string mr { get; set; } = null!;
+        public string smr { get; set; } = "";//old field
 	}
 
 
@@ -150,7 +150,7 @@ namespace SQLiteUpdater
 
 		public class ToDataEx  
         {
-            public Pub scriptPubKey { get; set; }
+            public Pub? scriptPubKey { get; set; }
 		}
 
         public class TxDataEx
@@ -164,9 +164,9 @@ namespace SQLiteUpdater
 
 		public class Pub
         {
-            public string asm { get; set; }
-            public string hex { get; set; }
-            public string type { get; set; }
+            public string? asm { get; set; }
+            public string? hex { get; set; }
+            public string? type { get; set; }
 		}
 
 

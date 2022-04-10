@@ -13,15 +13,15 @@ namespace SQLiteUpdater
 
     public class RpcSettings
     {
-        public string host { get; set; }
-        public string user { get; set; }
-        public string pass { get; set; }
+        public string host { get; set; } = null!;
+        public string user { get; set; } = null!;
+        public string pass { get; set; } = null!;
         public int port { get; set; }
     }
 
     public class DbSettings
     {
-        public string dbmetakey { get; set; }
-        public string database { get; set; }
+        public string dbmetakey { get; set; } = null!;
+        public string database { get; set; } = null!;
     }
 }

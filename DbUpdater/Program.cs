@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Threading;
+﻿using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
 namespace SQLiteUpdater
@@ -13,18 +10,18 @@ namespace SQLiteUpdater
             return new Program().Run();
         }
 
-        private string appSettingsFilename;
-        private AppSettings appSettings;
+        private string? appSettingsFilename;
+        private AppSettings? appSettings;
 
         private int Run()
         {
             var tokenSource = new CancellationTokenSource();
             LoadAppSettings();
             
-            var blockRepository = new BlockRepository(appSettings);
-            var transactionRepository = new TransactionRepository(appSettings);
+            var blockRepository = new BlockRepository(appSettings!);
+            var transactionRepository = new TransactionRepository(appSettings!);
             
-            var rpcclient = new RpcClient("http://" + appSettings.rpc.host + ":" + appSettings.rpc.port,
+            var rpcclient = new RPCClient("http://" + appSettings!.rpc.host + ":" + appSettings.rpc.port,
                 appSettings.rpc.user, appSettings.rpc.pass);
 
             var blockChainParser = new BlockChainParser(rpcclient, blockRepository, transactionRepository);

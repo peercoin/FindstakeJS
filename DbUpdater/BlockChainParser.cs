@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace SQLiteUpdater
+﻿namespace SQLiteUpdater
 {
     public class BlockChainParser
 	{
-		private readonly RpcClient client;
+		private readonly RPCClient client;
 		private readonly TransactionRepository transactionRepository;
 		private readonly BlockRepository blockRepository;
 
-		public BlockChainParser(RpcClient client, BlockRepository blockRepository, TransactionRepository transactionRepository)
+		public BlockChainParser(RPCClient client, BlockRepository blockRepository, TransactionRepository transactionRepository)
 		{
 			this.client = client;
 			this.transactionRepository = transactionRepository;
@@ -22,20 +16,20 @@ namespace SQLiteUpdater
 
         public async Task UpdateDb(CancellationToken cancellationToken)
         {
-            var blockcount = client.GetBlockCount();
+            var blockcount = await client.GetBlockCount();
 			Console.WriteLine("blockcount: " + blockcount);
-            var difficulty = client.GetDifficulty();
+            var difficulty = await client.GetDifficulty();
 			Console.WriteLine("difficulty: " + difficulty.pos);
 			var metaData = await blockRepository.GetMeta();
 
-            metaData.Diff = difficulty.pos;
+            metaData!.Diff = difficulty.pos;
             metaData.CurBH = blockcount;
 			Console.WriteLine("last block: " + metaData.MaxBH);
             while (!cancellationToken.IsCancellationRequested && metaData.MaxBH + 8 < 10 * (metaData.CurBH / 10))
             {
                 var current = (uint)metaData.MaxBH + 1;
 				Console.WriteLine("updating: " + current);
-				var hash = GetHash(current);
+				var hash = await GetHash(current);
                 await Parse(hash);
 
                 metaData.MaxBH = current;
@@ -45,9 +39,9 @@ namespace SQLiteUpdater
         }
 
 
-        public string GetBlockHash(string txId)
+        public async Task<string> GetBlockHash(string txId)
 		{
-			var tx = client.GetRawTransaction(txId, 1);
+			var tx = await client.GetRawTransaction(txId, 1);
 			return tx.blockhash;
 		}
 
@@ -71,8 +65,8 @@ namespace SQLiteUpdater
 
 			for (var index = 0; index < txIds.Count; index++)
 			{
-				var tx = client.GetRawTransaction(txIds[index]);
-				var txraw = client.DecodeRawTransaction(tx.hex);
+				var tx = await client.GetRawTransaction(txIds[index]);
+				var txraw = await client.DecodeRawTransaction(tx.hex);
 				var rawsize = tx.hex.Length / 2; // 2 char is 1 byte
 
 				await StoreTxState(blocktime, height, txraw, (uint)index, offset, (uint)rawsize);
@@ -130,7 +124,7 @@ namespace SQLiteUpdater
         private async Task StoreTxState(uint blocktime, uint height, DecodeRawTransactionResponse txraw,
             uint index, long offset, uint rawsize)
         {
-            var time = blocktime < PeercoinConstants.ProtocolV10SwitchTime && txraw.time.HasValue
+            var time = txraw.time.HasValue
                 ? (uint)txraw.time.Value
                 : blocktime;
 
@@ -158,7 +152,7 @@ namespace SQLiteUpdater
 		/// <returns></returns>
         public async Task<uint> Parse(string hash)
         {
-            var block = GetBlock(hash);
+            var block = await GetBlock(hash);
 
             await Store(block);
 
@@ -185,14 +179,14 @@ namespace SQLiteUpdater
 			await blockRepository.SetBlockState(newSate);
 		}
 
-		private string GetHash(uint index)
+		private async Task<string> GetHash(uint index)
 		{
-			return client.GetBlockHash(index);
+			return await client.GetBlockHash(index);
 		}
 
-		private BlockResponse GetBlock(string hash)
+		private async Task<BlockResponse> GetBlock(string hash)
 		{
-			return client.GetBlock(hash);
+			return await client.GetBlock(hash);
 		}
 
 	}//class parser
@@ -202,11 +196,11 @@ namespace SQLiteUpdater
 	{
 		public uint h { get; set; } //height
 
-		public string f { get; set; } //pow, pos
+		public string f { get; set; } = null!; //pow, pos
 		public uint bt { get; set; } //block unixtime
-		public string mr { get; set; } //blocks are clustered by modifier
-		public string hash { get; set; } //64 char
-		public List<string> tx { get; set; }
+		public string mr { get; set; } = null!;  //blocks are clustered by modifier
+		public string hash { get; set; } = null!;  //64 char
+		public List<string> tx { get; set; } = new List<string>();
 		public uint nTx { get; set; } //length tx
 	}
 

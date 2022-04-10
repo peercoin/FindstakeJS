@@ -1,2 +1,2 @@
-dotnet publish SQLiteUpdater.csproj -c Release --runtime linux-x64
+dotnet publish SQLiteUpdater.csproj -c Release --runtime linux-x64 --no-self-contained
 

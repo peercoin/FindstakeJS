@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace SQLiteUpdater
 {
-    public delegate Task JobAction(CancellationToken cancellationToken);
+  public delegate Task JobAction(CancellationToken cancellationToken);
 
     public class JobScheduler : IDisposable
     {
         private readonly JobAction jobAction;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private TimeSpan[] orderedStartTimes = Array.Empty<TimeSpan>();
-        private Timer timer;
+        private Timer? timer;
       
         private readonly object statusLock = new object();
         private bool running;

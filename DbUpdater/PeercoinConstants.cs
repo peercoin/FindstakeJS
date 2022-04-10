@@ -12,6 +12,6 @@ namespace SQLiteUpdater
         public static readonly Int64 StakeMaxAge = 90 * Day;
         public static readonly Int64 CoinDay = Coin * Day;
         public static readonly Int64 Findstakelimit = StakeMinAge - 761920;
-        public static readonly Int64 ProtocolV10SwitchTime = 1635768000; // Mon  1 Nov 12:00:00 UTC 2021
+        //public static readonly Int64 ProtocolV10SwitchTime = 1635768000; // Mon  1 Nov 12:00:00 UTC 2021
     }
 }
