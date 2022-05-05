@@ -32,7 +32,7 @@
     "firebase": "^9.0.1",
     "node-sass": "^4.14.1",
     "sass-loader": "^8.0.2",
-    "sqlite3": "^5.0.2",
+    "sqlite3": "^5.0.3",
     "typescript": "^3.9.2",
     "vue-template-compiler": "^2.6.14"
   }
