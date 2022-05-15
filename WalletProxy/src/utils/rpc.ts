@@ -1,12 +1,12 @@
-import axios, { AxiosResponse } from 'axios';
-const config = require('../config/index');
+import axios, { AxiosResponse } from "axios";
+const config = require("../config/index");
 
 export const PPCRPC = () => {
   return new PeercoinRPC(
-    'localhost',
+    "localhost",
     config.rpcs.user,
     config.rpcs.password,
-    config.rpcs.port,
+    config.rpcs.port
   );
 };
 
@@ -25,33 +25,42 @@ export class PeercoinRPC {
 
   async doExecute(
     method: string,
-    params: string[] | null | number[],
+    params: string[] | null | number[]
   ): Promise<AxiosResponse<any, any>> {
     return await axios.post(
-      'http://' + this.host + ':' + this.port,
+      "http://" + this.host + ":" + this.port,
       {
-        jsonrpc: '2.0',
+        jsonrpc: "2.0",
         id: +new Date(),
         method: method,
         params: !!params ? params : null,
       },
       {
         headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
         auth: {
           username: this.user,
           password: this.password,
         },
-      },
+      }
     );
   }
 
   async isReady(): Promise<boolean> {
     let ready = false;
     try {
-      const response = await this.doExecute('getblockcount', null);
+      console.log(
+        "get blockcount from " +
+          "http://" +
+          this.host +
+          ":" +
+          this.port +
+          " username: " +
+          this.user
+      );
+      const response = await this.doExecute("getblockcount", null);
       return (
         !!response &&
         !!response.data &&
@@ -65,62 +74,46 @@ export class PeercoinRPC {
     return ready;
   }
 
-  delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+  // delay(ms: number) {
+  //   return new Promise((resolve) => setTimeout(resolve, ms));
+  // }
 
   async getBlockCount(): Promise<number> {
-    let ready = false;
-
-    do {
-      try {
-        const response = await this.doExecute('getblockcount', null);
-        if (!!response && !!response.data && !!response.data.result) {
-          ready = true;
-          return response.data.result;
-        }
-      } catch (error) {
-        ready = false;
+    try {
+      const response = await this.doExecute("getblockcount", null);
+      if (!!response && !!response.data && !!response.data.result) {
+        return response.data.result;
       }
-      await this.delay(500);
-    } while (!ready);
+    } catch (error) {
+      console.warn(error);
+    }
+    return 0;
   }
 
   async getBlockHash(index: number): Promise<string> {
-    let ready = false;
-
-    do {
-      try {
-        const arr = [Number(index)];
-        const response = await this.doExecute('getblockhash', arr);
-        if (!!response && !!response.data && !!response.data.result) {
-          ready = true;
-          return response.data.result;
-        }
-      } catch (error) {
-
-        console.warn(error);
-        ready = false;
+    try {
+      const arr = [Number(index)];
+      const response = await this.doExecute("getblockhash", arr);
+      if (!!response && !!response.data && !!response.data.result) {
+        return response.data.result;
       }
-      console.log('again')
-      await this.delay(500);
-    } while (!ready);
+    } catch (error) {
+      console.warn(error);
+    }
+    return "";
   }
 
   async getBlock(hash: string): Promise<any> {
-    let ready = false;
-
-    do {
-      try {
-        const response = await this.doExecute('getblock', [hash]);
-        if (!!response && !!response.data && !!response.data.result) {
-          ready = true;
-          return response.data.result;
-        }
-      } catch (error) {
-        ready = false;
+ 
+    try {
+      const response = await this.doExecute("getblock", [hash]);
+      if (!!response && !!response.data && !!response.data.result) {
+ 
+        return response.data.result;
       }
-      await this.delay(500);
-    } while (!ready);
+    } catch (error) {
+      console.warn(error);
+    }
+    return null;
   }
 }

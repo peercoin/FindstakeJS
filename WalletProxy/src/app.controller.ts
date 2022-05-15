@@ -22,8 +22,18 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Get("block/count")
+  async getBlockCount(): Promise<number> {
+    return await this.appService.getBlockCount();
+  }
+
   @Get("block/:height")
-  async getHash(@Param("height") height: number): Promise<string> {    
+  async getHash(@Param("height") height: number): Promise<string> {
     return await this.appService.getBlockHashFromHeight(height);
+  }
+
+  @Get("block/hash/:hash")
+  async getBlockByHash(@Param("hash") hash: string): Promise<any> {
+    return await this.appService.getBlockByHash(hash);
   }
 }

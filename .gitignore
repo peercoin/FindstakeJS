@@ -15,3 +15,4 @@ yarn-error.log*
 
 DbUpdater/bin/
 DbUpdater/obj/
+WalletProxy/dist/
