@@ -25,7 +25,7 @@ export class PeercoinRPC {
 
   async doExecute(
     method: string,
-    params: string[] | null | number[]
+    params: null | any[]
   ): Promise<AxiosResponse<any, any>> {
     return await axios.post(
       "http://" + this.host + ":" + this.port,
@@ -107,6 +107,34 @@ export class PeercoinRPC {
  
     try {
       const response = await this.doExecute("getblock", [hash]);
+      if (!!response && !!response.data && !!response.data.result) {
+ 
+        return response.data.result;
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+    return null;
+  }
+
+  async getRawTransaction(hash: string, verbose: number): Promise<any> {
+ 
+    try {
+      const response = await this.doExecute("getrawtransaction", [hash, verbose]);
+      if (!!response && !!response.data && !!response.data.result) {
+ 
+        return response.data.result;
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+    return null;
+  }
+
+  async decodeRawTransaction(transaction: string): Promise<any> {
+ 
+    try {
+      const response = await this.doExecute("decoderawtransaction", [transaction]);
       if (!!response && !!response.data && !!response.data.result) {
  
         return response.data.result;

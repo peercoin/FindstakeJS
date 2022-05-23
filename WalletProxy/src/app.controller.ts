@@ -36,4 +36,15 @@ export class AppController {
   async getBlockByHash(@Param("hash") hash: string): Promise<any> {
     return await this.appService.getBlockByHash(hash);
   }
+
+  @Get("transaction/raw/{txId}")
+  async getRawTransaction(@Param("txId") txId: string): Promise<any> {
+    return await this.appService.getRawTransaction(txId, 0);
+  }
+
+  @Get("transaction/decode/{transaction} ")
+  async getaRawTransaction(@Param("transaction") transaction: string): Promise<any> {
+    return await this.appService.decodeRawTransaction(transaction);
+  }
+  
 }

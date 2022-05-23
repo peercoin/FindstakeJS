@@ -26,13 +26,13 @@ WEB_PORT=9009
 ## endpoints:
 port 9009 is hardcoded, todo: add port to settings.json
 ```
-http://127.0.0.1:9009/difficulty (todo)
+ 
 http://127.0.0.1:9009/block/count
 http://127.0.0.1:9009/block/{index:long}
 http://127.0.0.1:9009/block/hash/{hash}
-http://127.0.0.1:9009/transaction/raw/{txId}  (todo)
-http://127.0.0.1:9009/transaction/decode/{transaction} (todo)
-http://127.0.0.1:9009/listunspents (todo)
+http://127.0.0.1:9009/transaction/raw/{txId}   
+http://127.0.0.1:9009/transaction/decode/{transaction}  
+ 
 ``` 
 
 
@@ -67,20 +67,20 @@ http://127.0.0.1:9009/listunspents (todo)
 ## Installation
 
 ```bash
-$ npm install
+$ npm install or yarn install
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+$ npm run start or yarn start
 
 # watch mode
-$ npm run start:dev
+$ npm run start:dev or yarn start:dev
 
 # production mode
-$ npm run start:prod
+$ npm run start:prod or yarn start:prod
 ```
 
 ## Test

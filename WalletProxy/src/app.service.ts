@@ -24,4 +24,15 @@ export class AppService {
   async getBlockByHash(hash: string): Promise<object | null> {
     return await this.rpc.getBlock(hash);
   }
+
+  async getRawTransaction(
+    hash: string,
+    verbose: number
+  ): Promise<object | null> {
+    return await this.rpc.getRawTransaction(hash, verbose);
+  }
+
+  async decodeRawTransaction(transaction: string): Promise<object | null> {
+    return await this.rpc.decodeRawTransaction(transaction);
+  }
 }
