@@ -35,4 +35,23 @@ export class AppService {
   async decodeRawTransaction(transaction: string): Promise<object | null> {
     return await this.rpc.decodeRawTransaction(transaction);
   }
+
+  async createRawCoinstakeTransaction(
+    txid: string, //unspent transaction
+    vout: number, //index of unspent transaction
+    redeemScript: string,
+    address: string, // the P2SH addresses, usually a multi-signature addresses
+    futureOutput: number, // orginal input + stake reward
+    futureTimestamp: number, //unix time
+    minterPubkey: string //pubkey of the minter
+  ): Promise<object | null> {
+    return await this.rpc.createRawCoinstakeTransaction(
+      [{ txid: txid, vout: vout, redeemScript: redeemScript }],
+      [
+        { Address: minterPubkey, Vout: 0 },
+        { Address: address, Vout: futureOutput },
+      ],
+      futureTimestamp
+    );
+  }
 }

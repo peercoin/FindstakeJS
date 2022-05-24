@@ -104,11 +104,9 @@ export class PeercoinRPC {
   }
 
   async getBlock(hash: string): Promise<any> {
- 
     try {
       const response = await this.doExecute("getblock", [hash]);
       if (!!response && !!response.data && !!response.data.result) {
- 
         return response.data.result;
       }
     } catch (error) {
@@ -118,11 +116,12 @@ export class PeercoinRPC {
   }
 
   async getRawTransaction(hash: string, verbose: number): Promise<any> {
- 
     try {
-      const response = await this.doExecute("getrawtransaction", [hash, verbose]);
+      const response = await this.doExecute("getrawtransaction", [
+        hash,
+        verbose,
+      ]);
       if (!!response && !!response.data && !!response.data.result) {
- 
         return response.data.result;
       }
     } catch (error) {
@@ -132,11 +131,45 @@ export class PeercoinRPC {
   }
 
   async decodeRawTransaction(transaction: string): Promise<any> {
- 
     try {
-      const response = await this.doExecute("decoderawtransaction", [transaction]);
+      const response = await this.doExecute("decoderawtransaction", [
+        transaction,
+      ]);
       if (!!response && !!response.data && !!response.data.result) {
- 
+        return response.data.result;
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+    return null;
+  }
+
+  async createRawCoinstakeTransaction(
+    inputs: { txid: string; vout: number; redeemScript: string }[],
+    outputs: { Address: string; Vout: number }[],
+    timestamp: number
+  ): Promise<any> {
+    const param1 = inputs;
+    const param2 = [
+      {
+        coinstake: 0,
+      },
+    ] as any[];
+
+    for (let index = 0; index < outputs.length; index++) {
+      param2.push({
+        [outputs[index].Address]: outputs[index].Vout,
+      });
+    }
+
+    try {
+      const response = await this.doExecute("createrawtransaction", [
+        param1,
+        param2,
+        0,
+        timestamp,
+      ]);
+      if (!!response && !!response.data && !!response.data.result) {
         return response.data.result;
       }
     } catch (error) {

@@ -43,8 +43,41 @@ export class AppController {
   }
 
   @Get("transaction/decode/{transaction} ")
-  async getaRawTransaction(@Param("transaction") transaction: string): Promise<any> {
+  async getaRawTransaction(
+    @Param("transaction") transaction: string
+  ): Promise<any> {
     return await this.appService.decodeRawTransaction(transaction);
   }
-  
+
+  @Post("transaction/raw/coinstake")
+  async createMessage(
+    @Res() response,
+    @Body()
+    message: {
+      txid: string;
+      vout: number;
+      redeemScript: string;
+      address: string;
+      futureOutput: number;
+      futureTimestamp: number;
+      minterPubkey: string;
+    }
+  ) {
+    try {
+      console.log(message);
+      await this.appService.createRawCoinstakeTransaction(
+        message.txid,
+        Number(message.vout),
+        message.redeemScript,
+        message.address,
+        Number(message.futureOutput),
+        Number(message.futureTimestamp),
+        message.minterPubkey
+      );
+      return response.status(200);
+    } catch (error) {
+      console.warn(error);
+      return response.status(400);
+    }
+  }
 }
