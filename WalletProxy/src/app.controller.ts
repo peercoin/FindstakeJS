@@ -65,7 +65,7 @@ export class AppController {
   ) {
     try {
       console.log(message);
-      await this.appService.createRawCoinstakeTransaction(
+      return await this.appService.createRawCoinstakeTransaction(
         message.txid,
         Number(message.vout),
         message.redeemScript,
@@ -74,7 +74,7 @@ export class AppController {
         Number(message.futureTimestamp),
         message.minterPubkey
       );
-      return response.status(200);
+  
     } catch (error) {
       console.warn(error);
       return response.status(400);

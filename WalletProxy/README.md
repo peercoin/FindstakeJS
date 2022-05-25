@@ -24,7 +24,7 @@ WEB_PORT=9009
 ```
 
 ## endpoints:
-port 9009 is hardcoded, todo: add port to settings.json
+port 9009 is set in .env file
 ```
  
 http://127.0.0.1:9009/block/count
@@ -32,7 +32,17 @@ http://127.0.0.1:9009/block/{index:long}
 http://127.0.0.1:9009/block/hash/{hash}
 http://127.0.0.1:9009/transaction/raw/{txId}   
 http://127.0.0.1:9009/transaction/decode/{transaction}  
- 
+
+create a raw coinstake transaction:
+POST http://127.0.0.1:9009/transaction/raw/coinstake
+    txid: string, //unspent transaction
+    vout: number, //index of unspent transaction
+    redeemScript: string, e.g.: 532102633a97eab667d165b28b19ad0848cc4f3f3e06e6b19b15cdc910d4b13f4e611f21027260ccc4dba64b04c2c07bd02da5257058ad464857919789ad9c983025fd2cba2102b813e6335216f3ae8547d283f3ab600d08c1c444f5d34fa38cfd941d939001422103131f4fb6fdc603ad3859c2c5b3f246f1ee3ba5391600e960b9be4c59f609b3dd2103b12c1b22ebbdf8e7b1c19db701484fd6fdfb63e4b117800a6838c6eb0f0e881b55ae
+    address: string, // the P2SH addresses, usually a multi-signature addresses
+    futureOutput: number, // orginal input + stake reward
+    futureTimestamp: number, //unix time
+    minterPubkey: string //pubkey of the minter, const regex = /^pubkey:[a-fA-F0-9]{130}$/gm; 
+
 ``` 
 
 
