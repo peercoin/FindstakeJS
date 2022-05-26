@@ -42,20 +42,30 @@ export class AppController {
 
   @Get("transaction/raw/:txId")
   async getRawTransaction(@Param("txId") txId: string): Promise<any> {
-    console.log('getRawTransaction')
+    //console.log('getRawTransaction')
     return await this.appService.getRawTransaction(txId, 0);
   }
 
-  @Get("transaction/decode/:transaction ")
-  async getaRawTransaction(
-    @Param("transaction") transaction: string
+  @Post("transaction/raw/decode")
+  async decodeRawTransaction(
+    //@Res() response,
+    @Body()
+    message: {
+      rawtransaction: string;
+    }
   ): Promise<any> {
-    return await this.appService.decodeRawTransaction(transaction);
+    //console.log(message.rawtransaction);
+    let transaction = await this.appService.decodeRawTransaction(
+      message.rawtransaction
+    );
+
+    //console.log(transaction);
+    return transaction;
   }
 
   @Post("transaction/raw/coinstake")
   async createMessage(
-    @Res() response,
+    //@Res() response,
     @Body()
     message: {
       txid: string;
@@ -67,21 +77,17 @@ export class AppController {
       minterPubkey: string;
     }
   ) {
-    try {
-      console.log(message);
-      return await this.appService.createRawCoinstakeTransaction(
-        message.txid,
-        Number(message.vout),
-        message.redeemScript,
-        message.address,
-        Number(message.futureOutput),
-        Number(message.futureTimestamp),
-        message.minterPubkey
-      );
-  
-    } catch (error) {
-      console.warn(error);
-      return response.status(400);
-    }
+    console.log(message);
+    const response = await this.appService.createRawCoinstakeTransaction(
+      message.txid,
+      Number(message.vout),
+      message.redeemScript,
+      message.address,
+      Number(message.futureOutput),
+      Number(message.futureTimestamp),
+      message.minterPubkey
+    );
+    console.log(response);
+    return response;
   }
 }

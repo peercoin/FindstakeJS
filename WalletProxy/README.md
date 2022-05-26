@@ -31,7 +31,9 @@ http://127.0.0.1:9009/block/count
 http://127.0.0.1:9009/block/{index:long}
 http://127.0.0.1:9009/block/hash/{hash}
 http://127.0.0.1:9009/transaction/raw/{txId}   
-http://127.0.0.1:9009/transaction/decode/{transaction}  
+
+
+POST http://127.0.0.1:9009/transaction/raw/decode {rawtransaction:string}
 
 create a raw coinstake transaction:
 POST http://127.0.0.1:9009/transaction/raw/coinstake
