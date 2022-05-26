@@ -74,9 +74,17 @@ export class PeercoinRPC {
     return ready;
   }
 
-  // delay(ms: number) {
-  //   return new Promise((resolve) => setTimeout(resolve, ms));
-  // }
+  async getDifficulty(): Promise<number> {
+    try {
+      const response = await this.doExecute("getdifficulty", null);
+      if (!!response && !!response.data && !!response.data.result) {
+        return response.data.result["proof-of-stake"];
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+    return 0;
+  }
 
   async getBlockCount(): Promise<number> {
     try {

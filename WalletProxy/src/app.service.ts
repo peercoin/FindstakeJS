@@ -12,6 +12,9 @@ export class AppService {
   getHello(): string {
     return "Hello World!";
   }
+  async getDifficulty(): Promise<number> {
+    return await this.rpc.getDifficulty();
+  }
 
   async getBlockCount(): Promise<number> {
     return await this.rpc.getBlockCount();

@@ -21,7 +21,10 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-
+  @Get("difficulty")
+  async getDifficulty(): Promise<number> {
+    return await this.appService.getDifficulty();
+  }
   @Get("block/count")
   async getBlockCount(): Promise<number> {
     return await this.appService.getBlockCount();
@@ -37,12 +40,13 @@ export class AppController {
     return await this.appService.getBlockByHash(hash);
   }
 
-  @Get("transaction/raw/{txId}")
+  @Get("transaction/raw/:txId")
   async getRawTransaction(@Param("txId") txId: string): Promise<any> {
+    console.log('getRawTransaction')
     return await this.appService.getRawTransaction(txId, 0);
   }
 
-  @Get("transaction/decode/{transaction} ")
+  @Get("transaction/decode/:transaction ")
   async getaRawTransaction(
     @Param("transaction") transaction: string
   ): Promise<any> {
