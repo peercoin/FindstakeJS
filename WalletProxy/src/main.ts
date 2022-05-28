@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { urlencoded, json } from 'express';
 import { PPCRPC } from 'src/utils/rpc';
 const config = require('./config/index');
 
@@ -32,7 +33,13 @@ async function bootstrapWhenNodeIsReady() {
     return setTimeout(bootstrapWhenNodeIsReady, 1000);
   }
   
-  return bootstrap(await NestFactory.create(AppModule));
+  const app = await NestFactory.create(AppModule);
+ 
+  app.use(json({ limit: '5mb' }));
+  app.use(urlencoded({ extended: true, limit: '5mb' }));
+
+
+  return bootstrap(app);
 }
 
 bootstrapWhenNodeIsReady();
