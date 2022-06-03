@@ -47,7 +47,7 @@ export class AppService {
     futureOutput: number, // orginal input + stake reward
     futureTimestamp: number, //unix time
     minterPubkey: string //pubkey of the minter
-  ): Promise<object | null> {
+  ): Promise<string | null> {
     return await this.rpc.createRawCoinstakeTransaction(
       [{ txid: txid, vout: vout, redeemScript: redeemScript }],
       [

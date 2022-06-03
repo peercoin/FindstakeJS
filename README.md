@@ -11,37 +11,20 @@ Most cryptocoin mining requires specialized hardware, but Peercoin minting can b
 With FindstakeJS, there is no need to leave Peercoin wallet on 24-7 anymore. 
 Find out in advance when to mint and startup your wallet just before it finds a block and help secure the network. 
 
-#### Screenshot:
-![Alt text](https://imgur.com/Gm4n6Ge.png "FindstakeJS v0.5.11")
+ 
 
 Dependencies:
 ------------
- * installed Peercoin wallet with sync data
+ * installed Peercoin wallet with synced data
  * a modern browser [also a fast pc would not hurt, the browser is doing all the hard work, not the webserver]
- * nodejs (http://nodejs.org/)
+ * a running WalletProxy
 
     
-    
-How to install
-----------
-cd the folder:
-``` bash
-$ npm install
-```
- 
-
-[optional] How to (re)build  
-----------    
-``` bash
-$ npm build
-```	
-	
+     
 	
 How to set up
 ----------
-* this set up is initially needed to update the database:
-* install https://sqlitebrowser.org/ and open findstakejs.dat file to see the empty tables
-* configure /DbUpdater/bin/Release/net5.0/linux-x64/publish/appsettings.json
+ 
 * make sure to have the following in file ppcoin.conf:
 ``` bash
 listen=1
@@ -57,30 +40,27 @@ rpcport=8332
 
 * start Peercoin wallet (or daemon):
  
-* configure the same rpc username and password in \app\config.js
-test:
-``` bash
-$ node testrpc.js
+## Project setup
+```
+yarn install
 ```
 
-
-How to use
-----------
-to update database, start up Peercoin with a configured ppcoin.conf
-
-
-``` bash
-just once: chmod 777 /DbUpdater/bin/Release/net5.0/linux-x64/publish/SQLiteUpdater 
-$./DbUpdater/bin/Release/net5.0/linux-x64/publish/SQLiteUpdater  
+### Compiles and hot-reloads for development
 ```
-ps: first update may take about a few days!
-
-
-Start the website:
-``` bash
-$ node webserver.js
+yarn dev
 ```
- 
+
+### Compiles and minifies for production
+```
+yarn build
+```
+
+### Deploy
+
+everything in the `dist` folder.  
+
+
+  
 Open http://localhost:3000/  
 
 About

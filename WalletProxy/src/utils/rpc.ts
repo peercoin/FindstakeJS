@@ -61,6 +61,31 @@ export class PeercoinRPC {
           this.user
       );
       const response = await this.doExecute("getblockcount", null);
+      // let param1 = [
+      //   {
+      //     txid: "bdcae66a3c0b9804eaa7b8a923d597f9726fb46cdece563996b6f81804a2b60e",
+      //     vout: 0,
+      //     redeemScript:
+      //       "532102633a97eab667d165b28b19ad0848cc4f3f3e06e6b19b15cdc910d4b13f4e611f21027260ccc4dba64b04c2c07bd02da5257058ad464857919789ad9c983025fd2cba2102b813e6335216f3ae8547d283f3ab600d08c1c444f5d34fa38cfd941d939001422103131f4fb6fdc603ad3859c2c5b3f246f1ee3ba5391600e960b9be4c59f609b3dd2103b12c1b22ebbdf8e7b1c19db701484fd6fdfb63e4b117800a6838c6eb0f0e881b55ae",
+      //   },
+      // ];
+
+      // let p2 = [
+      //   {
+      //     Address:
+      //       "pubkey:04c17a7f16a7fdd275af270d24c08c5c1b7dd98e83742782f9b26ab43c9506dea33d396b8a9640d1ea5163dde2de50ffe9a9d2b43f2c2205731ab425d9b8cd4f10",
+      //     Vout: 0,
+      //   },
+      //   { Address: "p92W3t7YkKfQEPDb7cG9jQ6iMh7cpKLvwK", Vout: 20325.068926 },
+      // ];
+      // let rrr = await this.createRawCoinstakeTransaction(
+      //   param1,
+      //   p2,
+      //   1654153448
+      // );
+      // debugger;
+      // console.log(rrr);
+      // return !!rrr;
       return (
         !!response &&
         !!response.data &&
@@ -156,7 +181,7 @@ export class PeercoinRPC {
     inputs: { txid: string; vout: number; redeemScript: string }[],
     outputs: { Address: string; Vout: number }[],
     timestamp: number
-  ): Promise<any> {
+  ): Promise<string | null> {
     const param1 = inputs;
     const param2 = [
       {
@@ -169,14 +194,10 @@ export class PeercoinRPC {
         [outputs[index].Address]: outputs[index].Vout,
       });
     }
-
+    const params = [param1, param2, 0, timestamp];
+    console.log(params);
     try {
-      const response = await this.doExecute("createrawtransaction", [
-        param1,
-        param2,
-        0,
-        timestamp,
-      ]);
+      const response = await this.doExecute("createrawtransaction", params);
       if (!!response && !!response.data && !!response.data.result) {
         return response.data.result;
       }
