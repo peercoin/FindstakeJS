@@ -26,7 +26,7 @@ WEB_PORT=9009
 ## endpoints:
 port 9009 is set in .env file
 ```
- 
+http://127.0.0.1:9009/difficulty 
 http://127.0.0.1:9009/block/count
 http://127.0.0.1:9009/block/{index:long}
 http://127.0.0.1:9009/block/hash/{hash}
