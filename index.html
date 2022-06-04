@@ -3,12 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="favicon.ico" />
+    <meta http-equiv="refresh" content="3; url='https://findstake.peercoin.net'" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FindstakeJS</title>
     <script type="module" crossorigin src="assets/index.5eded738.js"></script>
     <link rel="stylesheet" href="assets/index.df9d452b.css">
+
+
+    <style>
+      #overlay {
+        position: fixed;
+        display: block;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 2;
+        cursor: pointer;
+      }
+      
+      #text{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 50px;
+        color: white;
+        transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+      }
+      </style>
   </head>
   <body>
+    <div id="overlay">
+      <div id="text">Redirecting to https://findstake.peercoin.net in 3 seconds.</div>
+    </div>
     <div id="app"></div>
     
   </body>
