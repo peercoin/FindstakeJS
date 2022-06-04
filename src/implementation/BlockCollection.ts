@@ -103,6 +103,17 @@ export class BlockCollection {
     this.url = url;
   }
 
+  async getBlockByHeight(height: number): Promise<Block> {
+    let block = this.Blocks.find((b) => b.height === height) || null;
+
+    if (!block) {
+      const hash = await this.getBlockHash(height);
+      block = await this.getBlock(hash!);
+    }
+
+    return block!;
+  }
+
   async getBlock(hash: string): Promise<Block> {
     let block = this.Blocks.find((b) => b.hash === hash) || null;
 
@@ -180,6 +191,18 @@ export class BlockCollection {
 
   isEven(n: number): boolean {
     return n % 2 == 0;
+  }
+
+  private async getBlockHash(height: number): Promise<string | null> {
+    try {
+      if (!height) return null;
+      return (
+        await axios.get(this.url + "/block/" + height, null || undefined)
+      ).data;
+    } catch (error) {
+      console.error(error);
+    }
+    return null;
   }
 
   private async getBlockByHash(hash: string): Promise<IBlock | null> {

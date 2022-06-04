@@ -472,10 +472,10 @@ export default defineComponent({
         try {
           const unspent = unspents[index];
           const id = "to" + unspent.tx + "_" + unspent.index;
-          const blockhash = unspent.blockhash;
+
           const blockheight = unspent.blockheight;
 
-          const block = await this.blocks!.getBlock(blockhash);
+          const block = await this.blocks!.getBlockByHeight(blockheight);
           const transaction = block!.getTransaction(unspent.tx);
           const output = transaction!.vout.find((v) => v.n === unspent.index);
           const template = new MintTemplate(
@@ -487,7 +487,7 @@ export default defineComponent({
             output!.n,
             output!.units,
             blockheight,
-            blockhash
+            block.hash
           );
           //console.log(template);
 
