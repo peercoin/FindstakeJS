@@ -89,7 +89,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import sortBy from "lodash/sortBy";
+import orderBy from "lodash/orderBy";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { FutureStake, MintTemplate } from "../implementation/MintTemplate";
 import VerticalExpand from "./VerticalExpand.vue";
@@ -144,7 +144,7 @@ export default defineComponent({
       let results = this.staketemplate.FutureStakes.slice();
       const sortItem = this.dayStamp || "";
 
-      return sortBy(
+      return orderBy(
         results,
         [
           (fs) => (fs.DayStamp === sortItem ? -1 : 1),
