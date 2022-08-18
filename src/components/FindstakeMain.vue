@@ -83,7 +83,7 @@ import { FutureStake, MintTemplate } from "../implementation/MintTemplate";
 import { BlockCollection } from "../implementation/BlockCollection";
 import { KernelHash } from "../implementation/KernelHash";
 import groupBy from "lodash/groupBy";
-import sortBy from "lodash/sortBy";
+import orderBy from "lodash/orderBy";
 import VerticalExpand from "./VerticalExpand.vue";
 import BarChart from "./BarChart.vue";
 import StakeProspects from "./StakeProspects.vue";
@@ -195,7 +195,7 @@ export default defineComponent({
 
       const sortItem = this.dayStamp || "";
 
-      return sortBy(
+      return orderBy(
         results,
         [
           (r) =>
