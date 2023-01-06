@@ -46,12 +46,13 @@ export class AppService {
     address: string, // the P2SH addresses, usually a multi-signature addresses
     futureOutput: number, // orginal input + stake reward
     futureTimestamp: number, //unix time
-    minterPubkey: string //pubkey of the minter
+    minterPubkey: string, //pubkey of the minter
+    minterReward: number = 0.0 // reward for the minter, default is zero
   ): Promise<string | null> {
     return await this.rpc.createRawCoinstakeTransaction(
       [{ txid: txid, vout: vout, redeemScript: redeemScript }],
       [
-        { Address: minterPubkey, Vout: 0 },
+        { Address: minterPubkey, Vout: minterReward },
         { Address: address, Vout: futureOutput },
       ],
       futureTimestamp
