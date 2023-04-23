@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="page-title smaller mt-2">SELECT AT MOST 10 UTXO TO CONTINUE</p>
+    <p class="page-title smaller mt-2">SELECT AT MOST {{ max }} UTXO TO CONTINUE</p>
 
     <div v-if="1 === 1" class="row justify-content-between my-4 g-0">
       <div class="col-md-6 pe-md-2 mt-3">

@@ -14,7 +14,8 @@ export class CreateRawCoinStake {
     address: string,
     futureOutput: number,
     futureTimestamp: number,
-    minterPubkey: string
+    minterPubkey: string,
+    minterReward: number = 0.0
   ): Promise<string | null> {
     try {  
       return (
@@ -27,6 +28,7 @@ export class CreateRawCoinStake {
           futureOutput: futureOutput,
           futureTimestamp: futureTimestamp,
           minterPubkey: 'pubkey:' + minterPubkey,  //pubkey: is appended otherwise it thinks it is a address
+          minterReward: minterReward
         })
       ).data;
     } catch (error) {   
