@@ -140,7 +140,7 @@ export default defineComponent({
       findstakeRunning: false,
       findstakeDone: false,
       trigger: 0,
-      max: 25,
+      max: 75,
     };
   },
 
