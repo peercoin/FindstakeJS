@@ -4,6 +4,14 @@
       <table cellpadding="0" cellspacing="0" class="tbl-header-head">
         <thead>
           <tr>
+            <th v-if="showDiscord">
+              <CheckboxToggle
+                v-model="staketemplate.Selected"
+                :show-labels="true"
+                label-checked="Discord"
+                label-unchecked="No Discord"
+              />
+            </th>
             <th
               @click.stop="copyToClipboard(staketemplate.Txid)"
               :title="staketemplate.Txid"
@@ -93,12 +101,14 @@ import orderBy from "lodash/orderBy";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { FutureStake, MintTemplate } from "../implementation/MintTemplate";
 import VerticalExpand from "./VerticalExpand.vue";
+import CheckboxToggle from "./CheckboxToggle.vue";
 
 export default defineComponent({
   components: {
     MintTemplate,
     FontAwesomeIcon,
     VerticalExpand,
+    CheckboxToggle,
   },
 
   props: {
@@ -128,6 +138,14 @@ export default defineComponent({
   },
 
   computed: {
+    showDiscord(): boolean {
+      let queryString = window.location.search;
+      let urlParams = new URLSearchParams(queryString);
+      return (
+        urlParams.has("pushToDiscord") && urlParams.get("pushToDiscord") === "1"
+      );
+    },
+
     txId(): string {
       return !!this.staketemplate.Txid
         ? this.staketemplate.Txid.slice(0, 5) +

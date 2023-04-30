@@ -25,28 +25,60 @@ export class StakeModifiers {
 
     let currentBlock = from;
     do {
-      const hash = await this.getHash(currentBlock);
+      let blockCache = null;
+      // debugger;
+      if (typeof Storage !== "undefined") {
+        // Code for localStorage/sessionStorage.
+        blockCache = localStorage.getItem("stakemodifier_" + currentBlock);
+        // if (!!blockCache)
+        //   console.log(
+        //     "found localstorage for " +
+        //       "stakemodifier_" +
+        //       currentBlock +
+        //       " value: " +
+        //       blockCache
+        //   );
+      }
 
-      const block = await this.getBlockByHash(hash);
+      if (!blockCache) {
+        //debugger;
+        const hash = await this.getHash(currentBlock);
+
+        const block = await this.getBlockByHash(hash);
+        if (!!block) {
+          blockCache = block.time + "~" + block.modifier;
+          if (typeof Storage !== "undefined") {
+            try {
+              localStorage.setItem(
+                "stakemodifier_" + currentBlock,
+                block.time + "~" + block.modifier
+              );
+            } catch (error) {
+              //QuotaExceededError
+            }
+          }
+        }
+      }
 
       if (
-        !!hash &&
-        !!block &&
+        !!blockCache &&
         !this.stakemodifiersAll.find((sm) => sm.blockheight === currentBlock)
       ) {
+        const time = parseInt(blockCache.split("~")[0], 10);
+        const modifier = blockCache.split("~")[1];
         this.stakemodifiersAll.push({
           blockheight: currentBlock,
-          blocktime: block.time,
-          modifier: block.modifier,
+          blocktime: time,
+          modifier: modifier,
           modifierBytes: null,
         });
-
-        if (!this.stakemodifiers.find((sm) => sm.modifier === block.modifier)) {
+        //add first modifier when changed:
+        if (!this.stakemodifiers.find((sm) => sm.modifier === modifier)) {
           this.stakemodifiers.push({
             blockheight: currentBlock,
-            blocktime: block.time,
-            modifier: block.modifier,
-            modifierBytes: CryptoUtils.hexToBytes(block.modifier),
+            blocktime: time,
+            modifier: modifier,
+            modifierBytes: CryptoUtils.hexToBytes(modifier),
           });
         }
       }

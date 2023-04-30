@@ -7,6 +7,7 @@ export interface FutureStake {
   FutureUnits: number;
   DayStamp: string;
   RawTransaction?: string | null;
+  Selected: boolean | null;
 }
 
 export class MintTemplate {
