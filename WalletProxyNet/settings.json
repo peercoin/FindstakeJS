@@ -1,0 +1,10 @@
+{
+  "Rpcuri": "http://127.0.0.1:8332",
+  "Rpcuser": "changethispusertotheoneyouuse",
+  "Rpcpassword": "changepasswordtotheoneyouuse",
+  "Discord": {
+    "BotToken": "get.your.own-bot_token",
+    "TagUsers": "@here",
+    "ChannelId": 123456789
+  }
+}

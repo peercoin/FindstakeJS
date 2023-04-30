@@ -57,6 +57,34 @@
             @bar-clicked="onBarClicked"
           />
 
+          <div v-show="showDiscord" class="row mx-1 mt-3 bg-light">
+            <div class="col-md-8 my-2 discord-title text-start">
+              PUSH TO DISCORD <strong>{{ numberOfSelected }}</strong> threads
+            </div>
+
+            <div class="col-md-2 my-2 text-center">
+              <button
+                type="button"
+                class="btn btn-success mt-1 mb-3"
+                @click="toggleDiscordSelect"
+                :disabled="!showDiscord"
+              >
+                TOGGLE
+              </button>
+            </div>
+
+            <div class="col-md-2 my-2">
+              <button
+                type="button"
+                class="btn btn-success mt-1 mb-3"
+                @click="startThreadToDiscord"
+                :disabled="!showDiscord"
+              >
+                PUSH
+              </button>
+            </div>
+          </div>
+
           <StakeProspects
             v-for="template in mintTemplatesWithResults"
             :key="template.Name"
@@ -70,6 +98,7 @@
 </template>
 
 <script lang="ts">
+import axios from "axios";
 import { defineComponent } from "vue";
 import isEmpty from "lodash/isEmpty";
 import MultiStepsProgress from "../components/MultiStepsProgress.vue";
@@ -140,11 +169,27 @@ export default defineComponent({
       findstakeRunning: false,
       findstakeDone: false,
       trigger: 0,
-      max: 75,
+      max: 750,
+      pushed2DiscordIds: [] as Array<string>,
     };
   },
 
   computed: {
+    showDiscord(): boolean {
+      let queryString = window.location.search;
+      let urlParams = new URLSearchParams(queryString);
+      return (
+        urlParams.has("pushToDiscord") && urlParams.get("pushToDiscord") === "1"
+      );
+    },
+
+    numberOfSelected(): number {
+      if (!!this.mintTemplatesWithResults) {
+        return this.mintTemplatesWithResults.filter((t) => t.Selected).length;
+      }
+      return 0;
+    },
+
     wizardStatus(): number {
       if (this.findstakeDone) return 7;
       if (this.findstakeRunning) return 6;
@@ -263,11 +308,73 @@ export default defineComponent({
   },
 
   methods: {
+    async startDiscordThread(title: string, body: string): Promise<boolean> {
+      try {
+        await axios.post(this.urlProxy + "/discord/thread/add", {
+          Title: title,
+          Body: body,
+        });
+
+        return true;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    },
+
     onHomeClick() {
       //todo: reset to defaults, for now refresh page
       window.location.reload();
     },
-
+    toggleDiscordSelect(): void {
+      this.mintTemplatesWithResults.forEach((mintTemplate) => {
+        mintTemplate.Selected = !mintTemplate.Selected;
+      });
+    },
+    async startThreadToDiscord() {
+      for (
+        let index = 0;
+        index < this.mintTemplatesWithResults.length;
+        index++
+      ) {
+        const staketemplate = this.mintTemplatesWithResults[index];
+        const itemExists = this.pushed2DiscordIds.find(
+          (t) => t === staketemplate.Id
+        );
+        if (
+          !itemExists &&
+          staketemplate.Selected &&
+          staketemplate.FutureStakes.length > 0
+        ) {
+          let futureStakes = staketemplate.FutureStakes.slice();
+          const sortItem = this.dayStamp || "";
+          const stake2push = orderBy(
+            futureStakes,
+            [
+              (fs) => (fs.DayStamp === sortItem ? -1 : 1),
+              (fs) => fs.FutureTimestamp,
+            ],
+            ["asc", "asc"]
+          )[0];
+          const url =
+            "https://peercoin.github.io/cointoolkit/?mode=peercoin&verify=" +
+            stake2push.RawTransaction;
+          const title =
+            stake2push.DayStamp +
+            " " +
+            staketemplate.Id.slice(-6) +
+            " " +
+            this.formatNumber(staketemplate.PrevTxOutValue * 0.000001, 2) +
+            " @max" +
+            this.formatNumber(stake2push.MaxDifficulty, 2);
+          var result = await this.startDiscordThread(title, url);
+          if (!!result) this.pushed2DiscordIds.push(staketemplate.Id);
+        }
+      }
+    },
+    formatNumber(coins: number, fix: number): string {
+      return "" + parseFloat(coins.toFixed(fix));
+    },
     utxoSelected(list: Array<MintTemplate>) {
       this.mintTemplates = list;
       this.allMintTemplates = [];
@@ -560,6 +667,15 @@ export default defineComponent({
   font-weight: 400;
   &.smaller {
     font-size: 1.4rem;
+  }
+}
+
+.discord-title {
+  color: #3cb054;
+  font-size: 1.1rem;
+  font-weight: 300;
+  &:hover {
+    cursor: pointer;
   }
 }
 </style>

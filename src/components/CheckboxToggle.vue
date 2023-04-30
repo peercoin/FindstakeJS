@@ -14,80 +14,62 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import { computed, onMounted, ref, watch } from "vue";
 
-export default defineComponent({
-  emits: ["update:modelValue"],
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-
-    modelValue: {
-      type: Boolean,
-      default: "",
-    },
-
-    showLabels: {
-      type: Boolean,
-      default: false,
-    },
-
-    labelChecked: {
-      type: String,
-      default: "",
-    },
-
-    labelUnchecked: {
-      type: String,
-      default: "",
-    },
+const emit = defineEmits(["update:modelValue"]);
+const props = defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  modelValue: {
+    type: Boolean,
+    default: false,
+  },
+  showLabels: {
+    type: Boolean,
+    default: false,
   },
 
-  watch: {
-    modelValue(newValue: boolean, oldValue: boolean) {
-      this.toggled = newValue;
-    },
+  labelChecked: {
+    type: String,
+    default: "",
   },
 
-  data() {
-    return {
-      toggled: this.modelValue,
-    };
-  },
-
-  computed: {
-    classes: function () {
-      return {
-        checked: this.toggled,
-        unchecked: !this.toggled,
-        disabled: this.disabled,
-      };
-    },
-
-    label: function () {
-      return this.toggled && this.showLabels
-        ? this.labelChecked
-        : this.labelUnchecked;
-    },
-  },
-
-  methods: {
-    toggle: function (e: any) {
-      if (this.disabled || (!!e && e.keyCode === 9)) {
-        // not if disabled or tab is pressed
-        e.stop();
-      }
-
-      this.toggled = !this.toggled;
-
-      this.$emit("update:modelValue", this.toggled);
-    },
+  labelUnchecked: {
+    type: String,
+    default: "",
   },
 });
+
+const toggled = computed<boolean>(() => {
+  return props.modelValue;
+});
+
+const classes = computed<object>(() => {
+  return {
+    checked: toggled.value,
+    unchecked: !toggled.value,
+    disabled: props.disabled,
+  };
+});
+
+const label = computed<string>(() => {
+  return toggled.value && props.showLabels
+    ? props.labelChecked
+    : props.labelUnchecked;
+});
+
+function toggle(e: any) {
+  if (props.disabled || (!!e && e.keyCode === 9)) {
+    // not if disabled or tab is pressed
+    e.stop();
+  }
+  emit("update:modelValue", !toggled.value);
+}
 </script>
+
 <style lang="scss" scoped>
 .checkbox-toggle {
   //width: 20em;

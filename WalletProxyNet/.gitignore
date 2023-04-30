@@ -1,0 +1,12 @@
+
+bin/Release/net6.0/linux-x64/publish/
+
+bin/Release/net6.0/linux-x64/
+
+obj/Debug/net6.0/
+
+obj/Release/net6.0/linux-x64/
+
+bin/Debug/net6.0/
+
+obj/
