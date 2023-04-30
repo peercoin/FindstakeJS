@@ -29,5 +29,8 @@ public class DiscordClient : IDiscordBotClient
         //tag everyone with permission
         if (!string.IsNullOrEmpty(discordClientFactory.SettingsDiscord.TagUsers))
             await newThread.SendMessageAsync(discordClientFactory.SettingsDiscord.TagUsers);
+    
+        //Discord has a rate limiter, so best is to take it easy:
+        await Task.Delay(3*1000);
     }
 }
