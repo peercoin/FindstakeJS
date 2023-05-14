@@ -198,7 +198,7 @@
               <input
                 id="minDifficultyinp"
                 class="form-control appinput"
-                :class="{ invalid: !minDifficulty }"
+                :class="{ invalid: !(minDifficulty > lastDifficulty - 3.0) }"
                 type="number"
                 v-model="minDifficulty"
                 :readonly="findingStakes"
@@ -323,19 +323,91 @@
           </div>
         </VerticalExpand>
 
-        <div v-if="!connected" class="row my-3">
+        <div v-if="!connected && showDiscord" class="row my-3">
           <div class="col-12">
             <input
               id="proxyurl"
               class="form-control appinput"
-              :class="{ invalid: !isValidURL }"
+              :class="{ invalid: !isValidDiscordURL }"
               type="text"
-              v-model="url"
+              v-model="discordurl"
               :readonly="step > 1"
             />
             <div class="appinput-label-container text-start">
               <label for="proxyurl" class="form-label appinput-label"
                 >URL WalletProxy</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <div v-if="!connected" class="row my-3">
+          <div class="col-12">
+            <input
+              id="proxyhost"
+              class="form-control appinput"
+              :class="{ invalid: !rpchost }"
+              type="text"
+              v-model="rpchost"
+              :readonly="step > 1"
+            />
+            <div class="appinput-label-container text-start">
+              <label for="proxyhost" class="form-label appinput-label"
+                >RPC hostname</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <div v-if="!connected" class="row my-3">
+          <div class="col-12">
+            <input
+              id="proxyuser"
+              class="form-control appinput"
+              :class="{ invalid: !rpcuser }"
+              type="text"
+              v-model="rpcuser"
+              :readonly="step > 1"
+            />
+            <div class="appinput-label-container text-start">
+              <label for="proxyuser" class="form-label appinput-label"
+                >RPC username</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <div v-if="!connected" class="row my-3">
+          <div class="col-12">
+            <input
+              id="proxypassword"
+              class="form-control appinput"
+              :class="{ invalid: !rpcpassword }"
+              type="text"
+              v-model="rpcpassword"
+              :readonly="step > 1"
+            />
+            <div class="appinput-label-container text-start">
+              <label for="proxypassword" class="form-label appinput-label"
+                >RPC password</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <div v-if="!connected" class="row my-3">
+          <div class="col-12">
+            <input
+              id="proxyport"
+              class="form-control appinput"
+              :class="{ invalid: !rpcport }"
+              type="text"
+              v-model.number="rpcport"
+              :readonly="step > 1"
+            />
+            <div class="appinput-label-container text-start">
+              <label for="proxyport" class="form-label appinput-label"
+                >RPC port</label
               >
             </div>
           </div>
@@ -361,279 +433,307 @@
   </div>
 </template>
 
-<script lang="ts">
-import axios from "axios";
-import { defineComponent, PropType } from "vue";
+<script lang="ts" setup>
+import { computed, ref, type PropType, nextTick } from "vue";
+import { JsonRPCClient } from "../implementation/JsonRPCClient";
 import kprogress from "./kprogress.vue";
 import { MintTemplate } from "../implementation/MintTemplate";
 import { CryptoUtils } from "../implementation/CryptoUtils";
 import VerticalExpand from "./VerticalExpand.vue";
 import CheckboxToggle from "./CheckboxToggle.vue";
 import VueSlider from "vue-slider-component";
-export default defineComponent({
-  components: {
-    kprogress,
-    VerticalExpand,
-    CheckboxToggle,
-    VueSlider,
+import { getToastr } from "../implementation/ToastrContainer";
+const toastr = getToastr();
+const emit = defineEmits<{
+  (
+    e: "connectionData",
+    data: {
+      lastBlock: number;
+      urlDiscordProxy: string;
+      lastDifficulty: number;
+      rpcClient: JsonRPCClient;
+      rpchost: string;
+      rpcuser: string;
+      rpcpassword: string;
+      rpcport: number;
+    }
+  ): void;
+  (e: "peercoinaddressentered", value: string): void;
+  (e: "rawTxToggle", value: boolean): void;
+  (
+    e: "started",
+    value: {
+      generateRawCoinStake: boolean;
+      minDifficulty: number;
+      minterpubkeyAddress: string;
+      redeemscript: string;
+      start: number;
+      end: number;
+      client: JsonRPCClient;
+      peercoinAddress: string;
+    }
+  ): void;
+}>();
+
+const props = defineProps({
+  percentBlocks:{
+    Type: Number,
+    required: true,
+    default: 0,
   },
-
-  emits: ["connectionData", "peercoinaddressentered", "rawTxToggle", "started"],
-
-  props: {
-    innerwidth: {
-      Type: Number,
-      required: true,
-      default: 0,
-    },
-    step: {
-      type: Number,
-      default: 0,
-    },
-    templates: {
-      type: Object as PropType<Array<MintTemplate>>,
-      default: [],
-    },
-    progressGetVouts: {
-      type: Number,
-      default: 0,
-    },
-    progressTemplates: {
-      type: Number,
-      default: 0,
-    },
-    progressFindstake: {
-      type: Number,
-      default: 0,
-    },
-    startBlock: {
-      type: Number,
-      default: 0,
-    },
-    currentBlock: {
-      type: Number,
-      default: 0,
-    },
-    max: {
-      type: Number,
-      default: 25,
-    },
+  innerwidth: {
+    Type: Number,
+    required: true,
+    default: 0,
   },
-
-  data() {
-    return {
-      dateRangeValues: [
-        3600 + Math.floor(0.001 * new Date().getTime()),
-        7 * 24 * 3600 + Math.floor(0.001 * new Date().getTime()),
-      ],
-      connected: false,
-      addressEntered: false,
-      generateRawCoinStake: false,
-      findingStakes: false,
-      lastBlock: 0,
-      lastDifficulty: 0,
-      minDifficulty: 0,
-      peercoinAddress: "",
-      minterpubkeyAddress: "",
-      redeemscript: "",
-      redeemscriptDfeault: "",
-      url: "http://127.0.0.1:9009",
-    };
+  step: {
+    type: Number,
+    default: 0,
   },
-
-  methods: {
-    async connect() {
-      try {
-        let url = this.url + "/block/count";
-
-        let resp = await axios.get(url);
-        if (!!resp.data) {
-          this.lastBlock = resp.data as number;
-        }
-
-        url = this.url + "/difficulty";
-
-        resp = await axios.get(url);
-        if (!!resp.data) {
-          this.lastDifficulty = parseFloat(Number(resp.data).toFixed(5));
-          this.minDifficulty = parseFloat(
-            (this.lastDifficulty + 0.25).toFixed(2)
-          );
-          this.connected = true;
-          this.$emit("connectionData", {
-            urlProxy: this.url,
-            lastBlock: this.lastBlock,
-            lastDifficulty: this.lastDifficulty,
-          });
-        }
-      } catch (error) {
-        console.warn(error);
-
-        (this as any).eventBus.emit("add-toastr", {
-          text: `Unable to connect to  ${this.url}`,
-          type: "error",
-        });
-      }
-    },
-
-    async findstakes() {
-      if (!this.findingStakes) {
-        this.$emit("started", {
-          generateRawCoinStake: this.generateRawCoinStake,
-          minDifficulty: this.minDifficulty,
-          minterpubkeyAddress: this.minterpubkeyAddress,
-          redeemscript: this.redeemscript,
-          start: this.dateRangeValues[0],
-          end: this.dateRangeValues[1],
-          url: this.url,
-          peercoinAddress: this.peercoinAddress,
-        });
-        this.findingStakes = true;
-      }
-    },
-
-    formatLongDate(timestamp: number, longFormat: boolean = false): string {
-      const options = longFormat
-        ? ({
-            weekday: "short", // long, short, narrow
-            day: "numeric", // numeric, 2-digit
-            year: "numeric", // numeric, 2-digit
-            month: "short", // numeric, 2-digit, long, short, narrow
-            hour: "numeric", // numeric, 2-digit
-            minute: "numeric", // numeric, 2-digit
-            second: "numeric", // numeric, 2-digit
-          } as Intl.DateTimeFormatOptions)
-        : ({
-            day: "2-digit", // numeric, 2-digit
-
-            month: "2-digit", // numeric, 2-digit, long, short, narrow
-            hour: "2-digit", // numeric, 2-digit
-            minute: "numeric", // numeric, 2-digit
-          } as Intl.DateTimeFormatOptions);
-
-      return new Date(timestamp * 1000).toLocaleString(
-        Intl.DateTimeFormat().resolvedOptions().locale,
-        options
-      );
-    },
-
-    toggleRaw(newval: boolean) {
-      if (!!newval) {
-        this.$nextTick(() => {
-          this.redeemscript = this.redeemscriptDfeault;
-        });
-      }
-      this.generateRawCoinStake = newval;
-      this.$emit("rawTxToggle", newval);
-    },
-
-    getVouts() {
-      if (!!this.peercoinAddress) {
-        this.addressEntered = true;
-        this.$emit("peercoinaddressentered", this.peercoinAddress);
-      }
-    },
+  templates: {
+    type: Object as PropType<Array<MintTemplate>>,
+    default: [],
   },
-
-  computed: {
-    showStart(): boolean {
-      let valid =
-        this.progressTemplates >= 50 &&
-        !this.findingStakes &&
-        this.validPPCAddress &&
-        !!this.templates &&
-        this.templates.length > 0 &&
-        this.templates.length <= this.max &&
-        !!this.minDifficulty &&
-        this.minDifficulty > this.lastDifficulty - 1.0;
-
-      if (!valid) return valid;
-
-      return this.generateRawCoinStake
-        ? this.validPubkeyAddress && !!this.redeemscript
-        : valid;
-    },
-
-    enableStart(): boolean {
-      return (
-        this.showStart &&
-        this.step >= 5 &&
-        this.percentBlocks > 99.9 &&
-        this.currentBlock === this.lastBlock
-      );
-    },
-
-    redeemTextareaHeight(): number {
-      const trigger = this.redeemscript;
-      try {
-        let _refs = this.$refs as any;
-
-        let area = _refs.redeemarea; // El. width minus scrollbar
-
-        return Math.max(50, parseInt("" + area.scrollHeight * 1.05)) || 50;
-      } catch (error) {
-        return 120;
-      }
-    },
-
-    heightTextArea(): { height: string } {
-      return {
-        height: this.redeemTextareaHeight + "px",
-      };
-    },
-
-    validPPCAddress(): boolean {
-      if (!!this.peercoinAddress) {
-        return CryptoUtils.isValidAddress(this.peercoinAddress, "prod");
-      }
-
-      return false;
-    },
-
-    validPubkeyAddress(): boolean {
-      if (!!this.minterpubkeyAddress) {
-        const regex = new RegExp("[0-9a-f]{130}$", "gm");
-
-        return !!this.minterpubkeyAddress.match(regex);
-      }
-
-      return false;
-    },
-
-    isP2SHaddress(): boolean {
-      if (this.validPPCAddress) {
-        return this.peercoinAddress.charAt(0) === "p";
-      }
-
-      return false;
-    },
-
-    stakemodifiersCollected(): boolean {
-      return this.currentBlock > 100 && this.currentBlock == this.lastBlock;
-    },
-
-    percentBlocks(): number {
-      let cur = Math.ceil(
-        100.0 *
-          (this.currentBlock - this.startBlock) *
-          (1.0 / (this.lastBlock - this.startBlock))
-      );
-
-      cur = Math.round(cur * 10) / 10;
-
-      return Math.min(100.0, Math.max(0.0, cur));
-    },
-
-    isValidURL(): boolean {
-      const regex = new RegExp(
-        "(localhost|\\b(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)(?::\\d{0,4})?\\b)",
-        "g"
-      );
-
-      return regex.test(this.url);
-    },
+  progressGetVouts: {
+    type: Number,
+    default: 0,
+  },
+  progressTemplates: {
+    type: Number,
+    default: 0,
+  },
+  progressFindstake: {
+    type: Number,
+    default: 0,
+  },
+  startBlock: {
+    type: Number,
+    default: 0,
+  },
+  currentBlock: {
+    type: Number,
+    default: 0,
+  },
+  max: {
+    type: Number,
+    default: 25,
   },
 });
+
+const dateRangeValues = ref<Array<number>>([
+  3600 + Math.floor(0.001 * new Date().getTime()),
+  7 * 24 * 3600 + Math.floor(0.001 * new Date().getTime()),
+]);
+const connected = ref<boolean>(false);
+const addressEntered = ref<boolean>(false);
+const generateRawCoinStake = ref<boolean>(false);
+const findingStakes = ref<boolean>(false);
+const lastBlock = ref<number>(0);
+const lastDifficulty = ref<number>(0);
+const minDifficulty = ref<number>(0);
+const peercoinAddress = ref<string>("");
+const minterpubkeyAddress = ref<string>("");
+const redeemscript = ref<string>("");
+const redeemscriptDfeault = ref<string>("");
+const discordurl = ref<string>("http://127.0.0.1:9009");
+const rpchost = ref<string>("127.0.0.1");
+
+const rpcuser = ref<string>("");
+const rpcpassword = ref<string>("");
+const rpcport = ref<number>(9902);
+const redeemarea = ref<HTMLTextAreaElement | null>(null);
+const showDiscord = computed<boolean>(() => {
+  let queryString = window.location.search;
+  let urlParams = new URLSearchParams(queryString);
+  return (
+    urlParams.has("pushToDiscord") && urlParams.get("pushToDiscord") === "1"
+  );
+});
+
+const validPPCAddress = computed<boolean>(() => {
+  if (!!peercoinAddress.value) {
+    return CryptoUtils.isValidAddress(peercoinAddress.value, "prod");
+  }
+
+  return false;
+});
+
+const validPubkeyAddress = computed<boolean>(() => {
+  if (!!minterpubkeyAddress.value) {
+    const regex = new RegExp("[0-9a-f]{130}$", "gm");
+
+    return !!minterpubkeyAddress.value.match(regex);
+  }
+
+  return false;
+});
+
+const redeemTextareaHeight = computed<number>(() => {
+  const trigger = redeemscript.value;
+  try {
+    //let _refs = this.$refs as any;
+
+    let area = redeemarea.value; // El. width minus scrollbar
+
+    return Math.max(50, parseInt("" + area!.scrollHeight * 1.05)) || 50;
+  } catch (error) {
+    return 120;
+  }
+});
+
+const enableStart = computed<boolean>(() => {
+  return (
+    showStart.value &&
+    props.step >= 5 &&
+    props.percentBlocks > 99.9 &&
+    props.currentBlock === lastBlock.value
+  );
+});
+
+const heightTextArea = computed<{ height: string }>(() => {
+  return {
+    height: redeemTextareaHeight.value + "px",
+  };
+});
+
+const showStart = computed<boolean>(() => {
+  let valid =
+    props.progressTemplates >= 50 &&
+    !findingStakes.value &&
+    validPPCAddress &&
+    !!props.templates &&
+    props.templates.length > 0 &&
+    props.templates.length <= props.max &&
+    !!minDifficulty.value &&
+    minDifficulty.value > lastDifficulty.value - 3.0;
+
+  if (!valid) return valid;
+
+  return generateRawCoinStake.value
+    ? validPubkeyAddress && !!redeemscript.value
+    : valid;
+});
+
+const isP2SHaddress = computed<boolean>(() => {
+  if (validPPCAddress.value) {
+    return peercoinAddress.value.charAt(0) === "p";
+  }
+
+  return false;
+});
+
+// const stakemodifiersCollected = computed<boolean>(() => {
+//   return props.currentBlock > 100 && props.currentBlock == lastBlock.value;
+// });
+
+const isValidDiscordURL = computed<boolean>(() => {
+  const regex = new RegExp(
+    "(localhost|\\b(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)(?::\\d{0,4})?\\b)",
+    "g"
+  );
+  return regex.test(discordurl.value);
+});
+
+function toggleRaw(newval: boolean) {
+  if (!!newval) {
+    nextTick(() => {
+      redeemscript.value = redeemscriptDfeault.value;
+    });
+  }
+  generateRawCoinStake.value = newval;
+  emit("rawTxToggle", newval);
+}
+
+function getVouts(): void {
+  if (!!peercoinAddress.value) {
+    addressEntered.value = true;
+    emit("peercoinaddressentered", peercoinAddress.value);
+  }
+}
+
+function formatLongDate(
+  timestamp: number,
+  longFormat: boolean = false
+): string {
+  const options = longFormat
+    ? ({
+        weekday: "short", // long, short, narrow
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "short", // numeric, 2-digit, long, short, narrow
+        hour: "numeric", // numeric, 2-digit
+        minute: "numeric", // numeric, 2-digit
+        second: "numeric", // numeric, 2-digit
+      } as Intl.DateTimeFormatOptions)
+    : ({
+        day: "2-digit", // numeric, 2-digit
+
+        month: "2-digit", // numeric, 2-digit, long, short, narrow
+        hour: "2-digit", // numeric, 2-digit
+        minute: "numeric", // numeric, 2-digit
+      } as Intl.DateTimeFormatOptions);
+
+  return new Date(timestamp * 1000).toLocaleString(
+    Intl.DateTimeFormat().resolvedOptions().locale,
+    options
+  );
+}
+
+async function connect() {
+  //const url="http://"+rpchost.value+":"+rpcport.value;
+  try {
+    const client = new JsonRPCClient(
+      rpchost.value,
+      rpcuser.value,
+      rpcpassword.value,
+      rpcport.value,
+      true
+    );
+    lastBlock.value = await client.getBlockCount();
+    let difficulty = await client.getDifficulty();
+    lastDifficulty.value = parseFloat(difficulty.toFixed(5));
+    minDifficulty.value = parseFloat((lastDifficulty.value + 0.25).toFixed(2));
+    connected.value = true;
+
+    emit("connectionData", {
+      rpcClient: client,
+      urlDiscordProxy: discordurl.value, //todo rename discordurl
+      rpchost: rpchost.value,
+      rpcuser: rpcuser.value,
+      rpcpassword: rpcpassword.value,
+      rpcport: rpcport.value,
+      lastBlock: lastBlock.value,
+      lastDifficulty: lastDifficulty.value,
+    });
+  } catch (error) {
+    console.warn(error);
+    const url = "http://" + rpchost.value + ":" + rpcport.value;
+    toastr.error(`Unable to connect to ${url}`);
+  }
+}
+
+async function findstakes() {
+  if (!findingStakes.value) {
+    const client = new JsonRPCClient(
+      rpchost.value,
+      rpcuser.value,
+      rpcpassword.value,
+      rpcport.value,
+      true
+    );
+    emit("started", {
+      generateRawCoinStake: generateRawCoinStake.value,
+      minDifficulty: minDifficulty.value,
+      minterpubkeyAddress: minterpubkeyAddress.value,
+      redeemscript: redeemscript.value,
+      start: dateRangeValues.value[0],
+      end: dateRangeValues.value[1],
+      client: client,
+      peercoinAddress: peercoinAddress.value,
+    });
+    findingStakes.value = true;
+  }
+}
 </script>
 
 <style lang="scss" scoped>

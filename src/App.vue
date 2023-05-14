@@ -2,11 +2,8 @@
   <div class="Site-content" ref="sitecontent">
     <div :style="centeredWhenCapped">
       <FindstakeMain :innerwidth="actualInnerWidth" v-slot="slotProps">
-        <Notifications />
-        <PageHeader
-          title="FindstakeJS"
-          @on-home-click="slotProps.onHomeClick"
-        />
+        <Toastr />
+        <PageHeader title="FindstakeJS" @on-home-click="slotProps.homeClick" />
       </FindstakeMain>
     </div>
 
@@ -14,79 +11,53 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import { computed, ref, onUnmounted, onMounted } from "vue";
 import debounce from "lodash/debounce";
 import FindstakeMain from "./components/FindstakeMain.vue";
-import Notifications from "./components/Notifications.vue";
+import Toastr from "./components/Toastr.vue";
 import PageHeader from "./components/PageHeader.vue";
 import PageFooter from "./components/PageFooter.vue";
+const heightApp = ref<number>(0);
+const widthApp = ref<number>(0);
+const actualInnerWidth = ref<number>(0);
+const deboucedGetDimension = ref<any>(null);
+const resizeObserver = ref<any>(null);
+const sitecontent = ref<HTMLDivElement | null>(null);
 
-export default defineComponent({
-  components: {
-    FindstakeMain,
-    PageHeader,
-    PageFooter,
-    Notifications,
-  },
+onMounted(() => {
+  getDimensions();
 
-  data() {
-    return {
-      heightApp: 0,
-      widthApp: 0,
-      actualInnerWidth: 0,
-      deboucedGetDimension: null as any,
-      resizeObserver: null as any,
-    };
-  },
+  deboucedGetDimension.value = debounce(getDimensions, 500);
 
-  mounted() {
-    this.getDimensions();
-
-    this.deboucedGetDimension = debounce(this.getDimensions, 500);
-
-    this.resizeObserver = new ResizeObserver(() => {
-      this.getDimensions();
-    });
-    this.resizeObserver.observe(document.body);
-  },
-
-  unmounted() {
-    this.resizeObserver.unobserve(document.body);
-  },
-
-  methods: {
-    getDimensions() {
-      let _refs = this.$refs as any;
-
-      this.heightApp = _refs.sitecontent.clientHeight; // El. width minus scrollbar
-
-      this.actualInnerWidth = document.body.clientWidth; // El. width minus scrollbar width
-
-      this.widthApp = _refs.sitecontent.offsetWidth;
-      //});
-    },
-  },
-
-  computed: {
-    centeredWhenCapped(): any {
-      if (
-        this.actualInnerWidth > 0 &&
-        this.actualInnerWidth - this.widthApp > 1
-      ) {
-        const offset = Math.floor(
-          0.5 * (this.actualInnerWidth - this.widthApp)
-        );
-        return {
-          position: "relative",
-          left: offset + "px",
-        };
-      }
-
-      return {};
-    },
-  },
+  resizeObserver.value = new ResizeObserver(() => {
+    getDimensions();
+  });
+  resizeObserver.value.observe(document.body);
 });
+
+onUnmounted(() => resizeObserver.value.unobserve(document.body));
+
+const centeredWhenCapped = computed<object>(() => {
+  if (
+    actualInnerWidth.value > 0 &&
+    actualInnerWidth.value - widthApp.value > 1
+  ) {
+    const offset = Math.floor(0.5 * (actualInnerWidth.value - widthApp.value));
+    return {
+      position: "relative",
+      left: offset + "px",
+    };
+  }
+
+  return {};
+});
+
+function getDimensions() {
+  heightApp.value = sitecontent.value!.clientHeight; // El. width minus scrollbar
+  actualInnerWidth.value = document.body.clientWidth; // El. width minus scrollbar width
+  widthApp.value = sitecontent.value!.offsetWidth;
+}
 </script>
 
 <style lang="scss">

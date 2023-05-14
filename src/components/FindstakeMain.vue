@@ -19,8 +19,9 @@
               :progressTemplates="progressTemplates"
               :progressFindstake="progressFindstake"
               :templates="mintTemplates"
-              :innerwidth="innerwidth"
+              :innerwidth="props.innerwidth"
               :max="max"
+              :percentBlocks="percentBlocks"
               @connectionData="collectStakeModifiers"
               @peercoinaddressentered="collectVouts"
               @started="startRun"
@@ -50,7 +51,7 @@
             :points="frequencyPoints"
             :show-y-axis="true"
             :show-x-axis="true"
-            :width="Math.max(100, Math.min(900, 0.7 * innerwidth))"
+            :width="Math.max(100, Math.min(900, 0.7 * props.innerwidth))"
             :height="200"
             :show-values="true"
             bar-color="#3cb054"
@@ -97,9 +98,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import axios from "axios";
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import { computed, ref, type PropType } from "vue";
+import { DiscordPoster } from "../implementation/DiscordPoster";
+import BN from "bn.js";
+import { JsonRPCClient } from "../implementation/JsonRPCClient";
 import isEmpty from "lodash/isEmpty";
 import MultiStepsProgress from "../components/MultiStepsProgress.vue";
 import FindstakeForm from "../components/FindstakeForm.vue";
@@ -113,6 +116,7 @@ import { BlockCollection } from "../implementation/BlockCollection";
 import { KernelHash } from "../implementation/KernelHash";
 import groupBy from "lodash/groupBy";
 import orderBy from "lodash/orderBy";
+import uniqBy from "lodash/uniqBy";
 import VerticalExpand from "./VerticalExpand.vue";
 import BarChart from "./BarChart.vue";
 import StakeProspects from "./StakeProspects.vue";
@@ -120,521 +124,516 @@ import { CryptoUtils } from "../implementation/CryptoUtils";
 import UTXOSelector from "./UTXOSelector.vue";
 import { CreateRawCoinStake } from "../implementation/CreateRawConstake";
 import { PeercoinMint } from "../implementation/PeercoinMint";
-
-export default defineComponent({
-  components: {
-    MultiStepsProgress,
-    FindstakeForm,
-    BarChart,
-    StakeProspects,
-    VerticalExpand,
-    UTXOSelector,
-  },
-
-  props: {
-    innerwidth: {
-      Type: Number,
-      required: true,
-      default: 0,
-    },
-  },
-
-  watch: {
-    dayStamp() {
-      this.$nextTick(() => {
-        this.trigger++;
-      });
-    },
-  },
-
-  data() {
-    return {
-      debugSkipCollectModifiers: false, //to skip loading modifiers while debugging
-      findstakeStatus: 1,
-      Findstakelimit: 2592000 - 761920,
-      urlProxy: "",
-      dayStamp: "",
-      lastBlock: 0,
-      lastDifficulty: 0,
-      currentBlock: 0,
-      progressGetVouts: 0,
-      progressTemplates: 0,
-      progressFindstake: 0,
-      stakeModifiers: null as StakeModifiers | null,
-      startBlocksDelta: 6 * 24 * 31,
-      unspentTransactions: null as UnspentTransactions | null,
-      allMintTemplates: [] as Array<MintTemplate>,
-      mintTemplates: [] as Array<MintTemplate>,
-      blocks: null as BlockCollection | null,
-      findstakeRunning: false,
-      findstakeDone: false,
-      trigger: 0,
-      max: 750,
-      pushed2DiscordIds: [] as Array<string>,
-    };
-  },
-
-  computed: {
-    showDiscord(): boolean {
-      let queryString = window.location.search;
-      let urlParams = new URLSearchParams(queryString);
-      return (
-        urlParams.has("pushToDiscord") && urlParams.get("pushToDiscord") === "1"
-      );
-    },
-
-    numberOfSelected(): number {
-      if (!!this.mintTemplatesWithResults) {
-        return this.mintTemplatesWithResults.filter((t) => t.Selected).length;
-      }
-      return 0;
-    },
-
-    wizardStatus(): number {
-      if (this.findstakeDone) return 7;
-      if (this.findstakeRunning) return 6;
-      if (
-        this.totaltemplates > 0 &&
-        this.findstakeStatus <= 3 &&
-        this.progressGetVouts >= 100 &&
-        this.progressTemplates > 99.9 &&
-        this.currentBlock === this.lastBlock
-      ) {
-        return 5;
-      }
-
-      if (
-        this.totaltemplates > 0 &&
-        this.findstakeStatus <= 3 &&
-        this.progressGetVouts >= 100
-      ) {
-        return 4;
-      }
-
-      if (
-        this.findstakeStatus == 2 &&
-        !!this.unspentTransactions &&
-        !!this.unspentTransactions.address
-      ) {
-        return 3;
-      }
-      return this.findstakeStatus;
-    },
-
-    startBlock(): number {
-      return this.lastBlock - this.startBlocksDelta;
-    },
-
-    totaltemplates(): number {
-      if (!!this.unspentTransactions && !!this.unspentTransactions.unspents) {
-        return this.unspentTransactions!.unspents.length;
-      }
-      return 0;
-    },
-
-    mintTemplatesWithResults(): Array<MintTemplate> {
-      let trigger1 = this.trigger;
-      let results = this.mintTemplates
-        .filter((t) => !isEmpty(t.FutureStakes))
-        .slice();
-
-      const sortItem = this.dayStamp || "";
-
-      return orderBy(
-        results,
-        [
-          (r) =>
-            r.FutureStakes.filter((fs) => fs.DayStamp === sortItem).length * -1,
-          (r) => r.PrevTxOutValue * -1,
-        ],
-        ["asc", "asc"]
-      );
-    },
-
-    showfrequencyPoints(): boolean {
-      if (!!this.frequencyPoints) {
-        return this.frequencyPoints.some((p) => p.value > 0);
-      }
-      return false;
-    },
-
-    frequencyPoints(): Array<{
-      label: string;
-      value: number;
-      tooltipLabel: string;
-    }> {
-      let points = [] as Array<{
-        label: string;
-        value: number;
-        tooltipLabel: string;
-      }>;
-      const now = new Date();
-
-      for (let index = 0; index < 21; index++) {
-        let daystamp = new Intl.DateTimeFormat(
-          Intl.DateTimeFormat().resolvedOptions().locale,
-          { weekday: "narrow", day: "numeric" }
-        ).format(now);
-
-        points.push({
-          label: daystamp,
-          value: 0, //start with zero
-          tooltipLabel: now.toLocaleDateString(),
-        });
-
-        now.setDate(now.getDate() + 1);
-      }
-      if (this.mintTemplates.length === 1) {
-        this.mintTemplates[0].FutureStakes.forEach((element) => {
-          let point = points.find((p) => p.label === element.DayStamp);
-          if (!!point) {
-            point.value++;
-          }
-        });
-      } else {
-        this.mintTemplates.forEach((template) => {
-          const dict = groupBy(template.FutureStakes, (t) => t.DayStamp);
-          for (let daystamp in dict) {
-            let point = points.find((p) => p.label === daystamp);
-            if (!!point) {
-              point.value++;
-            }
-          }
-        });
-      }
-
-      return points;
-    },
-  },
-
-  methods: {
-    async startDiscordThread(title: string, body: string): Promise<boolean> {
-      try {
-        await axios.post(this.urlProxy + "/discord/thread/add", {
-          Title: title,
-          Body: body,
-        });
-
-        return true;
-      } catch (error) {
-        console.error(error);
-        return false;
-      }
-    },
-
-    onHomeClick() {
-      //todo: reset to defaults, for now refresh page
-      window.location.reload();
-    },
-    toggleDiscordSelect(): void {
-      this.mintTemplatesWithResults.forEach((mintTemplate) => {
-        mintTemplate.Selected = !mintTemplate.Selected;
-      });
-    },
-    async startThreadToDiscord() {
-      for (
-        let index = 0;
-        index < this.mintTemplatesWithResults.length;
-        index++
-      ) {
-        const staketemplate = this.mintTemplatesWithResults[index];
-        const itemExists = this.pushed2DiscordIds.find(
-          (t) => t === staketemplate.Id
-        );
-        if (
-          !itemExists &&
-          staketemplate.Selected &&
-          staketemplate.FutureStakes.length > 0
-        ) {
-          let futureStakes = staketemplate.FutureStakes.slice();
-          const sortItem = this.dayStamp || "";
-          const stake2push = orderBy(
-            futureStakes,
-            [
-              (fs) => (fs.DayStamp === sortItem ? -1 : 1),
-              (fs) => fs.FutureTimestamp,
-            ],
-            ["asc", "asc"]
-          )[0];
-          const url =
-            "https://peercoin.github.io/cointoolkit/?mode=peercoin&verify=" +
-            stake2push.RawTransaction;
-          const title =
-            stake2push.DayStamp +
-            " " +
-            staketemplate.Id.slice(-6) +
-            " " +
-            this.formatNumber(staketemplate.PrevTxOutValue * 0.000001, 2) +
-            " @max" +
-            this.formatNumber(stake2push.MaxDifficulty, 2);
-          var result = await this.startDiscordThread(title, url);
-          if (!!result) this.pushed2DiscordIds.push(staketemplate.Id);
-        }
-      }
-    },
-    formatNumber(coins: number, fix: number): string {
-      return "" + parseFloat(coins.toFixed(fix));
-    },
-    utxoSelected(list: Array<MintTemplate>) {
-      this.mintTemplates = list;
-      this.allMintTemplates = [];
-    },
-
-    onBarClicked(bar: { label: string }): void {
-      this.dayStamp = bar.label || "";
-    },
-
-    getModifier(curtime: number) {
-      let stakeModifierBytes = [] as number[] | null;
-      const tt = curtime - this.Findstakelimit;
-
-      for (
-        let i = 0, max = this.stakeModifiers!.stakemodifiers.length;
-        i < max;
-        i++
-      ) {
-        const item = this.stakeModifiers!.stakemodifiers[i];
-        if (item.blocktime <= tt) {
-          stakeModifierBytes = item.modifierBytes;
-        } else {
-          break;
-        }
-      }
-      return CryptoUtils.fromByteArrayUnsigned(stakeModifierBytes!);
-    },
-
-    async collectStakeModifiers(data: {
-      lastBlock: number;
-      urlProxy: string;
-      lastDifficulty: number;
-    }) {
-      //console.log(data);
-      this.findstakeStatus = 2;
-      this.urlProxy = data.urlProxy;
-      this.blocks = new BlockCollection(this.urlProxy);
-      this.lastBlock = data.lastBlock;
-      this.lastDifficulty = data.lastDifficulty;
-      this.stakeModifiers = new StakeModifiers(this.urlProxy);
-
-      if (!this.debugSkipCollectModifiers) {
-        await this.stakeModifiers.collect(
-          this.lastBlock - this.startBlocksDelta,
-          this.lastBlock,
-          this.onStakeModifiersProgress
-        );
-      }
-
-      this.findstakeStatus = 3;
-    },
-
-    onStakeModifiersProgress(currentBlock: number): void {
-      if (
-        this.lastBlock == currentBlock ||
-        this.currentBlock < 1000 ||
-        currentBlock % 64 === 0
-      )
-        this.currentBlock = currentBlock;
-    },
-
-    async startRun(startoptions: {
-      generateRawCoinStake: boolean;
-      minDifficulty: number;
-      minterpubkeyAddress: string;
-      redeemscript: string;
-      start: number;
-      end: number;
-      url: string;
-      peercoinAddress: string;
-    }): Promise<void> {
-      this.findstakeRunning = true;
-
-      this.mintTemplates.forEach((template) => {
-        template.setBitsWithDifficulty(startoptions.minDifficulty);
-      });
-
-      await this.delay(300);
-
-      let futureTime = startoptions.start;
-      let startTime = startoptions.start;
-      let endTill = startoptions.end;
-      do {
-        for (let index = 0; index < this.mintTemplates.length; index++) {
-          const template = this.mintTemplates[index];
-          {
-            const result = KernelHash.checkStakeKernelHash(
-              template,
-              futureTime,
-              this.getModifier(futureTime)
-            );
-
-            if (result.success) {
-              if (
-                !template.FutureStakes.find(
-                  (t) => t.FutureTimestamp === futureTime
-                )
-              ) {
-                let raw = "" as string | null;
-                if (startoptions.generateRawCoinStake) {
-                  const createtc = new CreateRawCoinStake(startoptions.url);
-
-                  raw = await createtc.createRawCoinstakeTransaction(
-                    template.Txid,
-                    template.Vout,
-                    startoptions.redeemscript,
-                    startoptions.peercoinAddress,
-                    parseFloat(
-                      (result.FutureUnits / PeercoinMint.coin).toFixed(6)
-                    ),
-                    result.FutureTimestamp,
-                    startoptions.minterpubkeyAddress
-                  );
-                }
-
-                template.FutureStakes.push({
-                  DayStamp: result.DayStamp,
-                  FutureTimestamp: result.FutureTimestamp,
-                  FutureUnits: result.FutureUnits,
-                  MaxDifficulty: result.MaxDifficulty,
-                  RawTransaction: !!raw ? raw : null,
-                } as FutureStake);
-
-                this.trigger++;
-              }
-            }
-          }
-        }
-
-        if (
-          futureTime - startTime <= 1 ||
-          futureTime === endTill ||
-          futureTime % (1 * 3600) === 0
-        ) {
-          this.progressFindstake = Math.max(
-            0.0,
-            Math.min(
-              100,
-              (100.0 * (futureTime - startTime)) / (1.0 * (endTill - startTime))
-            )
-          );
-
-          await this.delay(300);
-        }
-        futureTime++;
-      } while (futureTime <= endTill);
-      this.findstakeDone = true;
-      this.trigger++;
-      (this as any).eventBus.emit("add-toastr", {
-        text: `  ${
-          this.unspentTransactions!.unspents.length
-        } Findstake completed`,
-        type: "success",
-      });
-    },
-
-    async collectVouts(address: string): Promise<void> {
-      try {
-        this.unspentTransactions = new UnspentTransactions(address);
-        await this.unspentTransactions.collect(
-          this.onCheckUnspent,
-          this.doToastr
-        );
-
-        await this.collectTemplates(
-          this.unspentTransactions!.address,
-          this.unspentTransactions!.unspents
-        );
-
-        if (this.unspentTransactions!.unspents.length > this.max)
-          (this as any).eventBus.emit("add-toastr", {
-            text: `Please reduce ${
-              this.unspentTransactions!.unspents.length
-            } transactions from ${address} to a max of ${
-              this.max
-            } to find stake with.`,
-            type: "warn",
-          });
-      } catch (error) {
-        console.error(error);
-        (this as any).eventBus.emit("add-toastr", {
-          text: `Unable to reach blockbook.peercoin.net`,
-          type: "error",
-        });
-      }
-    },
-
-    delay(n: number): Promise<void> {
-      return new Promise(function (resolve) {
-        setTimeout(resolve, n);
-      });
-    },
-
-    async collectTemplates(
-      address: string,
-      unspents: IUnspent[]
-    ): Promise<void> {
-      this.progressTemplates = unspents.length === 0 ? 100 : 0;
-      const newmintTemplates = [] as Array<MintTemplate>;
-
-      for (let index = 0; index < unspents.length; index++) {
-        try {
-          const unspent = unspents[index];
-          const id = "to" + unspent.tx + "_" + unspent.index;
-
-          const blockheight = unspent.blockheight;
-
-          const block = await this.blocks!.getBlockByHeight(blockheight);
-          const transaction = block!.getTransaction(unspent.tx);
-          const output = transaction!.vout.find((v) => v.n === unspent.index);
-          const template = new MintTemplate(
-            id,
-            address,
-            block!.time,
-            transaction!.offset,
-            transaction!.time,
-            output!.n,
-            output!.units,
-            blockheight,
-            block.hash
-          );
-          //console.log(template);
-
-          newmintTemplates.push(template);
-          if (index % 100 === 0) await this.delay(250);
-        } catch (error) {
-          console.warn(error);
-        }
-        const percent = (100.0 * (index + 1)) / unspents.length;
-
-        if (percent - this.progressTemplates > 0.9 || percent > 99.9)
-          this.progressTemplates = Math.min(100.0, Math.max(percent, 0.0));
-      }
-      if (newmintTemplates.length === 0) {
-        (this as any).eventBus.emit("add-toastr", {
-          text: `0 unspent transactions from ${address} found`,
-          type: "warn",
-        });
-      }
-      this.allMintTemplates = newmintTemplates;
-
-      if (newmintTemplates.length > this.max) {
-        // stay empty
-      } else {
-        this.mintTemplates = newmintTemplates;
-      }
-    },
-
-    doToastr(text: string, toastrType: string) {
-      (this as any).eventBus.emit("add-toastr", {
-        text: text,
-        type: toastrType,
-      });
-    },
-
-    onCheckUnspent(percentage: number) {
-      this.progressGetVouts = percentage;
-    },
+import { getToastr } from "../implementation/ToastrContainer";
+const toastr = getToastr();
+const props = defineProps({
+  innerwidth: {
+    Type: Number,
+    required: true,
+    default: 0,
   },
 });
+const debugSkipCollectModifiers = false; //to skip loading modifiers while debugging
+const Findstakelimit = 2592000 - 761920;
+const startBlocksDelta = 6 * 24 * 31;
+const max = 750;
+const pushed2DiscordIds = [] as Array<string>;
+const trigger = ref<number>(1);
+const findstakeStatus = ref<number>(1);
+const urlDiscordProxy = ref<string>("");
+const daystamp = ref<string>("");
+const lastBlock = ref<number>(0);
+const lastDifficulty = ref<number>(0);
+const currentBlock = ref<number>(0);
+const percentBlocks = ref<number>(0);
+
+const progressGetVouts = ref<number>(0);
+const progressTemplates = ref<number>(0);
+const progressFindstake = ref<number>(0);
+const stakeModifiers = ref<StakeModifiers | null>(null);
+
+const unspentTransactions = ref<UnspentTransactions | null>(null);
+const allMintTemplates = ref<Array<MintTemplate>>([]);
+const mintTemplates = ref<Array<MintTemplate>>([]);
+let blocks = null as BlockCollection | null;
+const findstakeRunning = ref<boolean>(false);
+const findstakeDone = ref<boolean>(false);
+
+const dayStamp = computed<string>(() => {
+  return "" + daystamp.value;
+});
+
+const showDiscord = computed<boolean>(() => {
+  let queryString = window.location.search;
+  let urlParams = new URLSearchParams(queryString);
+  return (
+    urlParams.has("pushToDiscord") && urlParams.get("pushToDiscord") === "1"
+  );
+});
+
+const mintTemplatesWithResults = computed<Array<MintTemplate>>(() => {
+  let trigger1 = trigger.value;
+
+  let results = uniqBy(
+    mintTemplates.value.filter((t) => !isEmpty(t.FutureStakes)).slice(),
+    "Id"
+  );
+  const sortItem = dayStamp.value || "";
+
+  return orderBy(
+    results,
+    [
+      (r) =>
+        r.FutureStakes.filter((fs) => fs.DayStamp === sortItem).length * -1,
+      (r) => r.PrevTxOutValue * -1,
+    ],
+    ["asc", "asc"]
+  );
+});
+
+const numberOfSelected = computed<number>(() => {
+  if (!!mintTemplatesWithResults.value) {
+    return mintTemplatesWithResults.value.filter((t) => t.Selected).length;
+  }
+  return 0;
+});
+
+const totaltemplates = computed<number>(() => {
+  if (!!unspentTransactions.value && !!unspentTransactions.value.unspents) {
+    return unspentTransactions.value!.unspents.length;
+  }
+  return 0;
+});
+
+const frequencyPoints = computed<
+  Array<{
+    label: string;
+    value: number;
+    tooltipLabel: string;
+  }>
+>(() => {
+  let points = [] as Array<{
+    label: string;
+    value: number;
+    tooltipLabel: string;
+  }>;
+  const now = new Date();
+
+  for (let index = 0; index < 21; index++) {
+    let daystamp = new Intl.DateTimeFormat(
+      Intl.DateTimeFormat().resolvedOptions().locale,
+      { weekday: "narrow", day: "numeric" }
+    ).format(now);
+
+    points.push({
+      label: daystamp,
+      value: 0, //start with zero
+      tooltipLabel: now.toLocaleDateString(),
+    });
+
+    now.setDate(now.getDate() + 1);
+  }
+  if (mintTemplates.value.length === 1) {
+    mintTemplates.value[0].FutureStakes.forEach((element) => {
+      let point = points.find((p) => p.label === element.DayStamp);
+      if (!!point) {
+        point.value++;
+      }
+    });
+  } else {
+    mintTemplates.value.forEach((template) => {
+      const dict = groupBy(template.FutureStakes, (t) => t.DayStamp);
+      for (let daystamp in dict) {
+        let point = points.find((p) => p.label === daystamp);
+        if (!!point) {
+          point.value++;
+        }
+      }
+    });
+  }
+
+  return points;
+});
+
+const showfrequencyPoints = computed<boolean>(() => {
+  if (!!frequencyPoints.value) {
+    return frequencyPoints.value.some((p) => p.value > 0);
+  }
+  return false;
+});
+
+const startBlock = computed<number>(() => {
+  return lastBlock.value - startBlocksDelta;
+});
+
+const wizardStatus = computed<number>(() => {
+  if (findstakeDone.value) return 7;
+  if (findstakeRunning.value) return 6;
+  if (
+    totaltemplates.value > 0 &&
+    findstakeStatus.value <= 3 &&
+    progressGetVouts.value >= 100 &&
+    progressTemplates.value > 99.9 &&
+    currentBlock.value === lastBlock.value
+  ) {
+    return 5;
+  }
+
+  if (
+    totaltemplates.value > 0 &&
+    findstakeStatus.value <= 3 &&
+    progressGetVouts.value >= 100
+  ) {
+    return 4;
+  }
+
+  if (
+    findstakeStatus.value == 2 &&
+    !!unspentTransactions.value &&
+    !!unspentTransactions.value.address
+  ) {
+    return 3;
+  }
+  return findstakeStatus.value;
+});
+
+async function startDiscordThread(
+  title: string,
+  body: string
+): Promise<boolean> {
+  try {
+    var discordClient = new DiscordPoster(urlDiscordProxy.value);
+    await discordClient.startDiscordThread(title, body);
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
+function onHomeClick(): void {
+  //todo: reset to defaults, for now refresh page
+  window.location.reload();
+}
+
+function toggleDiscordSelect(): void {
+  mintTemplatesWithResults.value.forEach((mintTemplate) => {
+    mintTemplate.Selected = !mintTemplate.Selected;
+  });
+}
+
+function formatNumber(coins: number, fix: number): string {
+  return "" + parseFloat(coins.toFixed(fix));
+}
+
+function utxoSelected(list: Array<MintTemplate>): void {
+  mintTemplates.value = list;
+  allMintTemplates.value = [];
+}
+
+async function startThreadToDiscord() {
+  for (let index = 0; index < mintTemplatesWithResults.value.length; index++) {
+    const staketemplate = mintTemplatesWithResults.value[index];
+    const itemExists = pushed2DiscordIds.find((t) => t === staketemplate.Id);
+    if (
+      !itemExists &&
+      staketemplate.Selected &&
+      staketemplate.FutureStakes.length > 0
+    ) {
+      let futureStakes = staketemplate.FutureStakes.slice();
+      const sortItem = dayStamp.value || "";
+      const stake2push = orderBy(
+        futureStakes,
+        [
+          (fs) => (fs.DayStamp === sortItem ? -1 : 1),
+          (fs) => fs.FutureTimestamp,
+        ],
+        ["asc", "asc"]
+      )[0];
+      const url =
+        "https://peercoin.github.io/cointoolkit/?mode=peercoin&verify=" +
+        stake2push.RawTransaction;
+      const title =
+        stake2push.DayStamp +
+        " " +
+        staketemplate.Id.slice(-6) +
+        " " +
+        formatNumber(staketemplate.PrevTxOutValue * 0.000001, 2) +
+        " @max" +
+        formatNumber(stake2push.MaxDifficulty, 2);
+      const result = await startDiscordThread(title, url);
+      if (!!result) pushed2DiscordIds.push(staketemplate.Id);
+    }
+  }
+}
+
+function onBarClicked(bar: { label: string }): void {
+  daystamp.value = bar.label || "";
+}
+
+function getModifier(curtime: number): BN {
+  let stakeModifierBytes = [] as number[] | null;
+  const tt = curtime - Findstakelimit;
+
+  for (
+    let i = 0, max = stakeModifiers.value!.stakemodifiers.length;
+    i < max;
+    i++
+  ) {
+    const item = stakeModifiers.value!.stakemodifiers[i];
+    if (item.blocktime <= tt) {
+      stakeModifierBytes = item.modifierBytes;
+    } else {
+      break;
+    }
+  }
+  return CryptoUtils.fromByteArrayUnsigned(stakeModifierBytes!);
+}
+
+function calcPercentBlocks(currentBlock: number): number {
+  if (currentBlock < 100) return 0;
+  //console.log(currentBlock, startBlock.value);
+  let cur = Math.ceil(
+    100.0 *
+      (currentBlock - startBlock.value) *
+      (1.0 / (lastBlock.value - startBlock.value))
+  );
+
+  cur = Math.round(cur * 10) / 10;
+
+  return Math.min(100.0, Math.max(0.0, cur));
+}
+
+function onStakeModifiersProgress(blocknumber: number): void {
+  if (
+    lastBlock.value == blocknumber ||
+    currentBlock.value < 1000 ||
+    currentBlock.value % 64 === 0
+  )
+    currentBlock.value = blocknumber;
+
+  percentBlocks.value = calcPercentBlocks(blocknumber);
+  console.log(percentBlocks.value + " percent of lastest blocks");
+}
+
+async function collectStakeModifiers(data: {
+  lastBlock: number;
+  urlDiscordProxy: string;
+  lastDifficulty: number;
+  rpcClient: JsonRPCClient;
+  rpchost: string;
+  rpcuser: string;
+  rpcpassword: string;
+  rpcport: number;
+}) {
+  //console.log(data);
+  findstakeStatus.value = 2;
+
+  urlDiscordProxy.value = data.urlDiscordProxy;
+  blocks = new BlockCollection(data.rpcClient);
+  lastBlock.value = data.lastBlock;
+  lastDifficulty.value = data.lastDifficulty;
+  stakeModifiers.value = new StakeModifiers(data.rpcClient);
+
+  if (!debugSkipCollectModifiers) {
+    await stakeModifiers.value.collect(
+      lastBlock.value - startBlocksDelta,
+      lastBlock.value,
+      onStakeModifiersProgress
+    );
+  }
+  //done collecting:
+  findstakeStatus.value = 3;
+}
+
+async function delay(n: number): Promise<void> {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, n);
+  });
+}
+
+async function collectVouts(address: string): Promise<void> {
+  try {
+    unspentTransactions.value = new UnspentTransactions(address);
+    await unspentTransactions.value.collect(onCheckUnspent, doToastr);
+
+    await collectTemplates(
+      unspentTransactions.value!.address,
+      unspentTransactions.value!.unspents
+    );
+
+    if (unspentTransactions.value!.unspents.length > max) {
+      toastr.warning(
+        `Please reduce ${
+          unspentTransactions.value!.unspents.length
+        } transactions from ${address} to a max of ${max} to find stake with.`
+      );
+    }
+  } catch (error) {
+    console.error(error);
+    toastr.error(`Unable to reach blockbook.peercoin.net`);
+  }
+}
+
+async function collectTemplates(
+  address: string,
+  unspents: IUnspent[]
+): Promise<void> {
+  progressTemplates.value = unspents.length === 0 ? 100 : 0;
+  const newmintTemplates = [] as Array<MintTemplate>;
+
+  for (let index = 0; index < unspents.length; index++) {
+    try {
+      const unspent = unspents[index];
+      const id = "to" + unspent.tx + "_" + unspent.index;
+
+      const blockheight = unspent.blockheight;
+
+      const block = await blocks!.getBlockByHeight(blockheight);
+      const transaction = block!.getTransaction(unspent.tx);
+      const output = transaction!.vout.find((v) => v.n === unspent.index);
+      const template = new MintTemplate(
+        id,
+        address,
+        block!.time,
+        transaction!.offset,
+        transaction!.time,
+        output!.n,
+        output!.units,
+        blockheight,
+        block.hash
+      );
+      //console.log(template);
+
+      newmintTemplates.push(template);
+      if (index % 100 === 0) await delay(250);
+    } catch (error) {
+      console.warn(error);
+    }
+    const percent = (100.0 * (index + 1)) / unspents.length;
+
+    if (percent - progressTemplates.value > 0.9 || percent > 99.9)
+      progressTemplates.value = Math.min(100.0, Math.max(percent, 0.0));
+  }
+  if (newmintTemplates.length === 0) {
+    toastr.warning(`0 unspent transactions from ${address} found`);
+  }
+  allMintTemplates.value = newmintTemplates;
+
+  if (newmintTemplates.length > max) {
+    // stay empty
+  } else {
+    mintTemplates.value = newmintTemplates;
+  }
+}
+
+function doToastr(text: string, toastrType: string): void {
+  switch (toastrType) {
+    case "success":
+      toastr.success(text);
+      break;
+    case "error":
+      toastr.error(text);
+      break;
+    default:
+      break;
+  }
+}
+
+function onCheckUnspent(percentage: number): void {
+  progressGetVouts.value = percentage;
+}
+
+async function startRun(startoptions: {
+  generateRawCoinStake: boolean;
+  minDifficulty: number;
+  minterpubkeyAddress: string;
+  redeemscript: string;
+  start: number;
+  end: number;
+  client: JsonRPCClient;
+  peercoinAddress: string;
+}): Promise<void> {
+  findstakeRunning.value = true;
+
+  mintTemplates.value.forEach((template) => {
+    template.setBitsWithDifficulty(startoptions.minDifficulty);
+  });
+
+  await delay(300);
+
+  let futureTime = startoptions.start;
+  let startTime = startoptions.start;
+  let endTill = startoptions.end;
+  do {
+    const list = mintTemplates.value;
+    for (let index = 0; index < list.length; index++) {
+      const template = list[index];
+      {
+        const result = KernelHash.checkStakeKernelHash(
+          template,
+          futureTime,
+          getModifier(futureTime)
+        );
+
+        if (result.success) {
+          if (
+            !template.FutureStakes.find((t) => t.FutureTimestamp === futureTime)
+          ) {
+            let raw = "" as string | null;
+            if (startoptions.generateRawCoinStake) {
+              const createtc = new CreateRawCoinStake(startoptions.client);
+
+              raw = await createtc.createRawCoinstakeTransaction(
+                template.Txid,
+                template.Vout,
+                startoptions.redeemscript,
+                startoptions.peercoinAddress,
+                parseFloat((result.FutureUnits / PeercoinMint.coin).toFixed(6)),
+                result.FutureTimestamp,
+                startoptions.minterpubkeyAddress
+              );
+            }
+
+            template.FutureStakes.push({
+              DayStamp: result.DayStamp,
+              FutureTimestamp: result.FutureTimestamp,
+              FutureUnits: result.FutureUnits,
+              MaxDifficulty: result.MaxDifficulty,
+              RawTransaction: !!raw ? raw : null,
+            } as FutureStake);
+
+            trigger.value = trigger.value + 1;
+          }
+        }
+      }
+    }
+
+    if (
+      futureTime - startTime <= 1 ||
+      futureTime === endTill ||
+      futureTime % (1 * 3600) === 0
+    ) {
+      progressFindstake.value = Math.max(
+        0.0,
+        Math.min(
+          100,
+          (100.0 * (futureTime - startTime)) / (1.0 * (endTill - startTime))
+        )
+      );
+
+      await delay(300);
+    }
+    futureTime++;
+  } while (futureTime <= endTill);
+  findstakeDone.value = true;
+  trigger.value = trigger.value + 1;
+
+  toastr.success(
+    `  ${unspentTransactions.value!.unspents.length} Findstake completed`
+  );
+}
 </script>
 
 <style lang="scss" scoped>

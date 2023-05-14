@@ -1,5 +1,4 @@
-import axios from "axios";
-
+import { JsonRPCClient } from "../implementation/JsonRPCClient";
 const Coin = 1000000; //	1 PPC = 1.000 mPPC
 export interface IBlock {
   hash: string;
@@ -94,13 +93,13 @@ export class Transaction {
 }
 
 export class BlockCollection {
-  url: string;
+  client: JsonRPCClient;
   BlockHeaderSize = 80;
 
   Blocks: Array<Block> = [];
 
-  constructor(url: string) {
-    this.url = url;
+  constructor(client: JsonRPCClient) {
+    this.client = client;
   }
 
   async getBlockByHeight(height: number): Promise<Block> {
@@ -196,9 +195,7 @@ export class BlockCollection {
   private async getBlockHash(height: number): Promise<string | null> {
     try {
       if (!height) return null;
-      return (
-        await axios.get(this.url + "/block/" + height, null || undefined)
-      ).data;
+      return await this.client.getBlockHash(height);
     } catch (error) {
       console.error(error);
     }
@@ -208,9 +205,7 @@ export class BlockCollection {
   private async getBlockByHash(hash: string): Promise<IBlock | null> {
     try {
       if (!hash) return null;
-      return (
-        await axios.get(this.url + "/block/hash/" + hash, null || undefined)
-      ).data;
+      return await this.client.getBlock(hash);
     } catch (error) {
       console.error(error);
     }
@@ -220,12 +215,7 @@ export class BlockCollection {
   private async getRawTransaction(txId: string): Promise<string | null> {
     try {
       if (!txId) return null;
-      return (
-        await axios.get(
-          this.url + "/transaction/raw/" + txId,
-          null || undefined
-        )
-      ).data;
+      return await this.client.getRawTransaction(txId, 0);
     } catch (error) {
       console.error(error);
     }
@@ -237,11 +227,7 @@ export class BlockCollection {
   ): Promise<ITransaction | null> {
     try {
       if (!rawtransaction) return null;
-      return (
-        await axios.post(this.url + "/transaction/raw/decode", {
-          rawtransaction: rawtransaction,
-        })
-      ).data;
+      return await this.client.decodeRawTransaction(rawtransaction);
     } catch (error) {
       console.error(error);
     }

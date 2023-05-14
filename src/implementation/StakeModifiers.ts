@@ -1,4 +1,4 @@
-import axios from "axios";
+import { JsonRPCClient } from "../implementation/JsonRPCClient";
 import orderBy from "lodash/orderBy";
 import { CryptoUtils } from "../implementation/CryptoUtils";
 
@@ -10,11 +10,11 @@ export interface IStakeModifier {
 }
 
 export class StakeModifiers {
-  url: string;
+  client: JsonRPCClient;
   stakemodifiersAll: IStakeModifier[];
   stakemodifiers: IStakeModifier[];
-  constructor(url: string) {
-    this.url = url;
+  constructor(  client: JsonRPCClient) {
+    this.client = client;
     this.stakemodifiersAll = [];
     this.stakemodifiers = [];
   }
@@ -22,7 +22,7 @@ export class StakeModifiers {
   async collect(from: number, to: number, progress: (current: number) => void) {
     //skip if already collected
     if (this.stakemodifiersAll.length > 4400) return;
-
+ 
     let currentBlock = from;
     do {
       let blockCache = null;
@@ -41,10 +41,11 @@ export class StakeModifiers {
       }
 
       if (!blockCache) {
-        //debugger;
+   
         const hash = await this.getHash(currentBlock);
 
         const block = await this.getBlockByHash(hash);
+
         if (!!block) {
           blockCache = block.time + "~" + block.modifier;
           if (typeof Storage !== "undefined") {
@@ -97,16 +98,15 @@ export class StakeModifiers {
       currentBlock++;
 
       if (currentBlock % 100 === 0) {
-        await this.delay(350);
+        await this.delay(250);
       }
     } while (currentBlock <= to);
+    //onfinished(currentBlock);
   }
 
   private async getHash(currentBlock: number): Promise<string> {
     try {
-      return (
-        await axios.get(this.url + "/block/" + currentBlock, null || undefined)
-      ).data as string;
+      return await this.client.getBlockHash(currentBlock);
     } catch (error) {
       console.error(error);
     }
@@ -124,9 +124,7 @@ export class StakeModifiers {
   ): Promise<{ time: number; modifier: string } | null> {
     try {
       if (!hash) return null;
-      return (
-        await axios.get(this.url + "/block/hash/" + hash, null || undefined)
-      ).data;
+      return await this.client.getBlock(hash);
     } catch (error) {
       console.error(error);
     }
