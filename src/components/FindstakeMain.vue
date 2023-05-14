@@ -146,7 +146,7 @@ const lastBlock = ref<number>(0);
 const lastDifficulty = ref<number>(0);
 const currentBlock = ref<number>(0);
 const percentBlocks = ref<number>(0);
-
+const minterReward = ref<number>(0);
 const progressGetVouts = ref<number>(0);
 const progressTemplates = ref<number>(0);
 const progressFindstake = ref<number>(0);
@@ -426,10 +426,11 @@ async function collectStakeModifiers(data: {
   rpcuser: string;
   rpcpassword: string;
   rpcport: number;
+  minterReward: number;
 }) {
   //console.log(data);
   findstakeStatus.value = 2;
-
+  minterReward.value = data.minterReward;
   urlDiscordProxy.value = data.urlDiscordProxy;
   blocks = new BlockCollection(data.rpcClient);
   lastBlock.value = data.lastBlock;
@@ -592,7 +593,8 @@ async function startRun(startoptions: {
                 startoptions.peercoinAddress,
                 parseFloat((result.FutureUnits / PeercoinMint.coin).toFixed(6)),
                 result.FutureTimestamp,
-                startoptions.minterpubkeyAddress
+                startoptions.minterpubkeyAddress,
+                1.0 * minterReward.value
               );
             }
 

@@ -200,7 +200,7 @@
                 class="form-control appinput"
                 :class="{ invalid: !(minDifficulty > lastDifficulty - 3.0) }"
                 type="number"
-                v-model="minDifficulty"
+                v-model.number="minDifficulty"
                 :readonly="findingStakes"
               />
               <div class="appinput-label-container text-start">
@@ -267,6 +267,27 @@
                     for="minterpubkeyAddressinp"
                     class="form-label appinput-label to-upper"
                     >UNCOMPRESSED PUBLIC KEY MINTER</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="row mt-2">
+              <div class="col-12">
+                <input
+                  id="minterreward"
+                  class="form-control appinput"
+                  :class="{ invalid: !minterReward }"
+                  type="text"
+                  placeholder="enter reward for minter"
+                  v-model.number="minterReward"
+                  :readonly="step < 2"
+                />
+                <div class="appinput-label-container text-start">
+                  <label
+                    for="minterreward"
+                    class="form-label appinput-label to-upper"
+                    >REWARD MINTER</label
                   >
                 </div>
               </div>
@@ -422,7 +443,7 @@
               class="btn btn-success mt-1 mb-3"
               @click="connect"
             >
-              Connect with WalletProxy
+              Connect with wallet
             </button>
           </div>
 
@@ -456,6 +477,7 @@ const emit = defineEmits<{
       rpcuser: string;
       rpcpassword: string;
       rpcport: number;
+      minterReward: number;
     }
   ): void;
   (e: "peercoinaddressentered", value: string): void;
@@ -476,7 +498,7 @@ const emit = defineEmits<{
 }>();
 
 const props = defineProps({
-  percentBlocks:{
+  percentBlocks: {
     Type: Number,
     required: true,
     default: 0,
@@ -531,6 +553,7 @@ const findingStakes = ref<boolean>(false);
 const lastBlock = ref<number>(0);
 const lastDifficulty = ref<number>(0);
 const minDifficulty = ref<number>(0);
+const minterReward = ref<number>(0);
 const peercoinAddress = ref<string>("");
 const minterpubkeyAddress = ref<string>("");
 const redeemscript = ref<string>("");
@@ -704,6 +727,7 @@ async function connect() {
       rpcport: rpcport.value,
       lastBlock: lastBlock.value,
       lastDifficulty: lastDifficulty.value,
+      minterReward: minterReward.value,
     });
   } catch (error) {
     console.warn(error);
