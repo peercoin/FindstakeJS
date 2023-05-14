@@ -67,6 +67,7 @@ function getDimensions() {
 //@import "my-bootstrap5-variables.scss";
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/mixins";
+@import "../node_modules/bootstrap/scss/maps";
 @import "../node_modules/bootstrap/scss/utilities";
 
 // see node_modules/bootstrap/scss/bootstrap.scss

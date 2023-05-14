@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@popperjs/core": "^2.11.5",
+    "@popperjs/core": "^2.11.7",
     "@types/bn.js": "^5.1.0",
     "@types/lodash": "^4.14.182",
     "axios": "^0.27.2",
