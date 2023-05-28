@@ -1,13 +1,13 @@
-import axios from "axios";
+import { JsonRPCClient } from "../implementation/JsonRPCClient";
 
 export class CreateRawCoinStake {
-   private url: string;
+  private client: JsonRPCClient;
 
-  constructor(url: string) {
-    this.url = url;
+  constructor(client: JsonRPCClient) {
+    this.client = client;
   }
 
-    async createRawCoinstakeTransaction(
+  async createRawCoinstakeTransaction(
     txid: string,
     vout: number,
     redeemScript: string,
@@ -17,21 +17,20 @@ export class CreateRawCoinStake {
     minterPubkey: string,
     minterReward: number = 0.0
   ): Promise<string | null> {
-    try {  
-      return (
-        
-        await axios.post(this.url + "/transaction/raw/coinstake", {
-          txid: txid,
-          vout: vout,
-          redeemScript: redeemScript,
-          address: address,
-          futureOutput: futureOutput,
-          futureTimestamp: futureTimestamp,
-          minterPubkey: 'pubkey:' + minterPubkey,  //pubkey: is appended otherwise it thinks it is a address
-          minterReward: minterReward
-        })
-      ).data;
-    } catch (error) {   
+    try {
+      const pkey = minterPubkey.startsWith("pubkey:")
+        ? minterPubkey
+        : "pubkey:" + minterPubkey;
+
+      return await this.client.createRawCoinstakeTransaction(
+        [{ txid: txid, vout: vout, redeemScript: redeemScript }],
+        [
+          { Address: pkey, Vout: minterReward },
+          { Address: address, Vout: futureOutput },
+        ],
+        futureTimestamp
+      );
+    } catch (error) {
       console.error(error);
     }
     return null;

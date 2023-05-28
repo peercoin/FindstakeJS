@@ -23,26 +23,17 @@
             </div>
 
             <div class="col-12 my-1 text-center">
-              <a href="https://github.com/peercoin/FindstakeJS"
-                ><font-awesome-icon
-                  :icon="['fab', 'github']"
-                  size="1x"
-                  :style="{ color: '#ffffff' }"
-              /></a>
-
+              <a href="https://github.com/peercoin/FindstakeJS">
+                <v-icon :inverse="true" name="bi-github" />
+              </a>
+              &nbsp;
               <a href="https://t.me/peercoin">
-                <font-awesome-icon
-                  :icon="['fab', 'telegram-plane']"
-                  size="1x"
-                  :style="{ 'margin-left': '10px', color: '#ffffff' }"
-              /></a>
-
+                <v-icon :inverse="true" name="bi-telegram" />
+              </a>
+              &nbsp;
               <a href="https://discord.gg/XPxfwtG">
-                <font-awesome-icon
-                  :icon="['fab', 'discord']"
-                  size="1x"
-                  :style="{ 'margin-left': '10px', color: '#ffffff' }"
-              /></a>
+                <v-icon :inverse="true" name="bi-discord" />
+              </a>
             </div>
           </div>
         </div>
@@ -74,26 +65,17 @@
             </div>
 
             <div class="col-sm-6 text-end">
-              <a href="https://github.com/peercoin/FindstakeJS"
-                ><font-awesome-icon
-                  :icon="['fab', 'github']"
-                  size="1x"
-                  :style="{ color: '#ffffff' }"
-              /></a>
-
+              <a href="https://github.com/peercoin/FindstakeJS">
+                <v-icon :inverse="true" name="bi-github" />
+              </a>
+              &nbsp;
               <a href="https://t.me/peercoin">
-                <font-awesome-icon
-                  :icon="['fab', 'telegram-plane']"
-                  size="1x"
-                  :style="{ 'margin-left': '10px', color: '#ffffff' }"
-              /></a>
-
+                <v-icon name="bi-telegram" :inverse="true" />
+              </a>
+              &nbsp;
               <a href="https://discord.gg/XPxfwtG">
-                <font-awesome-icon
-                  :icon="['fab', 'discord']"
-                  size="1x"
-                  :style="{ 'margin-left': '10px', color: '#ffffff' }"
-              /></a>
+                <v-icon :inverse="true" name="bi-discord" />
+              </a>
             </div>
           </div>
         </div>
@@ -102,100 +84,82 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import { computed, onMounted, onUnmounted, ref, type PropType } from "vue";
 import debounce from "lodash/debounce";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
-export default defineComponent({
-  components: {
-    FontAwesomeIcon,
+const props = defineProps({
+  innerwidth: {
+    Type: Number,
+    required: true,
+    default: 0,
   },
-
-  props: {
-    innerwidth: {
-      Type: Number,
-      required: true,
-      default: 0,
-    },
-    innerheigth: {
-      Type: Number,
-      required: true,
-      default: 0,
-    },
-  },
-
-  data() {
-    return {
-      clientHeight: 0, //heigth of browser
-      heightAppfooter: 0,
-      heightAppfootersmall: 0,
-      deboucedGetDimension: null as any,
-      resizeObserver: null as any,
-    };
-  },
-
-  mounted() {
-    this.getDimensions();
-
-    this.deboucedGetDimension = debounce(this.getDimensions, 500);
-
-    this.resizeObserver = new ResizeObserver(() => {
-      this.getDimensions();
-    });
-    this.resizeObserver.observe(document.body);
-  },
-
-  unmounted() {
-    this.resizeObserver.unobserve(document.body);
-  },
-
-  computed: {
-    dynamicbigfooter() {
-      if (this.clientHeight < this.innerheigth) {
-        //does not fit in window
-        return {
-          width: this.innerwidth + "px",
-        };
-      }
-
-      return {
-        width: this.innerwidth + "px",
-        top:
-          Math.min(this.clientHeight, this.innerheigth) -
-          this.heightAppfooter +
-          "px",
-      };
-    },
-
-    dynamicsmall() {
-      if (this.clientHeight < this.innerheigth) {
-        //does not fit in window
-        return {
-          width: this.innerwidth + "px",
-        };
-      }
-
-      return {
-        width: this.innerwidth + "px",
-        top:
-          Math.min(this.clientHeight, this.innerheigth) -
-          this.heightAppfootersmall +
-          "px",
-      };
-    },
-  },
-
-  methods: {
-    getDimensions() {
-      let _refs = this.$refs as any;
-      this.clientHeight = document.documentElement.clientHeight;
-
-      this.heightAppfooter = _refs.sitecontentfooter.offsetHeight;
-      this.heightAppfootersmall = _refs.sitecontentfootersmall.offsetHeight;
-    },
+  innerheigth: {
+    Type: Number,
+    required: true,
+    default: 0,
   },
 });
+const sitecontentfootersmall = ref<HTMLDivElement | null>(null);
+const sitecontentfooter = ref<HTMLDivElement | null>(null);
+const clientHeight = ref<number>(0);
+const heightAppfooter = ref<number>(0);
+const heightAppfootersmall = ref<number>(0);
+const deboucedGetDimension = ref<any>(null);
+const resizeObserver = ref<any>(null);
+
+onMounted(() => {
+  getDimensions();
+
+  deboucedGetDimension.value = debounce(getDimensions, 500);
+
+  resizeObserver.value = new ResizeObserver(() => {
+    getDimensions();
+  });
+  resizeObserver.value.observe(document.body);
+});
+
+onUnmounted(() => resizeObserver.value.unobserve(document.body));
+
+const dynamicbigfooter = computed<object>(() => {
+  if (clientHeight.value < props.innerheigth) {
+    //does not fit in window
+    return {
+      width: props.innerwidth + "px",
+    };
+  }
+
+  return {
+    width: props.innerwidth + "px",
+    top:
+      Math.min(clientHeight.value, props.innerheigth) -
+      heightAppfooter.value +
+      "px",
+  };
+});
+
+const dynamicsmall = computed<object>(() => {
+  if (clientHeight.value < props.innerheigth) {
+    //does not fit in window
+    return {
+      width: props.innerwidth + "px",
+    };
+  }
+
+  return {
+    width: props.innerwidth + "px",
+    top:
+      Math.min(clientHeight.value, props.innerheigth) -
+      heightAppfootersmall.value +
+      "px",
+  };
+});
+
+function getDimensions() {
+  clientHeight.value = document.documentElement.clientHeight;
+
+  heightAppfooter.value = sitecontentfooter.value!.offsetHeight;
+  heightAppfootersmall.value = sitecontentfootersmall.value!.offsetHeight;
+}
 </script>
 
 <style lang="scss" scoped>

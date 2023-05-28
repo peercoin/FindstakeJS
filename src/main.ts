@@ -1,31 +1,27 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import mitt from "mitt";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { OhVueIcon, addIcons } from "oh-vue-icons";
 import {
-  // faQuestionCircle,
-  // faArrowCircleLeft,
-  faChevronDown,
-  faChevronUp,
-  faTimesCircle,
-  faLink,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  faGithub,
-  faTelegramPlane,
-  faDiscord,
-} from "@fortawesome/free-brands-svg-icons";
-library.add(
-  faDiscord,
-  // faQuestionCircle,
-  faGithub,
-  faTelegramPlane,
-  //faTimes,
-  //faArrowCircleLeft,
-  faTimesCircle,
-  faChevronDown,
-  faChevronUp,
-  faLink
+  FaFlag,
+  LaExternalLinkAltSolid,
+  BiChevronDoubleDown,
+  BiChevronDoubleUp,
+  BiGithub,
+  BiTelegram,
+  BiDiscord,
+  FaGamepad,
+} from "oh-vue-icons/icons";
+
+addIcons(
+  FaFlag,
+  LaExternalLinkAltSolid,
+  BiChevronDoubleDown,
+  BiChevronDoubleUp,
+  BiGithub,
+  BiTelegram,
+  BiDiscord,
+  FaGamepad
 );
 
 import "vue-slider-component/theme/default.css";
@@ -33,7 +29,7 @@ import "vue-slider-component/theme/default.css";
 const eventBus = mitt();
 const app = createApp(App);
 app.config.globalProperties.eventBus = eventBus;
-
+app.component("v-icon", OhVueIcon);
 app
   //   .use(router)
   //   .use(store)
