@@ -25,17 +25,16 @@ Dependencies:
 How to set up
 ----------
  
-* make sure to have the following in file ppcoin.conf:
+* make sure to have the following settings in peercoin.conf file:
 ``` bash
 listen=1
 server=1
 txindex=1
-rpcssl=0
- 
 rpcuser=change_this_to_a_long_random_user
 rpcpassword=change_this_to_a_long_random_password
-rpctimeout=30
-rpcport=8332
+rpcport=9902
+corsdomain=https://findstake.peercoin.net (or * to accept all domains)
+rest=1
 ```
 
 * start Peercoin wallet (or daemon):

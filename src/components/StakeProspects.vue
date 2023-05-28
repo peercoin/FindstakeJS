@@ -39,25 +39,26 @@
               {{ formatLongDate(orderedFutureStakes[0].FutureTimestamp) }}
             </th>
             <th>
-              <font-awesome-icon
+              <v-icon
                 v-if="!!orderedFutureStakes[0]?.RawTransaction"
                 title="cointoolkit"
+                name="la-external-link-alt-solid"
+                fill="green"
                 class="mx-3 clickable"
-                :icon="['fas', 'link']"
                 @click.stop="openToolkit(orderedFutureStakes[0].RawTransaction)"
               />
-              <font-awesome-icon
+              <v-icon
                 v-if="!showMore"
                 class="clickable"
                 title="more"
-                :icon="['fas', 'chevron-down']"
+                name="bi-chevron-double-down"
                 @click.stop="showMore = !showMore"
               />
-              <font-awesome-icon
+              <v-icon
                 v-if="showMore"
                 class="clickable"
                 title="less"
-                :icon="['fas', 'chevron-up']"
+                name="bi-chevron-double-up"
                 @click.stop="showMore = !showMore"
               />
             </th>
@@ -80,11 +81,12 @@
             <td>
               {{ formatNumber(staketemplate.PrevTxOutValue * 0.000001, 6) }} →
               {{ formatNumber(item.FutureUnits * 0.000001, 6) }}
-              <font-awesome-icon
+              <v-icon
                 v-if="!!item?.RawTransaction"
                 title="cointoolkit"
+                name="la-external-link-alt-solid"
+                fill="green"
                 class="mx-3 clickable"
-                :icon="['fas', 'link']"
                 @click.stop="openToolkit(item?.RawTransaction)"
               />
             </td>
@@ -95,121 +97,91 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script lang="ts" setup>
+import { computed, ref, type PropType } from "vue";
 import orderBy from "lodash/orderBy";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { FutureStake, MintTemplate } from "../implementation/MintTemplate";
 import VerticalExpand from "./VerticalExpand.vue";
 import CheckboxToggle from "./CheckboxToggle.vue";
+import { getToastr } from "../implementation/ToastrContainer";
 
-export default defineComponent({
-  components: {
-    MintTemplate,
-    FontAwesomeIcon,
-    VerticalExpand,
-    CheckboxToggle,
+const toastr = getToastr();
+
+const props = defineProps({
+  dayStamp: {
+    type: String,
+    default: "",
   },
-
-  props: {
-    dayStamp: {
-      type: String,
-      default: "",
-    },
-    staketemplate: {
-      type: Object as PropType<MintTemplate>,
-      default: null,
-    },
-  },
-
-  data() {
-    return {
-      showMore: false,
-      trigger: 0,
-    };
-  },
-
-  watch: {
-    dayStamp() {
-      this.$nextTick(() => {
-        this.trigger++;
-      });
-    },
-  },
-
-  computed: {
-    showDiscord(): boolean {
-      let queryString = window.location.search;
-      let urlParams = new URLSearchParams(queryString);
-      return (
-        urlParams.has("pushToDiscord") && urlParams.get("pushToDiscord") === "1"
-      );
-    },
-
-    txId(): string {
-      return !!this.staketemplate.Txid
-        ? this.staketemplate.Txid.slice(0, 5) +
-            "..." +
-            this.staketemplate.Txid.substring(
-              this.staketemplate.Txid.length - 5
-            )
-        : "";
-    },
-
-    orderedFutureStakes(): Array<FutureStake> {
-      let trigger1 = this.trigger;
-      //assumed the array !isEmpty
-      let results = this.staketemplate.FutureStakes.slice();
-      const sortItem = this.dayStamp || "";
-
-      return orderBy(
-        results,
-        [
-          (fs) => (fs.DayStamp === sortItem ? -1 : 1),
-          (fs) => fs.FutureTimestamp,
-        ],
-        ["asc", "asc"]
-      );
-      //   return results.sort(sortDaystampFirst);
-    },
-  },
-
-  methods: {
-    copyToClipboard(val: string): void {
-      navigator.clipboard.writeText(val);
-      (this as any).eventBus.emit("add-toastr", {
-        text: val + " copied to clipboard",
-        type: "success",
-      });
-    },
-
-    openToolkit(nw: string | null | undefined) {
-      if (!nw) return;
-
-      const url =
-        "https://peercoin.github.io/cointoolkit/?mode=peercoin&verify=" + nw;
-      window.open(url, "_blank");
-    },
-
-    formatLongDate(timestamp: number, longFormat: boolean = true): string {
-      return new Date(timestamp * 1000).toLocaleString(
-        Intl.DateTimeFormat().resolvedOptions().locale,
-        {
-          weekday: "short", // long, short, narrow
-          day: "numeric", // numeric, 2-digit
-          year: "numeric", // numeric, 2-digit
-          month: "short", // numeric, 2-digit, long, short, narrow
-          hour: "numeric", // numeric, 2-digit
-          minute: "numeric", // numeric, 2-digit
-          second: "numeric", // numeric, 2-digit
-        }
-      );
-    },
-    formatNumber(coins: number, fix: number): string {
-      return "" + parseFloat(coins.toFixed(fix));
-    },
+  staketemplate: {
+    type: Object as PropType<MintTemplate>,
+    default: null,
   },
 });
+
+const showMore = ref<boolean>(false);
+const trigger = ref<number>(1);
+
+const showDiscord = computed<boolean>(() => {
+  let queryString = window.location.search;
+  let urlParams = new URLSearchParams(queryString);
+  return (
+    urlParams.has("pushToDiscord") && urlParams.get("pushToDiscord") === "1"
+  );
+});
+
+const txId = computed<string>(() => {
+  return !!props.staketemplate.Txid
+    ? props.staketemplate.Txid.slice(0, 5) +
+        "..." +
+        props.staketemplate.Txid.substring(props.staketemplate.Txid.length - 5)
+    : "";
+});
+
+const orderedFutureStakes = computed<Array<FutureStake>>(() => {
+  let trigger1 = trigger.value + props.dayStamp || "";
+  //assumed the array !isEmpty
+  let results = props.staketemplate.FutureStakes.slice();
+  const sortItem = props.dayStamp || "";
+
+  return orderBy(
+    results,
+    [(fs) => (fs.DayStamp === sortItem ? -1 : 1), (fs) => fs.FutureTimestamp],
+    ["asc", "asc"]
+  );
+  //   return results.sort(sortDaystampFirst);
+});
+
+function copyToClipboard(val: string): void {
+  navigator.clipboard.writeText(val);
+  toastr.success(val + " copied to clipboard");
+}
+
+function openToolkit(nw: string | null | undefined) {
+  if (!nw) return;
+
+  const url =
+    "https://peercoin.github.io/cointoolkit/?mode=peercoin&verify=" + nw;
+  window.open(url, "_blank");
+}
+
+function formatLongDate(timestamp: number, longFormat: boolean = true): string {
+  return new Date(timestamp * 1000).toLocaleString(
+    Intl.DateTimeFormat().resolvedOptions().locale,
+    {
+      weekday: "short", // long, short, narrow
+      day: "numeric", // numeric, 2-digit
+      year: "numeric", // numeric, 2-digit
+      month: "short", // numeric, 2-digit, long, short, narrow
+      hour: "numeric", // numeric, 2-digit
+      minute: "numeric", // numeric, 2-digit
+      second: "numeric", // numeric, 2-digit
+    }
+  );
+}
+
+function formatNumber(coins: number, fix: number): string {
+  return "" + parseFloat(coins.toFixed(fix));
+}
 </script>
 
 <style lang="scss">
