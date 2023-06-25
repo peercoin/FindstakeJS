@@ -148,10 +148,11 @@ export class KernelHash {
     units: number
   ): number {
     /*
-    Equation at 2.9975% plus a basis 1.2 peercoin:
-    A = P(1 + 0.029975*t) + 1.2      
+    Equation at 2.9975% plus a basis 1.x peercoin:
+    A = P(1 + 0.029975*t) + 1.x      
     if set too high the protocol may deny it.
     */
+    const staticReward = 1.3;
     const perc = 0.029975;
     const YEAR_IN_SECONDS = 31556952; // Average length of year in Gregorian calendar
 
@@ -160,8 +161,8 @@ export class KernelHash {
     const fractionyears = seconds / (1.0 * YEAR_IN_SECONDS);
 
     // just floor the double:
-    var newUnits = Math.floor(
-      units * (1 + perc * fractionyears) + 1.2 * 1000000
+    const newUnits = Math.floor(
+      units * (1 + perc * fractionyears) + (staticReward * 1000000)
     );
     return parseFloat(newUnits.toFixed(6));
   }
