@@ -277,7 +277,7 @@
                 <input
                   id="minterreward"
                   class="form-control appinput"
-                  :class="{ invalid: !minterReward }"
+                  :class="{ invalid: (minterReward < 0) }"
                   type="text"
                   placeholder="enter reward for minter"
                   v-model.number="minterReward"
