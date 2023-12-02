@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 golang/pushDiscord/main
+
+golang/endpointDiscordPush/gowebserver
