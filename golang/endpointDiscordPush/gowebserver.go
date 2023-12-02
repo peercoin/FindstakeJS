@@ -6,6 +6,7 @@ import (
 	"sync"
 	"os/exec"
 	"container/list"
+	"strings"
 	"time"
 	"github.com/spf13/viper"
     "github.com/gin-gonic/gin"
@@ -101,11 +102,11 @@ func pushOneDiscord(messagesToPush *list.List) {
 		var config AppConfig
 		getAppsettings(&config)
 	    prg := config.Command 
-		arg1 := "-title=" + title
-    	arg2 := "-body=" + body
+		arg1 := "-title=" + strings.Replace(title, " ", "_", -1)
+    	arg2 := "-body=" + strings.Replace(body, " ", "_", -1)
 		arg3 := "-bot=" + config.BotToken
 		arg4 := "-channel=" + config.ChannelId
-		arg5 := "-tags=" + config.TagUsers
+		arg5 := "-tags=" + strings.Replace(config.TagUsers, " ", "_", -1)
 		
 		cmd := exec.Command(prg, arg1, arg2, arg3, arg4, arg5)
 		stdout, err := cmd.Output()
