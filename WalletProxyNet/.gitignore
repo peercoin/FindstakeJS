@@ -9,4 +9,15 @@ obj/Release/net6.0/linux-x64/
 
 bin/Debug/net6.0/
 
+
+bin/Release/net8.0/linux-x64/publish/
+
+bin/Release/net8.0/linux-x64/
+
+obj/Debug/net8.0/
+
+obj/Release/net8.0/linux-x64/
+
+bin/Debug/net8.0/
+
 obj/

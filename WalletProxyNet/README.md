@@ -2,7 +2,7 @@
 ## WalletProxy
 
 
-This is a aspnet6.0 webservice that act as a REST endpoint for peercoin wallet.
+This is a aspnet8.0 webservice that act as a REST endpoint for peercoin wallet.
 
 Your peercoin.conf should have the following config:
 ```
@@ -21,7 +21,7 @@ The username and password can be changed accordingly in settings.json
 ## How to compile app:
 dotnet publish WalletProxy.csproj -c Release --runtime linux-x64 --no-self-contained
 
-(or use self-contained if there isnt a runtime net 6 installed)
+(or use self-contained if there isnt a runtime sdk net 8 installed)
 
 ## How to run:
 ~~build with Dockerfile~~  
