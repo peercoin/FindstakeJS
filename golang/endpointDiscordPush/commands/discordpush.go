@@ -1,10 +1,10 @@
-package main
+package commands
 
 import (
     "fmt"
-    "flag"
     "github.com/bwmarrin/discordgo"
 )
+
 
 type AppConfig struct {
 	BotToken string
@@ -56,21 +56,11 @@ func (client *DiscordClient) SendMessages(channelID string, tags string, blob *C
     return nil
 }
 
-//./main -title="opt" -body="body" -bot=atoken -channel=1234567 -tags=<@12344>
-func main() {
-    titlePtr := flag.String("title", "<title>", "title of thread")
-    bodyPtr := flag.String("body", "<body>", "body of message")
-    botPtr := flag.String("bot", "sometoken", "dicord bot token")
-    channelidPtr := flag.String("channel", "123456789", "channelId the start a thread in")
-    tagsPtr := flag.String("tags", "", "message to tag people")
-    flag.Parse()
-    fmt.Println("title:", *titlePtr)
-    fmt.Println("body:", *bodyPtr)
-    title := *titlePtr
-    body := *bodyPtr
-    botToken := *botPtr
-    channelID := *channelidPtr
-    tags := *tagsPtr
+func StringLen(s string) int{
+ return len(s)
+}
+
+func PushMessage(title string, body string, botToken string, channelID string, tags string ) {
     client := NewDiscordClient(botToken)
     receivedRequest := new(CreateThreadInput)
     receivedRequest.Title = title

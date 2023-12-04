@@ -4,18 +4,17 @@ import (
 	"fmt"
 	"strconv"
 	"sync"
-	"os/exec"
 	"container/list"
 	"strings"
 	"time"
 	"github.com/spf13/viper"
     "github.com/gin-gonic/gin"
+	"peercoin.net/go-push-discord-endpoint/commands"
 )
 
 type AppConfig struct {
 	Port int
 	Debugging bool
-	Command string
 	BotToken string
 	TagUsers string
 	ChannelId string
@@ -57,7 +56,6 @@ func getAppsettings(config *AppConfig) {
  
 	config.Port = viper.GetInt("web.port")
 	config.Debugging = viper.GetBool("web.debug")
-	config.Command = viper.GetString("discord.command")
  	config.BotToken = viper.GetString("discord.botToken")
  	config.TagUsers = viper.GetString("discord.tagUsers")
  	config.ChannelId = viper.GetString("discord.channelId")
@@ -101,23 +99,10 @@ func pushOneDiscord(messagesToPush *list.List) {
 
 		var config AppConfig
 		getAppsettings(&config)
-	    prg := config.Command 
-		arg1 := "-title=" + strings.Replace(title, " ", "_", -1)
-    	arg2 := "-body=" + strings.Replace(body, " ", "_", -1)
-		arg3 := "-bot=" + config.BotToken
-		arg4 := "-channel=" + config.ChannelId
-		arg5 := "-tags=" + strings.Replace(config.TagUsers, " ", "_", -1)
-		
-		cmd := exec.Command(prg, arg1, arg2, arg3, arg4, arg5)
-		stdout, err := cmd.Output()
 
-	    if err != nil {
-    	    fmt.Println(err.Error())
-        	return
-    	}
-
-    	fmt.Print(string(stdout))
-
+		commands.PushMessage(strings.Replace(title, " ", "_", -1), strings.Replace(body, " ", "_", -1), 
+			config.BotToken, config.ChannelId, strings.Replace(config.TagUsers, " ", "_", -1)) 
+ 
 		messagesToPush.Remove(topmessage)
 		logwithtime("push queue remaining: " + strconv.Itoa(messagesToPush.Len()))
 	}
