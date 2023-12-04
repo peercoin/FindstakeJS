@@ -43,9 +43,9 @@ func (client *DiscordClient) SendMessages(channelID string, tags string, blob *C
       //create a thread:
       thread, err := session.MessageThreadStartComplex(channelID, firstmessage.ID, &discordgo.ThreadStart{
         Name:                blob.Title,
-        AutoArchiveDuration: 60,
+        AutoArchiveDuration: 10080, //7days
         Invitable:           false,
-        RateLimitPerUser:    100,
+        RateLimitPerUser:    1, // Amount of seconds a user has to wait before sending another message or creating another thread (0-21600)
       })
  
       _, err = session.ChannelMessageSend(thread.ID, tags)

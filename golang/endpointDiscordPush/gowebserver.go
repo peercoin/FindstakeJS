@@ -100,8 +100,8 @@ func pushOneDiscord(messagesToPush *list.List) {
 		var config AppConfig
 		getAppsettings(&config)
 
-		commands.PushMessage(strings.Replace(title, " ", "_", -1), strings.Replace(body, " ", "_", -1), 
-			config.BotToken, config.ChannelId, strings.Replace(config.TagUsers, " ", "_", -1)) 
+		commands.PushMessage(title, body, 
+			config.BotToken, config.ChannelId, config.TagUsers) 
  
 		messagesToPush.Remove(topmessage)
 		logwithtime("push queue remaining: " + strconv.Itoa(messagesToPush.Len()))
