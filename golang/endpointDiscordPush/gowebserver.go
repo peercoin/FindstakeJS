@@ -8,6 +8,7 @@ import (
 	"time"
 	"github.com/spf13/viper"
     "github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 	"peercoin.net/go-push-discord-endpoint/commands"
 )
 
@@ -44,6 +45,7 @@ func main() {
         })
     })
 	router.POST("/discord/thread/add", createPostMessageHandler(gl_messagesToPush))
+	router.Use(cors.Default())
     router.Run(":" + strconv.Itoa(config.Port))
 }
 
