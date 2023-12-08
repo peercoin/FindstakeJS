@@ -3,13 +3,14 @@ package main
 import (
 	"container/list"
 	"fmt"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"peercoin.net/go-push-discord-endpoint/commands"
-	"strconv"
-	"sync"
-	"time"
 )
 
 type AppConfig struct {
