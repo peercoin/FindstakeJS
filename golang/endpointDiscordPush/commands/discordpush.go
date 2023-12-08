@@ -1,74 +1,74 @@
 package commands
 
 import (
-    "fmt"
-    "github.com/bwmarrin/discordgo"
+	"fmt"
+
+	"github.com/bwmarrin/discordgo"
 )
 
-
 type AppConfig struct {
-	BotToken string
-	TagUsers string
+	BotToken  string
+	TagUsers  string
 	ChannelId string
 }
 
 type CreateThreadInput struct {
-	Title  string
+	Title string
 	Body  string
 }
 
 type DiscordClient struct {
-    botToken string
+	botToken string
 }
 
 func NewDiscordClient(botToken string) *DiscordClient {
-    return &DiscordClient{
-        botToken: botToken,
-    }
+	return &DiscordClient{
+		botToken: botToken,
+	}
 }
 
 func (client *DiscordClient) SendMessages(channelID string, tags string, blob *CreateThreadInput) error {
-    session, err := discordgo.New("Bot " + client.botToken)
-    if err != nil {
-        return err
-    }
+	session, err := discordgo.New("Bot " + client.botToken)
+	if err != nil {
+		return err
+	}
 
-    defer session.Close()
- 
-      firstmessage, err := session.ChannelMessageSend(channelID, blob.Body)
-      if err != nil {
-          return err
-      }
-      fmt.Println(blob.Title)
-      //create a thread:
-      thread, err := session.MessageThreadStartComplex(channelID, firstmessage.ID, &discordgo.ThreadStart{
-        Name:                blob.Title,
-        AutoArchiveDuration: 10080, //7days
-        Invitable:           false,
-        RateLimitPerUser:    1, // Amount of seconds a user has to wait before sending another message or creating another thread (0-21600)
-      })
- 
-      _, err = session.ChannelMessageSend(thread.ID, tags)
-      if err != nil {
-          return err
-      }
- 
-    return nil
+	defer session.Close()
+
+	firstmessage, err := session.ChannelMessageSend(channelID, blob.Body)
+	if err != nil {
+		return err
+	}
+	fmt.Println(blob.Title)
+	//create a thread:
+	thread, err := session.MessageThreadStartComplex(channelID, firstmessage.ID, &discordgo.ThreadStart{
+		Name:                blob.Title,
+		AutoArchiveDuration: 10080, //7days
+		Invitable:           false,
+		RateLimitPerUser:    1, // Amount of seconds a user has to wait before sending another message or creating another thread (0-21600)
+	})
+
+	_, err = session.ChannelMessageSend(thread.ID, tags)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func StringLen(s string) int{
- return len(s)
+func StringLen(s string) int {
+	return len(s)
 }
 
-func PushMessage(title string, body string, botToken string, channelID string, tags string ) {
-    client := NewDiscordClient(botToken)
-    receivedRequest := new(CreateThreadInput)
-    receivedRequest.Title = title
-    receivedRequest.Body = body
-    err := client.SendMessages(channelID, tags, receivedRequest)
-    if err != nil {
-        fmt.Println("Error sending message:", err)
-        return
-    }
-    fmt.Println("sent message: " + title)
+func PushMessage(title string, body string, botToken string, channelID string, tags string) {
+	client := NewDiscordClient(botToken)
+	receivedRequest := new(CreateThreadInput)
+	receivedRequest.Title = title
+	receivedRequest.Body = body
+	err := client.SendMessages(channelID, tags, receivedRequest)
+	if err != nil {
+		fmt.Println("Error sending message:", err)
+		return
+	}
+	fmt.Println("sent message: " + title)
 }
