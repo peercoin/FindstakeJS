@@ -8,13 +8,13 @@ It has one endpoint to push a text message in a thread to a channel in Discord.
 * fill in the correct configuration in configs
 go build gowebserver.go
 or
-docker build --tag gowebserver .
+docker build --tag local:gowebserver .
 
 ## How to run:
 check the settings in appsettings.json
 ./gowebserver
 or
-docker run -d -p 9009:9009 gowebserver
+docker run -d --name my_go_webserver -p 9009:9009 local:gowebserver
 
 
 ## endpoints:
