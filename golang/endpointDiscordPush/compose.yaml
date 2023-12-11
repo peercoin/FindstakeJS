@@ -1,0 +1,7 @@
+version: "0.1"
+services:
+  gowebserver:
+    image: local:gowebserver
+    ports:
+      - 9009:9009
+networks: {}
