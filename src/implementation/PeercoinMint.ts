@@ -9,6 +9,21 @@ export class PeercoinMint {
   static coinDay = PeercoinMint.coin * PeercoinMint.day;
   static minStakeMinAge = 2592000;
 
+  static getFindstakelimit(): number {
+    const MODIFIER_INTERVAL_RATIO = 3;
+    const nModifierInterval = 3 * 2 * 60 * 60; // 6 hours in seconds. proposed: 3;
+    const nStakeMinAge = 60 * 60 * 24 * 30; //minimum age for coin age. proposed: 14 days;
+    let sum = 0;
+    for (let nSection = 0; nSection < 64; nSection++) {
+      let t =
+        (nModifierInterval * 63) /
+        (63 + (63 - nSection) * (MODIFIER_INTERVAL_RATIO - 1));
+      sum = sum + Math.floor(t);
+    }
+    const nStakeModifierSelectionInterval = Math.floor(sum); // 761920
+    return nStakeMinAge - nStakeModifierSelectionInterval; 
+  }
+
   static DiffToTarget(diff: number): BN {
     //floor it
     diff = diff | 0;

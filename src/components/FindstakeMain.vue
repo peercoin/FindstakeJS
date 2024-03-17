@@ -134,9 +134,10 @@ const props = defineProps({
   },
 });
 const debugSkipCollectModifiers = false; //to skip loading modifiers while debugging
-const Findstakelimit = 2592000 - 761920;
-const startBlocksDelta = 6 * 24 * 31;
+const Findstakelimit = PeercoinMint.getFindstakelimit(); //2592000 - 761920;
+const startBlocksDelta = 6 * 24 * (30 + 1); //proposed: 12 * 24 * (21+1)
 const max = 750;
+let lastIndexModifier = 0;
 const pushed2DiscordIds = [] as Array<string>;
 const trigger = ref<number>(1);
 const findstakeStatus = ref<number>(1);
@@ -375,15 +376,19 @@ function onBarClicked(bar: { label: string }): void {
 function getModifier(curtime: number): BN {
   let stakeModifierBytes = [] as number[] | null;
   const tt = curtime - Findstakelimit;
+  const max = stakeModifiers.value!.stakemodifiers.length;
+  // remember last i
+  let start = (lastIndexModifier > 5 && lastIndexModifier < max) ? lastIndexModifier - 5 : 0;
 
   for (
-    let i = 0, max = stakeModifiers.value!.stakemodifiers.length;
+    let i = start;
     i < max;
     i++
   ) {
     const item = stakeModifiers.value!.stakemodifiers[i];
     if (item.blocktime <= tt) {
       stakeModifierBytes = item.modifierBytes;
+      if (lastIndexModifier < max) lastIndexModifier = i;
     } else {
       break;
     }
