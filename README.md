@@ -16,16 +16,26 @@ Find out in advance when to mint and startup your wallet just before it finds a 
 Dependencies:
 ------------
  * installed Peercoin wallet with synced data
- * a modern browser [also a fast pc would not hurt, the browser is doing all the hard work, not the webserver]
- * a running WalletProxy
+ * a modern browser like firefox
+ 
 
     
      
 	
 How to set up
 ----------
- 
-* make sure to have the following settings in peercoin.conf file:
+  [Instead of installing a wallet on you own system, docker can be used too. See here for version 0.12.4:](https://github.com/peercoin/docker-peercoind/tree/master/0.12.4) 
+
+    or e.g. run this command to run it behind port 9999:
+    
+    docker run -p 9999:9902 --name peercoind -d peercoin/peercoind \
+        -rpcallowip=0.0.0.0/0 \
+        -rpcpassword=my_unique_password \
+        -rpcuser=my_secret_password \
+        -rest=1 \
+        -corsdomain=*
+
+* or the old fashion way... make sure to have the following settings in peercoin.conf file:
 ``` bash
 listen=1
 server=1

@@ -333,6 +333,7 @@ function utxoSelected(list: Array<MintTemplate>): void {
 }
 
 async function startThreadToDiscord() {
+  let pushList = [];
   for (let index = 0; index < mintTemplatesWithResults.value.length; index++) {
     const staketemplate = mintTemplatesWithResults.value[index];
     const itemExists = pushed2DiscordIds.find((t) => t === staketemplate.Id);
@@ -362,9 +363,24 @@ async function startThreadToDiscord() {
         formatNumber(staketemplate.PrevTxOutValue * 0.000001, 2) +
         " @max" +
         formatNumber(stake2push.MaxDifficulty, 2);
-      const result = await startDiscordThread(title, url);
-      if (!!result) pushed2DiscordIds.push(staketemplate.Id);
+      const pushItem = {
+        Title: title,
+        Url: url,
+        FutureTimestamp: stake2push.FutureTimestamp,
+      };
+      pushList.push(pushItem);
+      pushed2DiscordIds.push(staketemplate.Id);
     }
+  }
+  await pushToDiscord(pushList);
+}
+
+async function pushToDiscord(
+  listItems: { Title: string; Url: string; FutureTimestamp: number }[]
+) {
+  const orderedList = orderBy(listItems, [(fs) => fs.FutureTimestamp], ["asc"]);
+  for (let index = 0; index < orderedList.length; index++) {
+    await startDiscordThread(orderedList[index].Title, orderedList[index].Url);
   }
 }
 

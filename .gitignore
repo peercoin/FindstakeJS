@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+golang/pushDiscord/main
+
+golang/endpointDiscordPush/gowebserver

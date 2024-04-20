@@ -1,0 +1,9 @@
+name: emptywallet
+services:
+    peercoind:
+        ports:
+            - 9999:9902
+        container_name: peercoind
+        image: peercoin/peercoind
+        command: -rpcallowip=0.0.0.0/0 -rpcpassword=my_unique_password
+            -rpcuser=my_secret_password -rest=1 -corsdomain=*
