@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="wasm_exec.js"></script>
+    <script>
+      const go = new Go();
+      WebAssembly.instantiateStreaming(
+        fetch("hasStakeKernelWrapper.wasm"),
+        go.importObject
+      ).then((result) => {
+        go.run(result.instance);
+      });
+    </script>
+  </head>
+  <body>
+    <div>
+      <textarea id="jsoninput" name="jsoninput" cols="80" rows="20">
+ {
+  "BlockFromTime": 1394219584,
+  "StakeModifier": 15161125480764745506,
+  "PrevTxOffset": 160,
+  "PrevTxTime": 1394219584,
+  "PrevTxOutIndex": 1,
+  "PrevTxOutValue": 210090000,
+  "StakeMinAge": 2592000,
+  "Bits": 471087779,
+  "TxTime": 1411634680
+}
+    </textarea
+      >
+    </div>
+    <input
+      id="button"
+      type="submit"
+      name="button"
+      value="maxDifficulty > 0"
+      onclick="checkFutureStakeKernel(jsoninput.value)"
+    />
+
+    <div id="hasMaxDiff"></div>
+  </body>
+  <script>
+    const checkFutureStakeKernel = function (json) {
+      const result = hasStakeKernelWrapper(json);
+      document.getElementById("hasMaxDiff").innerText = result;
+    };
+  </script>
+</html>
